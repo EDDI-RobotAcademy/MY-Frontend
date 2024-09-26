@@ -8,14 +8,20 @@
                 <v-btn icon @click="closeDialog" class="close-btn" text>
                     <v-icon color="#444444">mdi-close</v-icon>
                 </v-btn>
+                <GoogleLogin/>
             </v-card>
         </v-dialog>
     </div>
 </template>
 
 <script>
+import GoogleLogin from './ui/GoogleLogin.vue';
+
 export default {
     name: 'LoginPopup',
+    components: {
+        GoogleLogin,
+    },
     data() {
         return {
             dialog: true,
