@@ -10,6 +10,7 @@
                 </v-btn>
                 <GoogleLogin/>
                 <KakaoLogin/>
+                <NaverLogin/>
             </v-card>
         </v-dialog>
     </div>
@@ -18,12 +19,14 @@
 <script>
 import GoogleLogin from './ui/GoogleLogin.vue';
 import KakaoLogin  from './ui/KakaoLogin.vue';
+import NaverLogin  from './ui/NaverLogin.vue';
 
 export default {
     name: 'LoginPopup',
     components: {
         GoogleLogin,
         KakaoLogin,
+        NaverLogin,
     },
     data() {
         return {
