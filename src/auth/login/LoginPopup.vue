@@ -9,6 +9,7 @@
                     <v-icon color="#444444">mdi-close</v-icon>
                 </v-btn>
                 <GoogleLogin/>
+                <KakaoLogin/>
             </v-card>
         </v-dialog>
     </div>
@@ -16,11 +17,13 @@
 
 <script>
 import GoogleLogin from './ui/GoogleLogin.vue';
+import KakaoLogin  from './ui/KakaoLogin.vue';
 
 export default {
     name: 'LoginPopup',
     components: {
         GoogleLogin,
+        KakaoLogin,
     },
     data() {
         return {
