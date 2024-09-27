@@ -22,33 +22,28 @@ export default {
     },
     methods: {
         googleLoginClick() {
-            console.log(this.GOOGLE_CLIENT_ID,"구글 클라이언트 아이디")
             let google = window.google;
             google.accounts.id.initialize({
                 client_id:
                     this.GOOGLE_CLIENT_ID,
-                callback: this.googleCallback,
+                callback: (res) => {
+                    console.log("res: ", res);
+                    try {
+                        const decodedCredential = atob(res.credential.split('.')[1]);
+                        const jsonCredential = JSON.parse(decodedCredential);
+                        jsonCredential.name = decodeURIComponent(escape(jsonCredential.name));
+                        this.googleUser = jsonCredential;
+                        console.log(this.googleUser);
+                    } catch (error) {
+                        console.error("JWT Decode Error: ", error);
+                    }
+                },
             });
             google.accounts.id.renderButton(document.getElementById("G_OAuth_btn"), {
                 theme: "outline",
                 size: "large",
             });
-            this.visibleGoogleButton = true
-        },
-        googleCallback(res) {
-            console.log("res: ", res);
-
-            try {
-                const decodedCredential = atob(res.credential.split('.')[1]);
-                const jsonCredential = JSON.parse(decodedCredential);
-
-                jsonCredential.name = decodeURIComponent(escape(jsonCredential.name));
-
-                this.googleUser = jsonCredential;
-                console.log(this.googleUser);
-            } catch (error) {
-                console.error("JWT Decode Error: ", error);
-            }
+            this.visibleGoogleButton = true;
         },
     },
 };
