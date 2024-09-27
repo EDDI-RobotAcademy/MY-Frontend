@@ -4,6 +4,7 @@
 </template>
 
 <script>
+import env from "@/env";
 import { mapActions } from 'vuex'
 
 const googleAuthenticationModule = 'googleAuthenticationModule'
@@ -16,14 +17,16 @@ export default {
         return {
             googleUser: {},
             visibleGoogleButton: false,
+            GOOGLE_CLIENT_ID: env.api.GOOGLE_CLIENT_ID,
         };
     },
     methods: {
         googleLoginClick() {
+            console.log(this.GOOGLE_CLIENT_ID,"구글 클라이언트 아이디")
             let google = window.google;
             google.accounts.id.initialize({
                 client_id:
-                    "415674556897-38o9fmeedntbld8hj0m6jq9b6ibgsqg8.apps.googleusercontent.com",
+                    this.GOOGLE_CLIENT_ID,
                 callback: this.googleCallback,
             });
             google.accounts.id.renderButton(document.getElementById("G_OAuth_btn"), {
