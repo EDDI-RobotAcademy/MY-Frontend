@@ -1,5 +1,6 @@
 import { createStore } from 'vuex'
 import kakaoAuthenticationModule from '@/kakaoAuthentication/store/kakaoAuthenticationModule'
+import googleAuthenticationModule from '@/googleAuthentication/store/GoogleAuthenticationModule'
 
 export default createStore({
   state: {
@@ -12,5 +13,6 @@ export default createStore({
   },
   modules: {
     kakaoAuthenticationModule,
+    googleAuthenticationModule,
   }
 })
