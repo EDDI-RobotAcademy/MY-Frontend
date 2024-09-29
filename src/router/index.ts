@@ -4,6 +4,8 @@ import KakaoAuthenticationRoutes from '@/kakaoAuthentication/router/KakaoAuthent
 import GoogleAuthenticationRoutes from '@/googleAuthentication/router/GoogleAuthenticationRoutes'
 import SurveyRoutes from '@/survey/router/SurveyRoutes'
 import HomeRoutes from '@/home/router/HomeRoutes'
+import NaverAuthenticationRoutes from '@/naverAuthentication/router/NaverAuthenticationRoutes'
+
 
 
 const routes: Array<RouteRecordRaw> = [
@@ -11,6 +13,7 @@ const routes: Array<RouteRecordRaw> = [
   // ...DashBoardRoutes,
   ...KakaoAuthenticationRoutes,
   ...GoogleAuthenticationRoutes,
+  ...NaverAuthenticationRoutes,
   ...SurveyRoutes,
 ]
 
