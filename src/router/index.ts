@@ -1,20 +1,15 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import DashBoardRoutes from '@/dashboard/router/DashBoardRoutes'
+import KakaoAuthenticationRoutes from '@/kakaoAuthentication/router/KakaoAuthenticationRoutes'
+import GoogleAuthenticationRoutes from '@/googleAuthentication/router/GoogleAuthenticationRoutes'
+import SurveyRoutes from '@/survey/router/SurveyRoutes'
+
 
 const routes: Array<RouteRecordRaw> = [
-  {
-    path: '/',
-    name: 'home',
-    component: HomeView
-  },
-  {
-    path: '/about',
-    name: 'about',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
-  }
+  ...DashBoardRoutes,
+  ...KakaoAuthenticationRoutes,
+  ...GoogleAuthenticationRoutes,
+  ...SurveyRoutes,
 ]
 
 const router = createRouter({
