@@ -3,11 +3,17 @@
 </template>
 
 <script>
+import { useStore } from 'vuex'
+
 export default {
-    methods: {
-        naverLoginClick() {
-            console.log("네이버 로그인 클릭");
-        },
+    setup () {
+        const store = useStore()
+        const naverLoginClick = async () => {
+            await store.dispatch("naverAuthenticationModule/requestNaverOauthRedirectionToDjango")
+        }
+        return {
+            naverLoginClick,
+        }
     }
 }
 </script>
