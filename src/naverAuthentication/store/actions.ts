@@ -1,9 +1,11 @@
 import axiosInst from "@/utility/axiosInstance"
 import { ActionContext } from "vuex"
+import { AxiosResponse } from "axios"
 
 export type naverAuthenticationActions = {
     requestNaverOauthRedirectionToDjango(): Promise<void>
     requestAccessTokenToDjangoRedirection(context: ActionContext<any, any>, payload: { code: string }): Promise<void>
+    requestNaverUserInfoToDjango(context: ActionContext<any, any>): Promise<any>
 }
 const actions: naverAuthenticationActions = {
     async requestNaverOauthRedirectionToDjango(): Promise<void> {
@@ -25,6 +27,19 @@ const actions: naverAuthenticationActions = {
             localStorage.setItem("accessToken", response.data.accessToken.access_token)
         } catch (error) {
             console.log('Access Token 요청 중 문제 발생:', error)
+            throw error
+        }
+    },
+    async requestNaverUserInfoToDjango(
+        context: ActionContext<any, any>): Promise<any> {
+        try {
+            const accessToken = localStorage.getItem("accessToken")
+            const userInfoResponse: AxiosResponse<any> =
+                await axiosInst.djangoAxiosInst.post('/naver_oauth/naver/user-info', { access_token: accessToken })
+            const userInfo = userInfoResponse.data.user_info
+            return userInfo
+        } catch (error) {
+            alert('사용자 정보 가져오기 실패!')
             throw error
         }
     },
