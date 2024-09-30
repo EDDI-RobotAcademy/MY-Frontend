@@ -1,132 +1,161 @@
 <template>
     <div class="survey-container">
-        <h1 class="survey-title">MBTI가 무엇입니까?</h1>
+      <h1>당신이 어떤 성향인지 알고싶어요.<br>다음 질문들에 답변해주세요!</h1>
+      <div v-for="(question, index) in questions" :key="index" :ref="'question-' + index" :class="{ 'answered': question.answered }">
+        <h2>{{ question.text }}</h2>
         <div class="options">
-            <label class="option">
-                <input type="radio" value="ISTJ" v-model="selectedMBTI" />
-                ISTJ
-            </label>
-            <label class="option">
-                <input type="radio" value="ISFJ" v-model="selectedMBTI" />
-                ISFJ
-            </label>
-            <label class="option">
-                <input type="radio" value="INFJ" v-model="selectedMBTI" />
-                INFJ
-            </label>
-            <label class="option">
-                <input type="radio" value="INTJ" v-model="selectedMBTI" />
-                INTJ
-            </label>
-            <label class="option">
-                <input type="radio" value="ISTP" v-model="selectedMBTI" />
-                ISTP
-            </label>
-            <label class="option">
-                <input type="radio" value="ISFP" v-model="selectedMBTI" />
-                ISFP
-            </label>
-            <label class="option">
-                <input type="radio" value="INFP" v-model="selectedMBTI" />
-                INFP
-            </label>
-            <label class="option">
-                <input type="radio" value="INTP" v-model="selectedMBTI" />
-                INTP
-            </label>
-            <label class="option">
-                <input type="radio" value="ESTP" v-model="selectedMBTI" />
-                ESTP
-            </label>
-            <label class="option">
-                <input type="radio" value="ESFP" v-model="selectedMBTI" />
-                ESFP
-            </label>
-            <label class="option">
-                <input type="radio" value="ENFP" v-model="selectedMBTI" />
-                ENFP
-            </label>
-            <label class="option">
-                <input type="radio" value="ENTP" v-model="selectedMBTI" />
-                ENTP
-            </label>
-            <label class="option">
-                <input type="radio" value="ESTJ" v-model="selectedMBTI" />
-                ESTJ
-            </label>
-            <label class="option">
-                <input type="radio" value="ESFJ" v-model="selectedMBTI" />
-                ESFJ
-            </label>
-            <label class="option">
-                <input type="radio" value="ENFJ" v-model="selectedMBTI" />
-                ENFJ
-            </label>
-            <label class="option">
-                <input type="radio" value="ENTJ" v-model="selectedMBTI" />
-                ENTJ
-            </label>
+          <label v-for="(option, optionIndex) in 5" :key="optionIndex">
+            <input
+              type="radio"
+              :name="'question-' + index"
+              :value="option"
+              v-model="question.answer"
+              @change="answerQuestion(index)"
+            >
+            <span class="radio-button"></span>
+          </label>
         </div>
-        <button class="submit-button" @click="submit">확인</button>
+        <div class="labels">
+        <span>그렇다</span>
+        <span>그렇지 않다</span>
+      </div>
     </div>
+    <div class="submit-button-container">
+      <button @click="submitSurvey" class="submit-button">제출하기</button>
+    </div>
+  </div>
 </template>
-
-<script>
-import { ref } from 'vue';
-
-export default {
-    setup () {
-        const selectedMBTI = ref('');
-
-        const submit = () => {
-            console.log('선택된 MBTI:', selectedMBTI.value);
+  
+  <script>
+  export default {
+    data() {
+      return {
+        questions: [
+          { text: "주기적으로 새로운 친구를 사귄다.", answer: null, answered: false },
+          { text: "단순하고 직관적인 아이디어보다는 복잡하고 참신한 아이디어에 흥미를 느낀다.", answer: null, answered: false },
+          { text: "주기적으로 새로운 친구를 사귄다.", answer: null, answered: false },
+          { text: "단순하고 직관적인 아이디어보다는 복잡하고 참신한 아이디어에 흥미를 느낀다.", answer: null, answered: false },
+          { text: "주기적으로 새로운 친구를 사귄다.", answer: null, answered: false },
+          { text: "단순하고 직관적인 아이디어보다는 복잡하고 참신한 아이디어에 흥미를 느낀다.", answer: null, answered: false },
+          { text: "주기적으로 새로운 친구를 사귄다.", answer: null, answered: false },
+          { text: "단순하고 직관적인 아이디어보다는 복잡하고 참신한 아이디어에 흥미를 느낀다.", answer: null, answered: false },
+          { text: "주기적으로 새로운 친구를 사귄다.", answer: null, answered: false },
+          { text: "단순하고 직관적인 아이디어보다는 복잡하고 참신한 아이디어에 흥미를 느낀다.", answer: null, answered: false },
+          { text: "주기적으로 새로운 친구를 사귄다.", answer: null, answered: false },
+          { text: "단순하고 직관적인 아이디어보다는 복잡하고 참신한 아이디어에 흥미를 느낀다.", answer: null, answered: false },
+        ],
+        showWarning: false
+      };
+    },
+    methods: {
+        answerQuestion(index) {
+            this.questions[index].answered = true;
+        },
+        submitSurvey() {
+            console.log("Survey submitted:", this.questions);
+            // API 호출 등을 통해 서버에 데이터를 전송하는 로직 구현 예정
         }
-
-        return { selectedMBTI, submit }
     }
-}
-</script>
+  }
 
-<style>
-.survey-container {
-    max-width: 600px;
+  </script>
+  
+  <style scoped>
+  .survey-container {
+    max-width: 900px;
     margin: 0 auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    background-color: #f9f9f9;
-}
-
-.survey-title {
+    padding: 40px;
+  }
+  
+  h1 {
     text-align: center;
+    font-size: 2.5rem;
     color: #333;
-}
-
-.options {
+    margin-top: 40px;
+    margin-bottom: 60px;
+  }
+  
+  .answered {
+    opacity: 0.5;
+  }
+  
+  .options {
     display: flex;
-    flex-wrap: wrap;
+    justify-content: space-between;
     margin: 20px 0;
+  }
+
+  .option-label {
+    display: inline-block;
+    position: relative;
+    cursor: pointer;
+}
+  
+  .labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 50px;
+  }
+  
+  input[type="radio"] {
+    display: none;
+  }
+  
+  .radio-button {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    border: 2px solid #ccc;
+    border-radius: 50%;
+    position: relative;
+    transition: all 0.3s ease;
 }
 
-.option {
-    width: 45%;
-    margin: 10px 2.5%;
-    font-size: 18px;
+.radio-button::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #ff9033;
+  transition: all 0.3s ease;
 }
 
-.submit-button {
-    width: 100%;
-    padding: 10px;
-    background-color: #007bff;
+input[type="radio"]:checked + .radio-button {
+  border-color: #ff9033;
+}
+
+input[type="radio"]:checked + .radio-button::after {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+  .submit-button-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    }   
+
+  .submit-button {
+    background-color: #ff9033;
     color: white;
     border: none;
-    border-radius: 5px;
+    padding: 1rem 2rem;
+    font-size: 1.2rem;
     cursor: pointer;
-    font-size: 16px;
+    transition: background-color 0.3s ease, opacity 2s ease;
+    margin-top: 30px;
+    border-radius: 30px;
+    font-weight: bold;
 }
 
-.submit-button:hover {
-    background-color: #0056b3;
+.submit-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
 }
 </style>
