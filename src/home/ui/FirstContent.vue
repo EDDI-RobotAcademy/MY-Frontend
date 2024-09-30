@@ -25,6 +25,7 @@
 <script>
 import { ref } from 'vue';
 import { ChevronDown } from 'lucide-vue-next';
+import router from "@/router";
 
 export default {
   name: 'FirstContent',
@@ -83,10 +84,6 @@ export default {
       console.error('Video playback error:', event);
     };
 
-    const getStarted = () => {
-      // 여기에 'GET STARTED' 버튼 클릭 시 실행할 로직을 추가하세요.
-    };
-
     return {
       videoPlayer,
       isOverlayVisible,
@@ -96,8 +93,12 @@ export default {
       showArrow,
       startOverlayTimer,
       handleError,
-      getStarted
     };
+  },
+  methods: {
+    getStarted(){
+      router.push("/login")
+    }
   }
 }
 </script>
