@@ -21,7 +21,7 @@
       </div>
     </div>
     <div class="submit-button-container">
-      <button @click="submitSurvey" class="submit-button">제출하기</button>
+      <button @click="submitSurvey" :disabled="!allQuestionsAnswered" class="submit-button">제출하기</button>
     </div>
   </div>
 </template>
@@ -46,6 +46,11 @@
         ],
         showWarning: false
       };
+    },
+    computed: {
+        allQuestionsAnswered() {
+            return this.questions.every(q => q.answered);
+        }
     },
     methods: {
         answerQuestion(index) {
