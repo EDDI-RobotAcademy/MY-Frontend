@@ -1,7 +1,7 @@
-import actions, { AuthenticationActions } from "./actions"
+import actions, { naverAuthenticationActions } from "./actions"
 export interface NaverAuthenticationModule {
     namespaced: true
-    actions: AuthenticationActions
+    actions: naverAuthenticationActions
 }
 const naverAuthenticationModule: NaverAuthenticationModule = {
     namespaced: true,
