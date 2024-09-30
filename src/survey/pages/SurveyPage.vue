@@ -55,6 +55,12 @@
     methods: {
         answerQuestion(index) {
             this.questions[index].answered = true;
+            this.$nextTick(() => {
+                if (index < this.questions.length - 1) {
+                const nextQuestion = this.$refs[`question-${index}`][0];
+                nextQuestion.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
         },
         submitSurvey() {
             console.log("Survey submitted:", this.questions);
