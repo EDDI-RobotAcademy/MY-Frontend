@@ -12,7 +12,7 @@ export default {
       'requestAccessTokenToDjangoRedirection',
       'requestUserInfoToDjango',
     ]),
-    ...mapActions(accountModule, ['requestEmailDuplicationCheckToDjango']),
+    ...mapActions(accountModule, ['requestEmailDuplicationCheckToDjango', 'requestCreateNewAccountToDjango']),
 
     async setRedirectData() {
       const code = this.$route.query.code
@@ -29,8 +29,21 @@ export default {
       if(userInfo.email) {
         const response = await this.requestEmailDuplicationCheckToDjango(userInfo.email)
         console.log("기존 유저 확인", response)
+        if(!response){
+          this.registerNewAccount(userInfo.email, userInfo.name)
+        }
       }
     },
+    async registerNewAccount(email, name) {
+      const accountInfo = {
+        loginType: 'GOOGLE',
+        email: email,
+        nickname: name,
+      }
+      await this.requestCreateNewAccountToDjango(accountInfo)
+      console.log('전송한 데이터:', accountInfo)
+      console.log('register submitForm email:', email)
+    }
   },
   async created() {
     await this.setRedirectData()
