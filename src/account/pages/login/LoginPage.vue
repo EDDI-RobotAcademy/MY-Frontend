@@ -22,9 +22,9 @@
 </template>
 
 <script>
-import GoogleLogin from '../ui/GoogleLogin.vue';
-import KakaoLogin  from '../ui/KakaoLogin.vue';
-import NaverLogin  from '../ui/NaverLogin.vue';
+import GoogleLogin from '../login/ui/GoogleLogin.vue';
+import KakaoLogin  from '../login/ui/KakaoLogin.vue';
+import NaverLogin  from '../login/ui/NaverLogin.vue';
 
 export default {
     name: 'LoginPage',
