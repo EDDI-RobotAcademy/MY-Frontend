@@ -6,23 +6,32 @@
       <h1>COOING은 인플루언서가 되고 싶은 당신을 위해<br>가장 비슷한 롤 모델을 찾고, 성장 방향을 알려주는 서비스에요.</h1>
       <h3>당신이 어떤 성향인지 알고싶어요. 다음 질문들에 답변해주세요!</h3>
       <div v-for="(question, index) in questions" :key="index" :ref="'question-' + index" :class="{ 'answered': question.answered }">
-        <h2>{{ question.text }}</h2>
-        <div class="options">
-          <label v-for="(option, optionIndex) in 5" :key="optionIndex">
-            <input
-              type="radio"
-              :name="'question-' + index"
-              :value="option"
-              v-model="question.answer"
-              @change="answerQuestion(index)"
-            >
-            <span class="radio-button"></span>
+      <h2>{{ question.text }}</h2>
+      <div v-if="question.type === 'radio'" class="options">
+        <label v-for="(option, optionIndex) in question.options" :key="optionIndex" class="option-label">
+          <input
+            type="radio"
+            :name="'question-' + index"
+            :value="option"
+            v-model="question.answer"
+            @change="answerQuestion(index)"
+          >
+          <span class="radio-button"></span>
+          <span class="option-text">{{ option }}</span>
           </label>
         </div>
-        <div class="labels">
-        <span>그렇다</span>
-        <span>그렇지 않다</span>
-      </div>
+        <div v-else-if="question.type === 'text'" class="text-input">
+          <input
+            type="text"
+            v-model="question.answer"
+            @input="answerQuestion(index)"
+            placeholder="여기에 답변을 입력하세요"
+          >
+        </div>
+        <div v-if="question.type === 'radio'" class="labels">
+          <span>{{ question.labels[0] }}</span>
+          <span>{{ question.labels[1] }}</span>
+        </div>
     </div>
     <div class="submit-button-container">
       <button @click="submitSurvey" :disabled="!allQuestionsAnswered" class="submit-button">제출하기</button>
@@ -35,16 +44,59 @@
     data() {
       return {
         questions: [
-          { text: "주기적으로 새로운 친구를 사귄다.", answer: null, answered: false },
-          { text: "단순하고 직관적인 아이디어보다는 복잡하고 참신한 아이디어에 흥미를 느낀다.", answer: null, answered: false },
-          { text: "주기적으로 새로운 친구를 사귄다.", answer: null, answered: false },
-          { text: "단순하고 직관적인 아이디어보다는 복잡하고 참신한 아이디어에 흥미를 느낀다.", answer: null, answered: false },
-          { text: "주기적으로 새로운 친구를 사귄다.", answer: null, answered: false },
-          { text: "단순하고 직관적인 아이디어보다는 복잡하고 참신한 아이디어에 흥미를 느낀다.", answer: null, answered: false },
-          { text: "주기적으로 새로운 친구를 사귄다.", answer: null, answered: false },
-          { text: "단순하고 직관적인 아이디어보다는 복잡하고 참신한 아이디어에 흥미를 느낀다.", answer: null, answered: false },
-          { text: "주기적으로 새로운 친구를 사귄다.", answer: null, answered: false },
-          { text: "단순하고 직관적인 아이디어보다는 복잡하고 참신한 아이디어에 흥미를 느낀다.", answer: null, answered: false },
+          { 
+            text: "당신의 성별을 선택하세요.", 
+            type: "radio", 
+            options: ["남성", "여성"], 
+            labels: ["", ""],
+            answer: null, 
+            answered: false 
+          },
+          { 
+            text: "당신의 연령을 선택하세요.", 
+            type: "radio", 
+            options: ["10대", "20대", "30대", "40대", "50대 이상"], 
+            labels: ["", ""],
+            answer: null, 
+            answered: false 
+          },
+          { 
+            text: "당신의 관심사를 알려주세요.", 
+            type: "radio", 
+            options: ["운동", "여행", "패션", "맛집", "요리", "뷰티"], 
+            labels: ["", ""],
+            answer: null, 
+            answered: false 
+          },
+          { 
+            text: "취미가 있으신가요? 자유롭게 답변해주세요.", 
+            type: "text", 
+            answer: "", 
+            answered: false 
+          },
+          { 
+            text: "당신이 만약 인플루언서가 된다면, 어느 정도까지 당신을 드러낼 수 있나요?", 
+            type: "radio", 
+            options: ["얼굴", "목소리", "아예 드러내고 싶지 않음"], 
+            labels: ["", ""],
+            answer: null, 
+            answered: false 
+          },
+          { 
+            text: "당신이 만약 인플루언서가 된다면, 주로 어떤 플랫폼에서 활동하고 싶으신가요?", 
+            type: "radio", 
+            options: ["유튜브", "인스타그램", "틱톡", "트위터(X)"], 
+            labels: ["", ""],
+            answer: null, 
+            answered: false 
+          },
+          { 
+            text: "좋아하거나 자주 보는 인플루언서나 크리에이터가 있으신가요? 자유롭게 답변해주세요.", 
+            type: "text", 
+            answer: "", 
+            answered: false 
+          },
+          // 추가 질문들
         ]
       };
     },
@@ -55,7 +107,12 @@
     },
     methods: {
         answerQuestion(index) {
-            this.questions[index].answered = true;
+            const question = this.questions[index];
+            if (question.type === 'text') {
+              question.answered = question.answer.trim() !== '';
+            } else {
+              question.answered = question.answer !== null;
+            }
             this.$nextTick(() => {
                 if (index < this.questions.length - 1) {
                 const nextQuestion = this.$refs[`question-${index}`][0];
@@ -84,7 +141,7 @@
     text-align: center;
 }
 
-.survey-icon {
+  .survey-icon {
     background-image: url("@/assets/images/fixed/survey/icon_survey.png");
     filter: brightness(0) saturate(100%) invert(56%) sepia(75%) saturate(1605%) hue-rotate(346deg) brightness(100%) contrast(104%);
     background-size: contain;
@@ -93,7 +150,7 @@
     height: 120px;
     width: 120px;
     margin: auto;
-}
+  }
   
   h1 {
     text-align: center;
@@ -103,12 +160,16 @@
     margin-bottom: 10px;
   }
 
+  h2 {
+    text-align: center;
+  }
+
   h3 {
     text-align: center;
     font-size: 1.3rem;
     color: #333;
     margin-top: 10px;
-    margin-bottom: 80px;
+    margin-bottom: 100px;
   }
   
   .answered {
@@ -116,16 +177,27 @@
   }
   
   .options {
-    display: flex;
-    justify-content: space-between;
-    margin: 20px 0;
-  }
-
-  .option-label {
-    display: inline-block;
-    position: relative;
-    cursor: pointer;
+  display: flex;
+  justify-content: space-around;
+  margin: 20px 0;
 }
+
+.option-label {
+  display: flex;
+  align-items: center;
+  position: relative;
+  cursor: pointer;
+}
+  
+  .text-input input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    margin-bottom: 50px;
+  }
   
   .labels {
     display: flex;
@@ -140,13 +212,14 @@
   }
   
   .radio-button {
-    display: inline-block;
-    width: 40px;
-    height: 40px;
-    border: 2px solid #ccc;
-    border-radius: 50%;
-    position: relative;
-    transition: all 0.3s ease;
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  border: 2px solid #ccc;
+  border-radius: 50%;
+  position: relative;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
 }
 
 .radio-button::after {
@@ -170,10 +243,25 @@ input[type="radio"]:checked + .radio-button::after {
   transform: translate(-50%, -50%) scale(1);
 }
 
+.option-text {
+  margin-left: 10px;
+  font-size: 16px;
+  line-height: 40px; /* 라디오 버튼의 높이와 동일하게 설정 */
+}
+
+.labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: #666;
+  margin-top: 10px;
+  margin-bottom: 50px;
+}
+
   .submit-button-container {
     display: flex;
     justify-content: center;
-    margin-top: 30px;
+    margin-top: 20px;
     margin-bottom: 30px;
     }   
 
@@ -185,13 +273,12 @@ input[type="radio"]:checked + .radio-button::after {
     font-size: 1.2rem;
     cursor: pointer;
     transition: background-color 0.3s ease, opacity 2s ease;
-    margin-top: 30px;
     border-radius: 30px;
     font-weight: bold;
 }
 
-.submit-button:disabled {
-  background-color: #cccccc;
-  cursor: not-allowed;
-}
+  .submit-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+  }
 </style>
