@@ -25,6 +25,7 @@ const actions: naverAuthenticationActions = {
                 '/naver_oauth/naver/access-token', { code })
             console.log('accessToken:', response.data.accessToken.access_token)
             localStorage.setItem("accessToken", response.data.accessToken.access_token)
+            return response.data.accessToken.access_token
         } catch (error) {
             console.log('Access Token 요청 중 문제 발생:', error)
             throw error
