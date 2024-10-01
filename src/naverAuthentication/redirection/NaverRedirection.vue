@@ -6,6 +6,7 @@
 import { mapActions } from 'vuex';
 const authenticationModule = 'naverAuthenticationModule'
 const accountModule = 'accountModule'
+const redisModule = 'redisModule'
 
 export default {
     methods: {
@@ -13,12 +14,13 @@ export default {
             'requestAccessTokenToDjangoRedirection', 'requestNaverUserInfoToDjango'
         ]),
         ...mapActions(accountModule, ['requestEmailDuplicationCheckToDjango', 'requestCreateNewAccountToDjango']),
-
+        ...mapActions(redisModule, ['requestAddRedisAccessTokenToDjango']),
         async setRedirectData() {
             const code = this.$route.query.code
             const response = await this.requestAccessTokenToDjangoRedirection({ code })
             console.log("액세스 토큰", response)
             if(response){
+                this.accessToken = response.accessToken
                 this.checkUserExists()
             }
         },
@@ -29,6 +31,8 @@ export default {
                 console.log("기존 유저 확인", response)
                 if(!response){
                     this.registerNewAccount(userInfo.response.email, userInfo.response.nickname)
+                } else {
+                    this.registerUserToken(userInfo.response.email, this.accessToken)
                 }
             }
         },
@@ -41,6 +45,10 @@ export default {
             await this.requestCreateNewAccountToDjango(accountInfo)
             console.log('전송한 데이터:', accountInfo)
             console.log('register submitForm email:', email)
+            this.registerUserToken(email, this.accessToken)
+        },
+        async registerUserToken(email, accessToken){
+            await this.requestAddRedisAccessTokenToDjango(email, accessToken)
         }
     },
     async created() {
