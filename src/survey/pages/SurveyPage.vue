@@ -17,13 +17,15 @@
         </label>
       </div>
       <div v-else-if="questions[currentQuestionIndex].type === 'text'" class="text-input">
-        <input type="text" v-model="questions[currentQuestionIndex].answer"
-          @keyup.enter="answerQuestion(currentQuestionIndex)" placeholder="여기에 답변을 입력하세요">
+        <input type="text" v-model="questions[currentQuestionIndex].answer" placeholder="여기에 답변을 입력하세요" @input="answerQuestion(currentQuestionIndex)">
       </div>
       <div v-if="questions[currentQuestionIndex].type === 'radio'" class="labels">
         <span>{{ questions[currentQuestionIndex].labels[0] }}</span>
         <span>{{ questions[currentQuestionIndex].labels[1] }}</span>
       </div>
+    </div>
+    <div class="submit-button-container" v-if="currentQuestionIndex < questions.length - 1">
+      <button @click="nextQuestion" class="next-button" :disabled="!questions[currentQuestionIndex].answered">다음</button>
     </div>
     <div class="submit-button-container" v-if="currentQuestionIndex === questions.length - 1">
       <button @click="submitSurvey" :disabled="!allQuestionsAnswered" class="submit-button">제출하기</button>
@@ -106,11 +108,10 @@ export default {
       } else {
         question.answered = question.answer !== null;
       }
-      this.$nextTick(() => {
-        if (index < this.questions.length - 1) {
-          this.currentQuestionIndex++;
-        }
-      });
+      this.$forceUpdate(); // Vue의 반응성을 강제로 업데이트
+    },
+    nextQuestion() {
+      this.currentQuestionIndex++;
     },
     submitSurvey() {
       console.log("Survey submitted:", this.questions);
@@ -122,10 +123,19 @@ export default {
 </script>
 
 <style scoped>
+
+@font-face {
+    font-family: 'YESMyoungjo-Regular';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_13@1.0/YESMyoungjo-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
 .survey-container {
   max-width: 1000px;
   margin: 0 auto;
   padding: 40px;
+  font-family: 'YESMyoungjo-Regular', sans-serif;
 }
 
 .icon-container {
@@ -153,6 +163,7 @@ h1 {
 }
 
 h2 {
+  font-family: var(--font-family);
   text-align: center;
 }
 
@@ -281,5 +292,21 @@ input[type="radio"]:checked+.radio-button::after {
 .submit-button:disabled {
   background-color: #cccccc;
   cursor: not-allowed;
+}
+
+.next-button {
+  background-color: #ff9033;
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
+  cursor: pointer;
+  border-radius: 30px;
+  font-weight: bold;
+}
+
+.next-button:disabled {
+  background-color: #cccccc; /* 비활성화 시 회색 배경 */
+  cursor: not-allowed; /* 커서 모양 변경 */
 }
 </style>
