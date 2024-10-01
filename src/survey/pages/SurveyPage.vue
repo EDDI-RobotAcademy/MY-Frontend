@@ -34,6 +34,9 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex';
+const surveyInputModule = 'surveyInputModule'
+
 export default {
   data() {
     return {
@@ -101,6 +104,8 @@ export default {
     }
   },
   methods: {
+    ...mapActions(surveyInputModule, ['sendSurveyToFastAPI']),
+
     answerQuestion(index) {
       const question = this.questions[index];
       if (question.type === 'text') {
@@ -116,6 +121,7 @@ export default {
     submitSurvey() {
       console.log("Survey submitted:", this.questions);
       // API 호출 등을 통해 서버에 데이터를 전송하는 로직 구현 예정
+      this.sendSurveyToFastAPI({"data": this.question})
     }
   }
 }

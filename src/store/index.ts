@@ -4,6 +4,7 @@ import googleAuthenticationModule from '@/googleAuthentication/store/GoogleAuthe
 import naverAuthenticationModule from '@/naverAuthentication/store/naverAuthenticationModule'
 import accountModule from '@/account/store/accountModule'
 import redisModule from '@/redis/store/redisModule'
+import surveyInputModule from '@/survey/store/surveyInputModule'
 
 export default createStore({
   state: {
@@ -20,5 +21,6 @@ export default createStore({
     naverAuthenticationModule,
     accountModule,
     redisModule,
+    surveyInputModule,
   }
 })
