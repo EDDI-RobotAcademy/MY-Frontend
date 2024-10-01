@@ -50,7 +50,7 @@ export default {
 }
 
 .login-box {
-  background-color: #2e2e2e;
+  background-color: #202020;
   padding: 2rem;
   border-radius: 8px;
   text-align: center;
