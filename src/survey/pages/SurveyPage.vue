@@ -1,6 +1,10 @@
 <template>
     <div class="survey-container">
-      <h1>당신이 어떤 성향인지 알고싶어요.<br>다음 질문들에 답변해주세요!</h1>
+      <div class="icon-container">
+        <v-img class="survey-icon"></v-img>
+      </div>
+      <h1>COOING은 인플루언서가 되고 싶은 당신을 위해<br>가장 비슷한 롤 모델을 찾고, 성장 방향을 알려주는 서비스에요.</h1>
+      <h3>당신이 어떤 성향인지 알고싶어요. 다음 질문들에 답변해주세요!</h3>
       <div v-for="(question, index) in questions" :key="index" :ref="'question-' + index" :class="{ 'answered': question.answered }">
         <h2>{{ question.text }}</h2>
         <div class="options">
@@ -41,10 +45,7 @@
           { text: "단순하고 직관적인 아이디어보다는 복잡하고 참신한 아이디어에 흥미를 느낀다.", answer: null, answered: false },
           { text: "주기적으로 새로운 친구를 사귄다.", answer: null, answered: false },
           { text: "단순하고 직관적인 아이디어보다는 복잡하고 참신한 아이디어에 흥미를 느낀다.", answer: null, answered: false },
-          { text: "주기적으로 새로운 친구를 사귄다.", answer: null, answered: false },
-          { text: "단순하고 직관적인 아이디어보다는 복잡하고 참신한 아이디어에 흥미를 느낀다.", answer: null, answered: false },
-        ],
-        showWarning: false
+        ]
       };
     },
     computed: {
@@ -73,17 +74,41 @@
   
   <style scoped>
   .survey-container {
-    max-width: 900px;
+    max-width: 1000px;
     margin: 0 auto;
     padding: 40px;
   }
+
+  .icon-container {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.survey-icon {
+    background-image: url("@/assets/images/fixed/survey/icon_survey.png");
+    filter: brightness(0) saturate(100%) invert(56%) sepia(75%) saturate(1605%) hue-rotate(346deg) brightness(100%) contrast(104%);
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    height: 120px;
+    width: 120px;
+    margin: auto;
+}
   
   h1 {
     text-align: center;
-    font-size: 2.5rem;
+    font-size: 2.3rem; 
     color: #333;
-    margin-top: 40px;
-    margin-bottom: 60px;
+    margin-top: 30px;
+    margin-bottom: 10px;
+  }
+
+  h3 {
+    text-align: center;
+    font-size: 1.3rem;
+    color: #333;
+    margin-top: 10px;
+    margin-bottom: 80px;
   }
   
   .answered {
