@@ -5,6 +5,7 @@ import naverAuthenticationModule from '@/naverAuthentication/store/naverAuthenti
 import accountModule from '@/account/store/accountModule'
 import authenticationModule from '@/authentication/store/authenticationModule'
 import surveyInputModule from '@/survey/store/surveyInputModule'
+import userInputModule from '@/chatbot/store/userInputModule'
 
 export default createStore({
   state: {
@@ -22,5 +23,6 @@ export default createStore({
     accountModule,
     authenticationModule,
     surveyInputModule,
+    userInputModule,
   }
 })

@@ -136,8 +136,10 @@ export default {
     };
 
     console.log("Survey submitted:", surveyData);
-    this.$store.dispatch('surveyInputModule/sendSurveyToFastAPI', surveyData);
-    this.$router.push('/chatbot');
+    this.$router.push({
+      path: '/chatbot',
+      state: { surveyData }
+    });
   }
 
   }

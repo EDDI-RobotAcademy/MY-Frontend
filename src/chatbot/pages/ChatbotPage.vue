@@ -32,33 +32,27 @@
 
 <script>
 export default {
-  name: 'ChatbotPage',
   data() {
     return {
       messages: [],
-      input: ''
+      input: '',
+      surveyData: null  // Add this to store survey data
+    };
+  },
+  created() {
+    // Access the surveyData from the router's state
+    if (this.$router && this.$router.history.current.state.surveyData) {
+      this.surveyData = this.$router.history.current.state.surveyData;
+      console.log("Received surveyData:", this.surveyData);
+      
+      // Dispatch the action to send the data to FastAPI
+      this.sendSurveyToFastAPI();
     }
   },
   methods: {
-    sendMessage() {
-      if (this.input.trim()) {
-        this.messages.push({ text: this.input, isUser: true });
-        this.input = '';
-        this.$nextTick(() => {
-          this.scrollToBottom();
-        });
-        // 봇 응답 
-        setTimeout(() => {
-          this.messages.push({ text: "안녕하세요! 무엇을 도와드릴까요?", isUser: false });
-          this.$nextTick(() => {
-            this.scrollToBottom();
-          });
-        }, 1000);
-      }
-    },
-    scrollToBottom() {
-      const container = this.$refs.messageContainer;
-      container.scrollTop = container.scrollHeight;
+    sendSurveyToFastAPI() {
+      // Use the survey data to send to the API
+      this.$store.dispatch('surveyInputModule/sendSurveyToFastAPI', this.surveyData);
     }
   }
 }
