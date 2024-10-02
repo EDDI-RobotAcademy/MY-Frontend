@@ -1,13 +1,18 @@
 <template>
-  <div class="NavigationMenuBar" @click="gotoContactPage">
+  <div class="NavigationMenuBar">
     <div class="background">
       <v-row cols="12">
-        <v-col cols="6" class="logo">
-          COOING
+        <v-col cols="6">
+          <button @click="goToHomePage" class="logo">
+            COOING
+          </button>
         </v-col>
         <v-col cols="6">
-          <button class="login">
+          <button v-if="!isAuthenticated" @click="goToLoginPage" class="login">
             로그인
+          </button>
+          <button v-if="isAuthenticated" @click="logOut" class="logout">
+            로그아웃
           </button>
         </v-col>
       </v-row>
@@ -16,17 +21,50 @@
 </template>
 
 <script>
+import router from "@/router";
+import { mapState, mapActions } from "vuex";
+const authenticationModule = "authenticationModule";
 
 export default {
-  name: 'NavigationMenuBar',
+  computed: {
+    ...mapState(authenticationModule, ["isAuthenticated"]),
+  },
+  methods: {
+    ...mapActions(authenticationModule, ["requestLogoutToDjango"]),
+    goToHomePage() {
+      router.push("/");
+    },
+    goToLoginPage() {
+      router.push("/login");
+    },
+    logOut() {
+      this.requestLogoutToDjango();
+      router.push("/");
+    },
+  },
+  mounted() {
+    console.log("navigation bar mounted()");
+    const userToken = localStorage.getItem("userToken");
+    if (userToken) {
+      console.log("You already has a userToken!");
+      this.$store.state.authenticationModule.isAuthenticated = true;
+    }
+  },
 }
 </script>
 
 <style scoped>
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap');
+
+* {
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
 .NavigationMenuBar {
   position: fixed;
   width: 100%;
-  height: 70px;
+  height: 50px;
   z-index: 1000;
   display: flex;
   align-items: center;
@@ -44,12 +82,18 @@ export default {
 .logo {
   color: #fff;
   padding-left: 3%;
-  padding-top: 2%;
+  padding-top: 1.5%;
 }
 
 .login {
   color: #fff;
-  padding-left: 80%;
-  padding-top: 3%;
+  padding-left: 90%;
+  padding-top: 1.5%;
+}
+
+.logout {
+  color: #fff;
+  padding-left: 88%;
+  padding-top: 1.5%;
 }
 </style>
