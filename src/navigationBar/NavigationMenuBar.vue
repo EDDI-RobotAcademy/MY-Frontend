@@ -22,7 +22,7 @@
 
 <script>
 import router from "@/router";
-import { mapState } from "vuex";
+import { mapState, mapActions } from "vuex";
 const authenticationModule = "authenticationModule";
 
 export default {
@@ -30,11 +30,16 @@ export default {
     ...mapState(authenticationModule, ["isAuthenticated"]),
   },
   methods: {
+    ...mapActions(authenticationModule, ["requestLogoutToDjango"]),
     goToHomePage() {
       router.push("/");
     },
     goToLoginPage() {
       router.push("/login");
+    },
+    logOut() {
+      this.requestLogoutToDjango();
+      router.push("/");
     },
   },
   mounted() {
