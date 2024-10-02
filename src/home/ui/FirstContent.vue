@@ -26,6 +26,8 @@
 import { ref } from 'vue';
 import { ChevronDown } from 'lucide-vue-next';
 import router from "@/router";
+import { mapState, mapActions } from "vuex";
+const authenticationModule = "authenticationModule";
 
 export default {
   name: 'FirstContent',
@@ -95,9 +97,17 @@ export default {
       handleError,
     };
   },
+  computed: {
+    ...mapState(authenticationModule, ["isAuthenticated"]),
+  },
   methods: {
     getStarted(){
-      router.push("/login")
+      if (!this.isAuthenticated) {
+        router.push("/login")
+      }
+      else {
+        router.push("/survey")
+      }
     }
   }
 }
