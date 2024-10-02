@@ -3,34 +3,39 @@
 </template>
 <script>
 import { mapActions } from 'vuex'
+
 const googleAuthenticationModule = 'googleAuthenticationModule'
 const accountModule = 'accountModule'
+const authenticationModule = 'authenticationModule'
 
 export default {
+  data() {
+    return {
+      accessToken: null,
+    }
+  },
   methods: {
-    ...mapActions(googleAuthenticationModule, [
-      'requestAccessTokenToDjangoRedirection',
-      'requestUserInfoToDjango',
-    ]),
+    ...mapActions(googleAuthenticationModule, ['requestAccessTokenToDjangoRedirection', 'requestGoogleUserInfoToDjango']),
     ...mapActions(accountModule, ['requestEmailDuplicationCheckToDjango', 'requestCreateNewAccountToDjango']),
+    ...mapActions(authenticationModule, ['requestAddRedisAccessTokenToDjango']),
 
     async setRedirectData() {
       const code = this.$route.query.code
-      console.log('code:', code)
-
       const response = await this.requestAccessTokenToDjangoRedirection({ code })
-      console.log("액세스 토큰", response)
-
-      const userInfo = await this.requestUserInfoToDjango()
-      console.log('userInfo:', userInfo)
-      console.log('email:', userInfo.email)
-      console.log('name:', userInfo.name)
-
-      if(userInfo.email) {
+      if (response) {
+        this.accessToken = response;
+        this.checkUserExists(this.accessToken)
+      }
+    },
+    async checkUserExists(accessToken) {
+      const userInfo = await this.requestGoogleUserInfoToDjango({ accessToken })
+      console.log("유저 인포 출력", userInfo)
+      if (userInfo.email) {
         const response = await this.requestEmailDuplicationCheckToDjango(userInfo.email)
-        console.log("기존 유저 확인", response)
-        if(!response){
-          this.registerNewAccount(userInfo.email, userInfo.name)
+        if (!response) {
+          this.registerNewAccount(userInfo.email, userInfo.nickname);
+        } else {
+          this.registerUserToken(userInfo.email, this.accessToken);
         }
       }
     },
@@ -41,9 +46,11 @@ export default {
         nickname: name,
       }
       await this.requestCreateNewAccountToDjango(accountInfo)
-      console.log('전송한 데이터:', accountInfo)
-      console.log('register submitForm email:', email)
-    }
+      this.registerUserToken(email, this.accessToken)
+    },
+    async registerUserToken(email, accessToken) {
+      await this.requestAddRedisAccessTokenToDjango(email, accessToken);
+    },
   },
   async created() {
     await this.setRedirectData()
