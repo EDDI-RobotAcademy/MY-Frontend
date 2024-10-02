@@ -1,31 +1,59 @@
-import { ActionContext } from "vuex"
-import { AxiosResponse } from "axios"
-import axiosInst from "@/utility/axiosInstance"
-import { SurveyInputState } from "./states"
+import { ActionContext } from "vuex";
+import { AxiosResponse } from "axios";
+import axiosInst from "@/utility/axiosInstance";
+import { SurveyInputState } from "./states";
 
 export type SurveyInputActions = {
     sendSurveyToFastAPI(
         context: ActionContext<SurveyInputState, any>,
-        payload: { data: any }): Promise<any>
-    }
+        payload: {
+            age_group: string,
+            gender: string,
+            mbti: string,
+            topic: string,
+            platform: string,
+            target_audience: string,
+            content_style: string,
+            post_frequency: string
+        }): Promise<any>
+}
 
 const actions: SurveyInputActions = {
     async sendSurveyToFastAPI(
         context: ActionContext<SurveyInputState, any>,
-        payload: { data: any }): Promise<any> {
+        payload: {
+            age_group: string,
+            gender: string,
+            mbti: string,
+            topic: string,
+            platform: string,
+            target_audience: string,
+            content_style: string,
+            post_frequency: string
+        }): Promise<any> {
         try {
-            console.log('sendSurveyToFastAPI()')
-            const { data } = payload
-
+            console.log('sendSurveyToFastAPI()');
+            
+            // Payload 구조에 맞게 데이터를 준비
             const response = await axiosInst.fastapiAxiosInst.post(
-                '/request-analysis', { "data": data })
-            return response.data
+                '/growth-strategy', {
+                    age_group: payload.age_group,
+                    gender: payload.gender,
+                    mbti: payload.mbti,
+                    topic: payload.topic,
+                    platform: payload.platform,
+                    target_audience: payload.target_audience,
+                    content_style: payload.content_style,
+                    post_frequency: payload.post_frequency
+                }
+            );
+            
+            return response.data;
         } catch (error) {
-            // Axios time out 나는 이슈 발생 (2500ms) 수정하기
-            console.log('sendSurveyToFastAPI() 중 문제 발생:', error)
-            throw error
+            console.log('sendSurveyToFastAPI() 중 문제 발생:', error);
+            throw error;
         }
     },
 }
 
-export default actions
+export default actions;
