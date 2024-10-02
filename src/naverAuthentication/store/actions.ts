@@ -5,7 +5,7 @@ import { AxiosResponse } from "axios"
 export type naverAuthenticationActions = {
     requestNaverOauthRedirectionToDjango(): Promise<void>
     requestAccessTokenToDjangoRedirection(context: ActionContext<any, any>, payload: { code: string }): Promise<void>
-    requestNaverUserInfoToDjango(context: ActionContext<any, any>): Promise<any>
+    requestNaverUserInfoToDjango(context: ActionContext<any, any>, payload: { accessToken: string }):Promise<any>
 }
 const actions: naverAuthenticationActions = {
     async requestNaverOauthRedirectionToDjango(): Promise<void> {
@@ -24,7 +24,6 @@ const actions: naverAuthenticationActions = {
             const response = await axiosInst.djangoAxiosInst.post(
                 '/naver_oauth/naver/access-token', { code })
             console.log('accessToken:', response.data.accessToken.access_token)
-            localStorage.setItem("accessToken", response.data.accessToken.access_token)
             return response.data.accessToken.access_token
         } catch (error) {
             console.log('Access Token 요청 중 문제 발생:', error)
@@ -32,11 +31,12 @@ const actions: naverAuthenticationActions = {
         }
     },
     async requestNaverUserInfoToDjango(
-        context: ActionContext<any, any>): Promise<any> {
+        context: ActionContext<any, any>,
+        payload: { accessToken: string }): Promise<void> {
         try {
-            const accessToken = localStorage.getItem("accessToken")
+            const { accessToken } = payload
             const userInfoResponse: AxiosResponse<any> =
-                await axiosInst.djangoAxiosInst.post('/naver_oauth/naver/user-info', { access_token: accessToken })
+                await axiosInst.djangoAxiosInst.post('/naver_oauth/naver/user-info', { accessToken })
             const userInfo = userInfoResponse.data.user_info
             return userInfo
         } catch (error) {
