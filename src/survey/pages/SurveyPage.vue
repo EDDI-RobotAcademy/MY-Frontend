@@ -1,146 +1,158 @@
 <template>
-  <div class="survey-container">
-    <div class="icon-container">
-      <v-img class="survey-icon"></v-img>
-    </div>
-    <h1>COOING은 인플루언서가 되고 싶은 당신을 위해<br>가장 비슷한 롤 모델을 찾고, 성장 방향을 알려주는 서비스에요.</h1>
-    <h3>당신이 어떤 성향인지 알고싶어요. 다음 질문들에 답변해주세요!</h3>
-    <div :ref="'question-' + currentQuestionIndex" :class="{ 'answered': questions[currentQuestionIndex].answered }">
-      <h2>{{ questions[currentQuestionIndex].text }}</h2>
-      <div v-if="questions[currentQuestionIndex].type === 'radio'" class="options">
-        <label v-for="(option, optionIndex) in questions[currentQuestionIndex].options" :key="optionIndex"
-          class="option-label">
-          <input type="radio" :name="'question-' + currentQuestionIndex" :value="option"
-            v-model="questions[currentQuestionIndex].answer" @change="answerQuestion(currentQuestionIndex)">
-          <span class="radio-button"></span>
-          <span class="option-text">{{ option }}</span>
-        </label>
+  <div class="main-container">
+      <video ref="videoPlayer" class="fullscreen-video" :src="videoSource" autoplay muted loop playsinline
+          @error="handleError"></video>
+      <div class="content-overlay">
+          <div class="survey-icon">
+              <v-img alt="Survey Icon"></v-img>
+          </div>
+          <div class="overlay-text">
+              <h1>COOING은 인플루언서가 되고 싶은 당신을 위해<br>가장 비슷한 롤 모델을 찾고, 성장 방향을 알려주는 서비스에요.</h1>
+              <h3>당신이 어떤 성향인지 알고싶어요. 다음 질문들에 답변해주세요!</h3>
+          </div>
+          <div class="survey-container">
+              <h2>{{ questions[currentQuestionIndex].text }}</h2>
+              <div v-if="questions[currentQuestionIndex].type === 'radio'" class="options">
+                  <label v-for="(option, optionIndex) in questions[currentQuestionIndex].options" :key="optionIndex"
+                      class="option-label">
+                      <input type="radio" :name="'question-' + currentQuestionIndex" :value="option"
+                          v-model="questions[currentQuestionIndex].answer"
+                          @change="answerQuestion(currentQuestionIndex)">
+                      <span class="radio-button"></span>
+                      <span class="option-text">{{ option }}</span>
+                  </label>
+              </div>
+              <div v-else-if="questions[currentQuestionIndex].type === 'text'" class="text-input">
+                  <input type="text" v-model="questions[currentQuestionIndex].answer" placeholder="여기에 답변을 입력하세요"
+                      @input="answerQuestion(currentQuestionIndex)">
+              </div>
+              <button @click="nextQuestion" class="next-button" :class="{ 'submit-button': isLastQuestion }"
+                  :disabled="!questions[currentQuestionIndex].answered">
+                  {{ isLastQuestion ? '제출' : '다음' }} <span class="arrow">&#8594;</span>
+              </button>
+          </div>
       </div>
-      <div v-else-if="questions[currentQuestionIndex].type === 'text'" class="text-input">
-        <input type="text" v-model="questions[currentQuestionIndex].answer" placeholder="여기에 답변을 입력하세요" @input="answerQuestion(currentQuestionIndex)">
-      </div>
-      <div v-if="questions[currentQuestionIndex].type === 'radio'" class="labels">
-        <span>{{ questions[currentQuestionIndex].labels[0] }}</span>
-        <span>{{ questions[currentQuestionIndex].labels[1] }}</span>
-      </div>
-    </div>
-    <div class="submit-button-container" v-if="currentQuestionIndex < questions.length - 1">
-      <button @click="nextQuestion" class="next-button" :disabled="!questions[currentQuestionIndex].answered">다음</button>
-    </div>
-    <div class="submit-button-container" v-if="currentQuestionIndex === questions.length - 1">
-      <button @click="submitSurvey" :disabled="!allQuestionsAnswered" class="submit-button">제출하기</button>
-    </div>
   </div>
 </template>
 
 <script>
-export default {
-  data() {
-    return {
-      currentQuestionIndex: 0,
-      questions: [
-        {
-          text: "당신의 성별을 선택하세요.",
-          type: "radio",
-          options: ["남성", "여성"],
-          labels: ["", ""],
-          answer: null,
-          answered: false
-        },
-        {
-          text: "당신의 연령을 선택하세요.",
-          type: "radio",
-          options: ["10대", "20대", "30대", "40대", "50대 이상"],
-          labels: ["", ""],
-          answer: null,
-          answered: false
-        },
-        {
-          text: "당신의 관심사를 알려주세요.",
-          type: "radio",
-          options: ["운동", "여행", "패션", "맛집", "요리", "뷰티"],
-          labels: ["", ""],
-          answer: null,
-          answered: false
-        },
-        {
-          text: "취미가 있으신가요? 자유롭게 답변해주세요.",
-          type: "text",
-          answer: "",
-          answered: false
-        },
-        {
-          text: "당신이 만약 인플루언서가 된다면, 어느 정도까지 당신을 드러낼 수 있나요?",
-          type: "radio",
-          options: ["얼굴", "목소리", "아예 드러내고 싶지 않음"],
-          labels: ["", ""],
-          answer: null,
-          answered: false
-        },
-        {
-          text: "당신이 만약 인플루언서가 된다면, 주로 어떤 플랫폼에서 활동하고 싶으신가요?",
-          type: "radio",
-          options: ["유튜브", "인스타그램", "틱톡", "트위터(X)"],
-          labels: ["", ""],
-          answer: null,
-          answered: false
-        },
-        {
-          text: "좋아하거나 자주 보는 인플루언서나 크리에이터가 있으신가요? 자유롭게 답변해주세요.",
-          type: "text",
-          answer: "",
-          answered: false
-        },
-        // 추가 질문들
-      ]
-    };
-  },
-  computed: {
-    allQuestionsAnswered() {
-      return this.questions.every(q => q.answered || (q.type === 'text' && q.answer.trim() !== ''));
-    }
-  },
-  methods: {
-    answerQuestion(index) {
-      const question = this.questions[index];
-      if (question.type === 'text') {
-        question.answered = question.answer.trim() !== '';
-      } else {
-        question.answered = question.answer !== null;
-      }
-      this.$forceUpdate(); // Vue의 반응성을 강제로 업데이트
-    },
-    nextQuestion() {
-      this.currentQuestionIndex++;
-    },
-    submitSurvey() {
-      console.log("Survey submitted:", this.questions);
-      // API 호출 등을 통해 서버에 데이터를 전송하는 로직 구현 예정
-    }
-  }
-}
+import { ref, computed } from 'vue';
 
+export default {
+  name: 'IntegratedComponent',
+  setup() {
+      const videoPlayer = ref(null);
+      const currentQuestionIndex = ref(0);
+      const questions = ref([
+          {
+              text: "당신의 성별을 선택하세요.",
+              type: "radio",
+              options: ["남성", "여성"],
+              answer: null,
+              answered: false
+          },
+          {
+              text: "당신의 연령을 선택하세요.",
+              type: "radio",
+              options: ["10대", "20대", "30대", "40대", "50대 이상"],
+              answer: null,
+              answered: false
+          },
+          {
+              text: "당신의 관심사를 알려주세요.",
+              type: "radio",
+              options: ["운동", "여행", "패션", "맛집", "요리", "뷰티"],
+              answer: null,
+              answered: false
+          },
+          {
+              text: "당신의 취미를 알려주세요.",
+              type: "text",
+              answer: "",
+              answered: false
+          },
+          {
+              text: "당신이 만약 인플루언서가 된다면, 어느 정도까지 당신을 드러낼 수 있나요?",
+              type: "radio",
+              options: ["얼굴", "목소리", "아예 드러내고 싶지 않음"],
+              answer: null,
+              answered: false
+          },
+          {
+              text: "당신이 만약 인플루언서가 된다면, 주로 어떤 플랫폼에서 활동하고 싶으신가요?",
+              type: "radio",
+              options: ["유튜브", "인스타그램", "틱톡", "트위터(X)"],
+              answer: null,
+              answered: false
+          },
+          {
+              text: "좋아하거나 자주 보는 인플루언서나 크리에이터가 있으신가요?",
+              type: "text",
+              answer: "",
+              answered: false
+          },
+      ]);
+
+      const handleError = (event) => {
+          console.error('Video playback error:', event);
+      };
+
+      const answerQuestion = (index) => {
+          const question = questions.value[index];
+          if (question.type === 'text') {
+              question.answered = question.answer.trim() !== '';
+          } else {
+              question.answered = question.answer !== null;
+          }
+      };
+
+      const isLastQuestion = computed(() => {
+          return currentQuestionIndex.value === questions.value.length - 1;
+      });
+
+      const nextQuestion = () => {
+          if (!isLastQuestion.value) {
+              currentQuestionIndex.value++;
+          } else {
+              submitSurvey();
+          }
+      };
+
+      const submitSurvey = () => {
+          console.log("Survey submitted:", questions.value);
+      };
+
+      return {
+          videoPlayer,
+          currentQuestionIndex,
+          questions,
+          handleError,
+          answerQuestion,
+          nextQuestion,
+          isLastQuestion,
+          submitSurvey,
+      };
+  },
+  data() {
+      return {
+          videoSource: '/videos/survey-background.mp4',
+      };
+  },
+}
 </script>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap');
 
-@font-face {
-    font-family: 'YESMyoungjo-Regular';
-    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_13@1.0/YESMyoungjo-Regular.woff') format('woff');
-    font-weight: normal;
-    font-style: normal;
+* {
+  font-family: 'Noto Sans KR', sans-serif;
 }
 
-.survey-container {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 40px;
-  font-family: 'YESMyoungjo-Regular', sans-serif;
-}
-
-.icon-container {
-  margin-top: 30px;
-  text-align: center;
+.main-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
 }
 
 .survey-icon {
@@ -154,68 +166,105 @@ export default {
   margin: auto;
 }
 
-h1 {
-  text-align: center;
-  font-size: 2rem;
-  color: #333;
-  margin-top: 30px;
-  margin-bottom: 10px;
+.fullscreen-video {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-h2 {
-  font-family: var(--font-family);
+.content-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+  background-color: rgba(255, 255, 255, 0.6);
+}
+
+.survey-container {
+  padding: 20px;
+  border-radius: 10px;
+  margin: 10px 0;
+  max-width: 800px;
+  width: 100%;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+.overlay-text {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  margin: 10px 0;
+  max-width: 800px;
+  width: 100%;
+}
+
+.overlay-text h1 {
+  font-size: 1.8rem;
+  color: #000;
+  margin-bottom: 20px;
   text-align: center;
 }
 
-h3 {
+.overlay-text h3 {
+  font-size: 1.2rem;
+  color: #000;
+  margin-bottom: 20px;
   text-align: center;
-  font-size: 1.3rem;
-  color: #333;
-  margin-top: 10px;
-  margin-bottom: 100px;
 }
 
-.answered {
-  opacity: 0.5;
+.survey-container {
+  text-align: center;
+  padding: 20px;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, .5);
+}
+
+.survey-icon {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 20px;
+}
+
+.survey-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.survey-container h2 {
+  font-size: 1.4rem;
+  color: #000;
+  margin-bottom: 20px;
 }
 
 .options {
   display: flex;
-  justify-content: space-around;
-  margin: 20px 0;
-}
-
-.options label:hover .radio-button {
-  border-color: #ff9033;
-}
-
-.options label:hover .radio-button::after {
-  transform: translate(-50%, -50%) scale(1);
+  flex-direction: row;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 20px;
 }
 
 .option-label {
   display: flex;
   align-items: center;
-  position: relative;
   cursor: pointer;
 }
 
-.text-input input {
-  width: 100%;
-  padding: 10px;
-  margin-top: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 16px;
-  margin-bottom: 50px;
-}
-
-.labels {
-  display: flex;
-  justify-content: space-between;
-  font-size: 14px;
-  color: #666;
-  margin-bottom: 50px;
+.option-text {
+  font-size: 1.3rem;
+  color: #000;
 }
 
 input[type="radio"] {
@@ -223,90 +272,83 @@ input[type="radio"] {
 }
 
 .radio-button {
-  display: inline-block;
-  width: 40px;
-  height: 40px;
-  border: 2px solid #ccc;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #000;
   border-radius: 50%;
+  margin-right: 10px;
   position: relative;
-  transition: all 0.3s ease;
-  flex-shrink: 0;
+  display: inline-block;
+  vertical-align: middle;
 }
 
-.radio-button::after {
+input[type="radio"]:checked+.radio-button::after {
   content: '';
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%) scale(0);
-  width: 20px;
-  height: 20px;
+  transform: translate(-50%, -50%);
+  width: 10px;
+  height: 10px;
+  background-color: #ff9033;
   border-radius: 50%;
-  background-color: #ff9033;
-  transition: all 0.3s ease;
 }
 
-input[type="radio"]:checked+.radio-button {
-  border-color: #ff9033;
-}
-
-input[type="radio"]:checked+.radio-button::after {
-  transform: translate(-50%, -50%) scale(1);
-}
-
-.option-text {
-  margin-left: 10px;
+.text-input input {
+  width: 70%;
+  padding: 10px;
+  border: 1px solid #000;
+  border-radius: 5px;
   font-size: 16px;
-  line-height: 40px;
-  /* 라디오 버튼의 높이와 동일하게 설정 */
-}
-
-.labels {
-  display: flex;
-  justify-content: space-between;
-  font-size: 14px;
-  color: #666;
-  margin-top: 10px;
-  margin-bottom: 50px;
-}
-
-.submit-button-container {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-  margin-bottom: 30px;
-}
-
-.submit-button {
-  background-color: #ff9033;
-  color: white;
-  border: none;
-  padding: 1rem 2rem;
-  font-size: 1.2rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease, opacity 2s ease;
-  border-radius: 30px;
-  font-weight: bold;
-}
-
-.submit-button:disabled {
-  background-color: #cccccc;
-  cursor: not-allowed;
+  margin-bottom: 12px;
 }
 
 .next-button {
   background-color: #ff9033;
   color: white;
   border: none;
-  padding: 1rem 2rem;
-  font-size: 1.2rem;
+  padding: 10px 20px 12px;
+  font-size: 1rem;
   cursor: pointer;
-  border-radius: 30px;
+  border-radius: 25px;
   font-weight: bold;
+  margin-top: 8px;
+  margin-bottom: 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
+}
+
+.next-button .arrow {
+  margin-left: 8px;
+  font-size: 1.2rem;
+  transition: transform 0.3s ease;
+}
+
+.next-button:not(:disabled):hover .arrow {
+  transform: translateX(4px);
 }
 
 .next-button:disabled {
-  background-color: #cccccc; /* 비활성화 시 회색 배경 */
-  cursor: not-allowed; /* 커서 모양 변경 */
+  background-color: rgb(69, 69, 69);
+  cursor: not-allowed;
+}
+
+.next-button:disabled .arrow {
+  opacity: 0.5;
+}
+
+.submit-button {
+  background-color: #4CAF50;
+}
+
+.submit-button:hover {
+  background-color: #45a049;
+}
+
+.submit-button:disabled {
+  background-color: rgb(69, 69, 69);
+  cursor: not-allowed;
 }
 </style>
