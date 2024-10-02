@@ -3,7 +3,7 @@ import kakaoAuthenticationModule from '@/kakaoAuthentication/store/kakaoAuthenti
 import googleAuthenticationModule from '@/googleAuthentication/store/GoogleAuthenticationModule'
 import naverAuthenticationModule from '@/naverAuthentication/store/naverAuthenticationModule'
 import accountModule from '@/account/store/accountModule'
-import redisModule from '@/redis/store/redisModule'
+import authenticationModule from '@/authentication/store/authenticationModule'
 import surveyInputModule from '@/survey/store/surveyInputModule'
 
 export default createStore({
@@ -20,7 +20,7 @@ export default createStore({
     googleAuthenticationModule,
     naverAuthenticationModule,
     accountModule,
-    redisModule,
+    authenticationModule,
     surveyInputModule,
   }
 })
