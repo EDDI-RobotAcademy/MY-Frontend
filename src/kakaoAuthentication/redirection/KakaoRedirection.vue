@@ -2,6 +2,7 @@
     <div></div>
 </template>
 <script>
+import router from '@/router'
 import { mapActions } from 'vuex'
 
 const kakaoAuthenticationModule = 'kakaoAuthenticationModule'
@@ -32,8 +33,10 @@ export default {
                 const response = await this.requestEmailDuplicationCheckToDjango(userInfo.kakao_account.email)
                 if (!response) {
                     this.registerNewAccount(userInfo.kakao_account.email, userInfo.kakao_account.profile.nickname);
+                    router.push('/survey')
                 } else {
                     this.registerUserToken(userInfo.kakao_account.email, this.accessToken);
+                    router.push('/')
                 }
             }
         },
@@ -44,11 +47,11 @@ export default {
                 nickname: nickname,
             }
             await this.requestCreateNewAccountToDjango(accountInfo)
-            this.registerUserToken(email, this.accessToken);
+            this.registerUserToken(email, this.accessToken)
         },
         async registerUserToken(email, accessToken) {
             await this.requestAddRedisAccessTokenToDjango(email, accessToken);
-        }
+        },
     },
     async created() {
         await this.setRedirectData();
