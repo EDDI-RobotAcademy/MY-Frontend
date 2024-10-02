@@ -41,13 +41,12 @@ export default {
   },
   created() {
     // Access the surveyData from the router's state
-    if (this.$router && this.$router.history.current.state.surveyData) {
-      this.surveyData = this.$router.history.current.state.surveyData;
+      this.surveyData = history.state.surveyData;
       console.log("Received surveyData:", this.surveyData);
       
       // Dispatch the action to send the data to FastAPI
-      this.sendSurveyToFastAPI();
-    }
+      const strategy = this.sendSurveyToFastAPI();
+      console.log("Strategy:", strategy);
   },
   methods: {
     sendSurveyToFastAPI() {
