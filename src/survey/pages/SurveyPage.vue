@@ -97,11 +97,13 @@ export default {
     };
   },
   computed: {
+
     isLastQuestion() {
       return this.currentQuestionIndex === this.questions.length - 1;
     }
   },
   methods: {
+
     handleError(event) {
       console.error('Video playback error:', event);
     },
@@ -122,10 +124,22 @@ export default {
       }
     },
     submitSurvey() {
-      console.log("Survey submitted:", this.questions);
-      // API 호출 등을 통해 서버에 데이터를 전송하는 로직 구현 예정
-      this.$store.dispatch('surveyInputModule/sendSurveyToFastAPI', { data: this.questions });
-    }
+    const surveyData = {
+      age_group: this.questions[1].answer, 
+      gender: this.questions[0].answer,  
+      mbti: '', 
+      topic: this.questions[3].answer, 
+      platform: this.questions[5].answer, 
+      target_audience: '', 
+      content_style: '', 
+      post_frequency: '' 
+    };
+
+    console.log("Survey submitted:", surveyData);
+    this.$store.dispatch('surveyInputModule/sendSurveyToFastAPI', surveyData);
+    this.$router.push('/chatbot');
+  }
+
   }
 };
 </script>
