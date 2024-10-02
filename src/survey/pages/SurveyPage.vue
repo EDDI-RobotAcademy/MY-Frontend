@@ -36,113 +36,75 @@
 </template>
 
 <script>
-import { ref, computed } from 'vue';
-import { mapActions } from 'vuex';
 const surveyInputModule = 'surveyInputModule'
 
 export default {
   name: 'IntegratedComponent',
-  setup() {
-      const videoPlayer = ref(null);
-      const currentQuestionIndex = ref(0);
-      const questions = ref([
-          {
-              text: "당신의 성별을 선택하세요.",
-              type: "radio",
-              options: ["남성", "여성"],
-              answer: null,
-              answered: false
-          },
-          {
-              text: "당신의 연령을 선택하세요.",
-              type: "radio",
-              options: ["10대", "20대", "30대", "40대", "50대 이상"],
-              answer: null,
-              answered: false
-          },
-          {
-              text: "당신의 관심사를 알려주세요.",
-              type: "radio",
-              options: ["운동", "여행", "패션", "맛집", "요리", "뷰티"],
-              answer: null,
-              answered: false
-          },
-          {
-              text: "당신의 취미를 알려주세요.",
-              type: "text",
-              answer: "",
-              answered: false
-          },
-          {
-              text: "당신이 만약 인플루언서가 된다면, 어느 정도까지 당신을 드러낼 수 있나요?",
-              type: "radio",
-              options: ["얼굴", "목소리", "아예 드러내고 싶지 않음"],
-              answer: null,
-              answered: false
-          },
-          {
-              text: "당신이 만약 인플루언서가 된다면, 주로 어떤 플랫폼에서 활동하고 싶으신가요?",
-              type: "radio",
-              options: ["유튜브", "인스타그램", "틱톡", "트위터(X)"],
-              answer: null,
-              answered: false
-          },
-          {
-              text: "좋아하거나 자주 보는 인플루언서나 크리에이터가 있으신가요?",
-              type: "text",
-              answer: "",
-              answered: false
-          },
-      ]);
-
-      const handleError = (event) => {
-          console.error('Video playback error:', event);
-      };
-
-      const answerQuestion = (index) => {
-          const question = questions.value[index];
-          if (question.type === 'text') {
-              question.answered = question.answer.trim() !== '';
-          } else {
-              question.answered = question.answer !== null;
-          }
-      };
-
-      const isLastQuestion = computed(() => {
-          return currentQuestionIndex.value === questions.value.length - 1;
-      });
-
-      const nextQuestion = () => {
-          if (!isLastQuestion.value) {
-              currentQuestionIndex.value++;
-          } else {
-              submitSurvey();
-          }
-      };
-
-      const submitSurvey = () => {
-          console.log("Survey submitted:", questions.value);
-      };
-
-      return {
-          videoPlayer,
-          currentQuestionIndex,
-          questions,
-          handleError,
-          answerQuestion,
-          nextQuestion,
-          isLastQuestion,
-          submitSurvey,
-      };
-  },
   data() {
-      return {
-          videoSource: '/videos/survey-background.mp4',
-      };
+    return {
+      videoSource: '/videos/survey-background.mp4',
+      videoPlayer: null,
+      currentQuestionIndex: 0,
+      questions: [
+        {
+          text: "당신의 성별을 선택하세요.",
+          type: "radio",
+          options: ["남성", "여성"],
+          answer: null,
+          answered: false
+        },
+        {
+          text: "당신의 연령을 선택하세요.",
+          type: "radio",
+          options: ["10대", "20대", "30대", "40대", "50대 이상"],
+          answer: null,
+          answered: false
+        },
+        {
+          text: "당신의 관심사를 알려주세요.",
+          type: "radio",
+          options: ["운동", "여행", "패션", "맛집", "요리", "뷰티"],
+          answer: null,
+          answered: false
+        },
+        {
+          text: "당신의 취미를 알려주세요.",
+          type: "text",
+          answer: "",
+          answered: false
+        },
+        {
+          text: "당신이 만약 인플루언서가 된다면, 어느 정도까지 당신을 드러낼 수 있나요?",
+          type: "radio",
+          options: ["얼굴", "목소리", "아예 드러내고 싶지 않음"],
+          answer: null,
+          answered: false
+        },
+        {
+          text: "당신이 만약 인플루언서가 된다면, 주로 어떤 플랫폼에서 활동하고 싶으신가요?",
+          type: "radio",
+          options: ["유튜브", "인스타그램", "틱톡", "트위터(X)"],
+          answer: null,
+          answered: false
+        },
+        {
+          text: "좋아하거나 자주 보는 인플루언서나 크리에이터가 있으신가요?",
+          type: "text",
+          answer: "",
+          answered: false
+        },
+      ]
+    };
+  },
+  computed: {
+    isLastQuestion() {
+      return this.currentQuestionIndex === this.questions.length - 1;
+    }
   },
   methods: {
-    ...mapActions(surveyInputModule, ['sendSurveyToFastAPI']),
-
+    handleError(event) {
+      console.error('Video playback error:', event);
+    },
     answerQuestion(index) {
       const question = this.questions[index];
       if (question.type === 'text') {
@@ -153,15 +115,19 @@ export default {
       this.$forceUpdate(); // Vue의 반응성을 강제로 업데이트
     },
     nextQuestion() {
-      this.currentQuestionIndex++;
+      if (!this.isLastQuestion) {
+        this.currentQuestionIndex++;
+      } else {
+        this.submitSurvey();
+      }
     },
     submitSurvey() {
       console.log("Survey submitted:", this.questions);
       // API 호출 등을 통해 서버에 데이터를 전송하는 로직 구현 예정
-      this.sendSurveyToFastAPI({"data": this.question})
+      this.$store.dispatch('surveyInputModule/sendSurveyToFastAPI', { data: this.questions });
     }
   }
-}
+};
 </script>
 
 <style scoped>
