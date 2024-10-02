@@ -88,7 +88,7 @@ export default {
           answered: false
         },
         {
-          text: "좋아하거나 자주 보는 인플루언서나 크리에이터가 있으신가요?",
+          text: "좋아하거나 자주 보는 인플루언서/크리에이터가 있으신가요?",
           type: "text",
           answer: "",
           answered: false
