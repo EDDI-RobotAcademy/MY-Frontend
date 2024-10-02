@@ -7,7 +7,7 @@ import { mapActions } from 'vuex'
 
 const kakaoAuthenticationModule = 'kakaoAuthenticationModule'
 const accountModule = 'accountModule'
-const redisModule = 'redisModule'
+const authenticationModule = 'authenticationModule'
 
 export default {
     data() {
@@ -18,7 +18,7 @@ export default {
     methods: {
         ...mapActions(kakaoAuthenticationModule, ['requestAccessTokenToDjangoRedirection','requestAccessTokenToDjangoRedirection', 'requestKakaoUserInfoToDjango']),
         ...mapActions(accountModule, ['requestEmailDuplicationCheckToDjango', 'requestCreateNewAccountToDjango']),
-        ...mapActions(redisModule, ['requestAddRedisAccessTokenToDjango']),
+        ...mapActions(authenticationModule, ['requestAddRedisAccessTokenToDjango']),
         async setRedirectData() {
             const code = this.$route.query.code
             const response = await this.requestAccessTokenToDjangoRedirection({ code })
@@ -36,7 +36,8 @@ export default {
                     router.push('/survey')
                 } else {
                     this.registerUserToken(userInfo.kakao_account.email, this.accessToken);
-                    router.push('/')
+                    router.push('/survey')  // 임시 라우터. 성향조사 제출 여부 확인 기능 추가시 변경 예정
+                    // router.push('/')
                 }
             }
         },
