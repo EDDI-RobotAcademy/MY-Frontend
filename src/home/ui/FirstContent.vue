@@ -10,7 +10,7 @@
             <h1 :class="{ 'fade-in': showTitle }">{{ overlayTitleTwo }}</h1>
             <p :class="{ 'fade-in': showDescription }">{{ overlayDescription }}</p>
           </div>
-          <button @click="getStarted" class="get-started-btn" :class="{ 'fade-in': showButton }">GET STARTED</button>
+          <button @click="getStarted" class="get-started-btn" :class="{ 'fade-in': showButton }">시작하기</button>
           <transition name="fade">
             <div v-if="showArrow" class="down-arrow">
               <ChevronDown :size="48" />
