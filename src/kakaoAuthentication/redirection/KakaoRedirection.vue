@@ -6,30 +6,34 @@ import { mapActions } from 'vuex'
 
 const kakaoAuthenticationModule = 'kakaoAuthenticationModule'
 const accountModule = 'accountModule'
+const redisModule = 'redisModule'
 
 export default {
+    data() {
+        return {
+            accessToken: null,
+        }
+    },
     methods: {
-        ...mapActions(kakaoAuthenticationModule,
-            ['requestAccessTokenToDjangoRedirection', 'requestUserInfoToDjango']),
+        ...mapActions(kakaoAuthenticationModule, ['requestAccessTokenToDjangoRedirection','requestAccessTokenToDjangoRedirection', 'requestKakaoUserInfoToDjango']),
         ...mapActions(accountModule, ['requestEmailDuplicationCheckToDjango', 'requestCreateNewAccountToDjango']),
-
+        ...mapActions(redisModule, ['requestAddRedisAccessTokenToDjango']),
         async setRedirectData() {
             const code = this.$route.query.code
-            console.log('code:', code)
-
             const response = await this.requestAccessTokenToDjangoRedirection({ code })
-            console.log("액세스 토큰", response)
-            if(response){
-                this.checkUserExists()
+            if (response) {
+                this.accessToken = response;
+                this.checkUserExists(this.accessToken)
             }
         },
-        async checkUserExists() {
-            const userInfo = await this.requestUserInfoToDjango()
-            if(userInfo.kakao_account.email) {
+        async checkUserExists(accessToken) {
+            const userInfo = await this.requestKakaoUserInfoToDjango({ accessToken })
+            if (userInfo.kakao_account.email) {
                 const response = await this.requestEmailDuplicationCheckToDjango(userInfo.kakao_account.email)
-                console.log("기존 유저 확인", response)
-                if(!response){
-                    this.registerNewAccount(userInfo.kakao_account.email, userInfo.properties.nickname)
+                if (!response) {
+                    this.registerNewAccount(userInfo.kakao_account.email, userInfo.kakao_account.profile.nickname);
+                } else {
+                    this.registerUserToken(userInfo.kakao_account.email, this.accessToken);
                 }
             }
         },
@@ -40,12 +44,14 @@ export default {
                 nickname: nickname,
             }
             await this.requestCreateNewAccountToDjango(accountInfo)
-            console.log('전송한 데이터:', accountInfo)
-            console.log('register submitForm email:', email)
+            this.registerUserToken(email, this.accessToken);
+        },
+        async registerUserToken(email, accessToken) {
+            await this.requestAddRedisAccessTokenToDjango(email, accessToken);
         }
     },
     async created() {
-        await this.setRedirectData()
+        await this.setRedirectData();
     }
 }
 </script>
