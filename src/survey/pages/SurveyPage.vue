@@ -37,6 +37,8 @@
 
 <script>
 import { ref, computed } from 'vue';
+import { mapActions } from 'vuex';
+const surveyInputModule = 'surveyInputModule'
 
 export default {
   name: 'IntegratedComponent',
@@ -138,6 +140,27 @@ export default {
           videoSource: '/videos/survey-background.mp4',
       };
   },
+  methods: {
+    ...mapActions(surveyInputModule, ['sendSurveyToFastAPI']),
+
+    answerQuestion(index) {
+      const question = this.questions[index];
+      if (question.type === 'text') {
+        question.answered = question.answer.trim() !== '';
+      } else {
+        question.answered = question.answer !== null;
+      }
+      this.$forceUpdate(); // Vue의 반응성을 강제로 업데이트
+    },
+    nextQuestion() {
+      this.currentQuestionIndex++;
+    },
+    submitSurvey() {
+      console.log("Survey submitted:", this.questions);
+      // API 호출 등을 통해 서버에 데이터를 전송하는 로직 구현 예정
+      this.sendSurveyToFastAPI({"data": this.question})
+    }
+  }
 }
 </script>
 
