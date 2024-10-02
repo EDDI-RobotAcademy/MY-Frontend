@@ -2,6 +2,7 @@
   <div></div>
 </template>
 <script>
+import router from '@/router'
 import { mapActions } from 'vuex'
 
 const googleAuthenticationModule = 'googleAuthenticationModule'
@@ -34,8 +35,10 @@ export default {
         const response = await this.requestEmailDuplicationCheckToDjango(userInfo.email)
         if (!response) {
           this.registerNewAccount(userInfo.email, userInfo.nickname);
+          router.push('/survey')
         } else {
           this.registerUserToken(userInfo.email, this.accessToken);
+          router.push('/survey')
         }
       }
     },
