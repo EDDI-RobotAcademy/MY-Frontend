@@ -14,7 +14,7 @@
           <div class="social-icons">
             <GoogleLogin/>
             <KakaoLogin/>
-            <NaverLogin/>
+            <!-- <NaverLogin/> -->
           </div>
         </div>
       </div>
@@ -31,7 +31,7 @@ export default {
     components: {
         GoogleLogin,
         KakaoLogin,
-        NaverLogin,
+        // NaverLogin,
     }
 }
 </script>
@@ -39,7 +39,7 @@ export default {
 <style scoped>
 
 .login-container {
-  display: flex;
+  display:flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
@@ -50,6 +50,7 @@ export default {
 }
 
 .login-box {
+  width:400px;
   background-color: #202020;
   padding: 2rem;
   border-radius: 8px;
@@ -76,7 +77,7 @@ export default {
   border-radius: 4px;
   font-size: 1rem;
   cursor: pointer;
-  width: 100%;
+  width: 80%;
   margin-bottom: 1rem;
 }
 
