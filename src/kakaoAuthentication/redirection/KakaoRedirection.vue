@@ -16,7 +16,7 @@ export default {
         }
     },
     methods: {
-        ...mapActions(kakaoAuthenticationModule, ['requestAccessTokenToDjangoRedirection','requestAccessTokenToDjangoRedirection', 'requestKakaoUserInfoToDjango']),
+        ...mapActions(kakaoAuthenticationModule, ['requestAccessTokenToDjangoRedirection', 'requestKakaoUserInfoToDjango']),
         ...mapActions(accountModule, ['requestEmailDuplicationCheckToDjango', 'requestCreateNewAccountToDjango']),
         ...mapActions(authenticationModule, ['requestAddRedisAccessTokenToDjango']),
         async setRedirectData() {
