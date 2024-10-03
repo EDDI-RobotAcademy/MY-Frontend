@@ -15,7 +15,7 @@
           <!-- <span>또는<br>소셜 계정으로 로그인</span> -->
           <span>소셜 계정으로 로그인</span>
           <div class="social-icons">
-            <GoogleLogin/>
+            <!-- <GoogleLogin/> -->
             <KakaoLogin/>
             <!-- <NaverLogin/> -->
           </div>
@@ -32,7 +32,7 @@ import NaverLogin  from '../login/ui/NaverLogin.vue';
 export default {
     name: 'LoginPage',
     components: {
-        GoogleLogin,
+        // GoogleLogin,
         KakaoLogin,
         // NaverLogin,
     }
