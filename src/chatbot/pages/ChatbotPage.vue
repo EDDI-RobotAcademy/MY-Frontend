@@ -29,27 +29,33 @@ export default {
   data() {
     return {
       messages: [],
-      surveyData: null  // Add this to store survey data
+      surveyData: null,  // 설문 데이터 저장
     };
   },
   created() {
-    // Access the surveyData from the router's state
+    // router에서 설문 데이터 받아오기
       this.surveyData = history.state.surveyData;
       console.log("Received surveyData:", this.surveyData);
-      
-      // Dispatch the action to send the data to FastAPI
-      const strategy = this.sendSurveyToFastAPI();
-      console.log("Strategy:", strategy);
+
+      this.sendSurveyToFastAPI();
   },
   methods: {
-    sendSurveyToFastAPI() {
-      // Use the survey data to send to the API
-      this.$store.dispatch('surveyInputModule/sendSurveyToFastAPI', this.surveyData);
+    async sendSurveyToFastAPI() {
+      try{
+        const strategy = await this.$store.dispatch('surveyInputModule/sendSurveyToFastAPI', this.surveyData);
+        console.log("Strategy:", strategy);
+        this.fullResponse = strategy.generatedStrategy;
+
+        // 응답 받은 성장 전략을 챗봇 메세지에 출력
+        this.messages.push({ text: `성장 전략: ${strategy.generatedStrategy}`, isUser: false });
+      } catch (error) {
+        console.error("FastAPI 요청 오류:", error);
+      }
     },
-    scrollToBottom() {
-      const container = this.$refs.messageContainer;
-      container.scrollTop = container.scrollHeight;
-    }
+    // scrollToBottom() {
+    //   const container = this.$refs.messageContainer;
+    //   container.scrollTop = container.scrollHeight;
+    // }
 
   }
 }
@@ -66,7 +72,7 @@ export default {
 .chatbot-header {
   background-color: white;
   color: #ff6033;
-  padding: 1rem;
+  padding: 3rem;
   text-align: center;
 }
 
