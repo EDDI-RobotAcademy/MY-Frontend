@@ -55,6 +55,7 @@
     border: 1px solid #ccc;
     border-radius: 20px;
     background-color: white;
+    width: 800px
   }
   
   .send-button {
