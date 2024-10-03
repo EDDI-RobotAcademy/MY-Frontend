@@ -18,13 +18,22 @@
       };
     },
     methods: {
-      sendMessage() {
-        if (this.input.trim()) {
-          // Emit the 'sendMessage' event to the parent component
-          this.$emit('sendMessage', this.input);
-          this.input = '';  // Clear the input field after sending the message
-        }
+        sendMessage() {
+      if (this.input.trim()) {
+        this.messages.push({ text: this.input, isUser: true });
+        this.input = '';
+        this.$nextTick(() => {
+          this.scrollToBottom();
+        });
+        // 봇 응답 
+        setTimeout(() => {
+          this.messages.push({ text: "안녕하세요! 무엇을 도와드릴까요?", isUser: false });
+          this.$nextTick(() => {
+            this.scrollToBottom();
+          });
+        }, 1000);
       }
+    }
     }
   };
   </script>

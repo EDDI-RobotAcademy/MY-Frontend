@@ -15,7 +15,7 @@
           </div>
         </div>
       </div>
-      <send-message @sendMessage="sendMessage" />
+      <send-message/>
     </main>
   </div>
 </template>
@@ -46,14 +46,10 @@ export default {
       // Use the survey data to send to the API
       this.$store.dispatch('surveyInputModule/sendSurveyToFastAPI', this.surveyData);
     },
-    sendMessage(message) {
-      this.messages.push({ text: message, isUser: true });
-
-      // 기본 응답 추가
-      const botResponse = "안녕하세요! 무엇을 도와드릴까요?";
-      this.messages.push({ text: botResponse, isUser: false });
-      
-    },
+    scrollToBottom() {
+      const container = this.$refs.messageContainer;
+      container.scrollTop = container.scrollHeight;
+    }
 
   }
 }
