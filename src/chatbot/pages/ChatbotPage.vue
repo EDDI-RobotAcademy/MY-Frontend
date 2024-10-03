@@ -15,27 +15,20 @@
           </div>
         </div>
       </div>
-     
-        <div class="input-wrapper">
-          <input v-model="input" 
-                 @keyup.enter="sendMessage"
-                 placeholder="메시지를 입력하세요."
-                 class="message-input" />
-          <button @click="sendMessage" class="send-button">
-            <i class="mdi mdi-send"></i>
-          </button>
-        </div>
- 
+      <send-message @sendMessage="sendMessage" />
     </main>
   </div>
 </template>
 
 <script>
+import SendMessage from './ui/sendMessage.vue';
 export default {
+  components: {
+    SendMessage
+  },
   data() {
     return {
       messages: [],
-      input: '',
       surveyData: null  // Add this to store survey data
     };
   },
@@ -52,7 +45,16 @@ export default {
     sendSurveyToFastAPI() {
       // Use the survey data to send to the API
       this.$store.dispatch('surveyInputModule/sendSurveyToFastAPI', this.surveyData);
-    }
+    },
+    sendMessage(message) {
+      this.messages.push({ text: message, isUser: true });
+
+      // 기본 응답 추가
+      const botResponse = "안녕하세요! 무엇을 도와드릴까요?";
+      this.messages.push({ text: botResponse, isUser: false });
+      
+    },
+
   }
 }
 </script>
@@ -137,51 +139,6 @@ export default {
   background-color: #f1f1f1;
   color: black;
   border-bottom-left-radius: 0;
-}
-
-/* .input-container {
-  display: flex;
-  justify-content: center;
-  width: 80%;
-  max-width: 600px;
-  margin: 0 auto;
-  margin-top: auto;
-} */
-
-.input-wrapper {
-  display: flex;
-  align-items: center; /* 수직 정렬 */
-  width: 80%;
-  max-width: 600px;
-  margin: 0 auto; /* 가운데 정렬 */
-  border-radius: 20px; 
-  padding: 0.5rem; 
-}
-
-.message-input {
-  flex-grow: 1;
-  padding: 0.75rem;
-  border: 1px solid #ccc;
-  border-radius: 20px;
-  background-color: white;
-}
-
-.send-button {
-  padding: 0.5rem 1rem;
-  background-color: #414141;
-  color: white;
-  border: none;
-  border-radius: 20px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.send-button:hover {
-  background-color: #414141;
-}
-
-.message-input:focus + .send-button {
-  background-color: #ff3700; /* 포커스 시 버튼 색상 */
 }
 
 </style>
