@@ -58,6 +58,7 @@
   }
   
   .send-button {
+    margin-left: 10px;
     padding: 0.5rem 1rem;
     background-color: #414141;
     color: white;
@@ -72,7 +73,7 @@
   }
   
   .message-input:focus + .send-button {
-    background-color: #ff3700;
+    background-color: #ff9033;
   }
   </style>
   
