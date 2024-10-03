@@ -13,8 +13,10 @@
             <img :src="message.isUser ? require('@/assets/images/fixed/chatbot/user_avatar.png') : require('@/assets/images/fixed/chatbot/ai_avatar.jpg')"
                  :alt="message.isUser ? 'User avatar' : 'Bot avatar'" 
                  class="message-avatar">
-            <div class="message-bubble">
+            <div v-if="message.isUser" class="message-bubble">
               {{ message.text }}
+            </div>
+            <div v-else class="message-bubble" v-html="formatMessage(message.text)">
             </div>
           </div>
         </div>
@@ -51,17 +53,20 @@ export default {
     },
     async sendSurveyToFastAPI() {
       try {
-        const waitingMessageIndex = this.messages.push({ text: `설문 데이터 결과 기다리는 중..`, isUser: false }) - 1;
+        const waitingMessageIndex = this.messages.push({ text: `성향 분석 중.. `, isUser: false }) - 1;
         const strategy = await this.$store.dispatch('surveyInputModule/sendSurveyToFastAPI', this.surveyData);
         console.log("Strategy:", strategy);
         this.fullResponse = strategy.generatedStrategy;
 
         this.messages.splice(waitingMessageIndex, 1);
 
-        this.messages.push({ text: `성장 전략: ${strategy.generatedStrategy}`, isUser: false });
+        this.messages.push({ text: `📢 당신을 위한 맟춤형 인플루언서 성장 전략을 제공해드릴게요! \n\n${strategy.generatedStrategy}`, isUser: false });
       } catch (error) {
         console.error("FastAPI 요청 오류:", error);
       }
+    },
+    formatMessage(message) {
+      return message.replace(/\n/g, '<br>');
     },
     // scrollToBottom() {
     //   const container = this.$refs.messageContainer;
