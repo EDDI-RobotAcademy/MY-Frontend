@@ -136,14 +136,14 @@ export default {
     },
     submitSurvey() {
       const surveyData = {
-        age_group: this.questions[1].answer,
         gender: this.questions[0].answer,
-        mbti: '',
+        age_group: this.questions[1].answer,
+        mbti: this.questions[2].answer,
         topic: this.questions[3].answer,
-        platform: this.questions[5].answer,
-        target_audience: '',
-        content_style: '',
-        post_frequency: ''
+        strength: this.questions[4].answer,
+        reveal: this.questions[5].answer,
+        platform: this.questions[6].answer,
+        interested_influencer: this.questions[7].answer,
       };
 
       console.log("Survey submitted:", surveyData);

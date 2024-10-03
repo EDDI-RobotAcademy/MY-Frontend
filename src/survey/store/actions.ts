@@ -7,14 +7,14 @@ export type SurveyInputActions = {
     sendSurveyToFastAPI(
         context: ActionContext<SurveyInputState, any>,
         payload: {
-            age_group: string,
             gender: string,
+            age_group: string,
             mbti: string,
             topic: string,
+            strength: string,
+            reveal: string,
             platform: string,
-            target_audience: string,
-            content_style: string,
-            post_frequency: string
+            interested_influencer: string
         }): Promise<any>
 }
 
@@ -22,14 +22,14 @@ const actions: SurveyInputActions = {
     async sendSurveyToFastAPI(
         context: ActionContext<SurveyInputState, any>,
         payload: {
-            age_group: string,
             gender: string,
+            age_group: string,
             mbti: string,
             topic: string,
+            strength: string,
+            reveal: string,
             platform: string,
-            target_audience: string,
-            content_style: string,
-            post_frequency: string
+            interested_influencer: string
         }): Promise<any> {
         try {
             console.log('sendSurveyToFastAPI()');
@@ -37,14 +37,14 @@ const actions: SurveyInputActions = {
             // Payload 구조에 맞게 데이터를 준비
             const response = await axiosInst.fastapiAxiosInst.post(
                 '/growth-strategy', {
-                    age_group: payload.age_group,
                     gender: payload.gender,
+                    age_group: payload.age_group,
                     mbti: payload.mbti,
                     topic: payload.topic,
+                    strength: payload.strength,
+                    reveal: payload.reveal,
                     platform: payload.platform,
-                    target_audience: payload.target_audience,
-                    content_style: payload.content_style,
-                    post_frequency: payload.post_frequency
+                    interested_influencer: payload.interested_influencer
                 }
             );
             
