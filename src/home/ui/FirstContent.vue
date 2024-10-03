@@ -12,7 +12,7 @@
           </div>
           <button @click="getStarted" class="get-started-btn" :class="{ 'fade-in': showButton }">시작하기</button>
           <transition name="fade">
-            <div v-if="showArrow" class="down-arrow">
+            <div v-if="showArrow" class="down-arrow" @click="smoothScroll">
               <ChevronDown :size="48" />
             </div>
           </transition>
@@ -50,9 +50,17 @@ export default {
     overlayDescription: {
       type: String,
       default: ''
+    },
+    scrollToY: {
+      type: Number,
+      default: 0
+    },
+    scrollDuration: {
+      type: Number,
+      default: 1000 // 밀리초 단위, 기본값 1초
     }
   },
-  setup() {
+  setup(props) {
     const videoPlayer = ref(null);
     const isOverlayVisible = ref(false);
     const showTitle = ref(false);
@@ -86,6 +94,30 @@ export default {
       console.error('Video playback error:', event);
     };
 
+    const smoothScroll = () => {
+      const startPosition = window.pageYOffset;
+      const distance = props.scrollToY - startPosition;
+      const startTime = performance.now();
+
+      function animation(currentTime) {
+        const timeElapsed = currentTime - startTime;
+        const run = easeInOutQuad(timeElapsed, startPosition, distance, props.scrollDuration);
+        window.scrollTo(0, run);
+        if (timeElapsed < props.scrollDuration) {
+          requestAnimationFrame(animation);
+        }
+      }
+
+      function easeInOutQuad(t, b, c, d) {
+        t /= d / 2;
+        if (t < 1) return c / 2 * t * t + b;
+        t--;
+        return -c / 2 * (t * (t - 2) - 1) + b;
+      }
+
+      requestAnimationFrame(animation);
+    };
+
     return {
       videoPlayer,
       isOverlayVisible,
@@ -95,6 +127,7 @@ export default {
       showArrow,
       startOverlayTimer,
       handleError,
+      smoothScroll,
     };
   },
   computed: {
@@ -208,6 +241,7 @@ export default {
   transform: translateX(-50%);
   color: white;
   animation: bounce 2s infinite;
+  cursor: pointer;
 }
 
 @keyframes bounce {
