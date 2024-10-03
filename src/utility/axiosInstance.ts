@@ -8,7 +8,7 @@ const djangoAxiosInst: AxiosInstance = axios.create({
 
 const fastapiAxiosInst: AxiosInstance = axios.create({
     baseURL: env.api.AI_BASE_URL,
-    timeout: 10000,
+    timeout: 100000,
 })
 
 export default { djangoAxiosInst, fastapiAxiosInst }

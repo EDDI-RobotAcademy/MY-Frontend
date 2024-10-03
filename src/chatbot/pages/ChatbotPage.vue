@@ -15,44 +15,48 @@
           </div>
         </div>
       </div>
-     
-        <div class="input-wrapper">
-          <input v-model="input" 
-                 @keyup.enter="sendMessage"
-                 placeholder="메시지를 입력하세요."
-                 class="message-input" />
-          <button @click="sendMessage" class="send-button">
-            <i class="mdi mdi-send"></i>
-          </button>
-        </div>
- 
+      <send-message/>
     </main>
   </div>
 </template>
 
 <script>
+import SendMessage from './ui/sendMessage.vue';
 export default {
+  components: {
+    SendMessage
+  },
   data() {
     return {
       messages: [],
-      input: '',
-      surveyData: null  // Add this to store survey data
+      surveyData: null,  // 설문 데이터 저장
     };
   },
   created() {
-    // Access the surveyData from the router's state
+    // router에서 설문 데이터 받아오기
       this.surveyData = history.state.surveyData;
       console.log("Received surveyData:", this.surveyData);
-      
-      // Dispatch the action to send the data to FastAPI
-      const strategy = this.sendSurveyToFastAPI();
-      console.log("Strategy:", strategy);
+
+      this.sendSurveyToFastAPI();
   },
   methods: {
-    sendSurveyToFastAPI() {
-      // Use the survey data to send to the API
-      this.$store.dispatch('surveyInputModule/sendSurveyToFastAPI', this.surveyData);
-    }
+    async sendSurveyToFastAPI() {
+      try{
+        const strategy = await this.$store.dispatch('surveyInputModule/sendSurveyToFastAPI', this.surveyData);
+        console.log("Strategy:", strategy);
+        this.fullResponse = strategy.generatedStrategy;
+
+        // 응답 받은 성장 전략을 챗봇 메세지에 출력
+        this.messages.push({ text: `성장 전략: ${strategy.generatedStrategy}`, isUser: false });
+      } catch (error) {
+        console.error("FastAPI 요청 오류:", error);
+      }
+    },
+    // scrollToBottom() {
+    //   const container = this.$refs.messageContainer;
+    //   container.scrollTop = container.scrollHeight;
+    // }
+
   }
 }
 </script>
@@ -68,7 +72,7 @@ export default {
 .chatbot-header {
   background-color: white;
   color: #ff6033;
-  padding: 1rem;
+  padding: 3rem;
   text-align: center;
 }
 
@@ -137,51 +141,6 @@ export default {
   background-color: #f1f1f1;
   color: black;
   border-bottom-left-radius: 0;
-}
-
-/* .input-container {
-  display: flex;
-  justify-content: center;
-  width: 80%;
-  max-width: 600px;
-  margin: 0 auto;
-  margin-top: auto;
-} */
-
-.input-wrapper {
-  display: flex;
-  align-items: center; /* 수직 정렬 */
-  width: 80%;
-  max-width: 600px;
-  margin: 0 auto; /* 가운데 정렬 */
-  border-radius: 20px; 
-  padding: 0.5rem; 
-}
-
-.message-input {
-  flex-grow: 1;
-  padding: 0.75rem;
-  border: 1px solid #ccc;
-  border-radius: 20px;
-  background-color: white;
-}
-
-.send-button {
-  padding: 0.5rem 1rem;
-  background-color: #414141;
-  color: white;
-  border: none;
-  border-radius: 20px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.send-button:hover {
-  background-color: #414141;
-}
-
-.message-input:focus + .send-button {
-  background-color: #ff3700; /* 포커스 시 버튼 색상 */
 }
 
 </style>
