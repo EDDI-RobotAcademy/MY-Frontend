@@ -1,37 +1,36 @@
 <template>
   <div class="main-container">
-      <video ref="videoPlayer" class="fullscreen-video" :src="videoSource" autoplay muted loop playsinline
-          @error="handleError"></video>
-      <div class="content-overlay">
-          <div class="survey-icon">
-              <v-img alt="Survey Icon"></v-img>
-          </div>
-          <div class="overlay-text">
-              <h1>COOING은 인플루언서가 되고 싶은 당신을 위해<br>가장 비슷한 롤 모델을 찾고, 성장 방향을 알려주는 서비스에요.</h1>
-              <h3>당신이 어떤 성향인지 알고싶어요. 다음 질문들에 답변해주세요!</h3>
-          </div>
-          <div class="survey-container">
-              <h2>{{ questions[currentQuestionIndex].text }}</h2>
-              <div v-if="questions[currentQuestionIndex].type === 'radio'" class="options">
-                  <label v-for="(option, optionIndex) in questions[currentQuestionIndex].options" :key="optionIndex"
-                      class="option-label">
-                      <input type="radio" :name="'question-' + currentQuestionIndex" :value="option"
-                          v-model="questions[currentQuestionIndex].answer"
-                          @change="answerQuestion(currentQuestionIndex)">
-                      <span class="radio-button"></span>
-                      <span class="option-text">{{ option }}</span>
-                  </label>
-              </div>
-              <div v-else-if="questions[currentQuestionIndex].type === 'text'" class="text-input">
-                  <input type="text" v-model="questions[currentQuestionIndex].answer" placeholder="여기에 답변을 입력하세요"
-                      @input="answerQuestion(currentQuestionIndex)">
-              </div>
-              <button @click="nextQuestion" class="next-button" :class="{ 'submit-button': isLastQuestion }"
-                  :disabled="!questions[currentQuestionIndex].answered">
-                  {{ isLastQuestion ? '제출' : '다음' }} <span class="arrow">&#8594;</span>
-              </button>
-          </div>
+    <video ref="videoPlayer" class="fullscreen-video" :src="videoSource" autoplay muted loop playsinline
+      @error="handleError"></video>
+    <div class="content-overlay">
+      <div class="survey-icon">
+        <v-img alt="Survey Icon"></v-img>
       </div>
+      <div class="overlay-text">
+        <h1>COOING은 인플루언서가 되고 싶은 당신을 위해<br>가장 비슷한 롤 모델을 찾고, 성장 방향을 알려주는 서비스에요.</h1>
+        <h3>당신이 어떤 성향인지 알고싶어요. 다음 질문들에 답변해주세요!</h3>
+      </div>
+      <div class="survey-container">
+        <h2>{{ questions[currentQuestionIndex].text }}</h2>
+        <div v-if="questions[currentQuestionIndex].type === 'radio'" class="options">
+          <label v-for="(option, optionIndex) in questions[currentQuestionIndex].options" :key="optionIndex"
+            class="option-label">
+            <input type="radio" :name="'question-' + currentQuestionIndex" :value="option"
+              v-model="questions[currentQuestionIndex].answer" @change="answerQuestion(currentQuestionIndex)">
+            <span class="radio-button"></span>
+            <span class="option-text">{{ option }}</span>
+          </label>
+        </div>
+        <div v-else-if="questions[currentQuestionIndex].type === 'text'" class="text-input">
+          <input @keyup.enter="nextQuestionIfNotEmpty" type="text" v-model="questions[currentQuestionIndex].answer"
+            :placeholder="questions[currentQuestionIndex].placeholder" @input="answerQuestion(currentQuestionIndex)">
+        </div>
+        <button @click="nextQuestion" class="next-button" :class="{ 'submit-button': isLastQuestion }"
+          :disabled="!questions[currentQuestionIndex].answered">
+          {{ isLastQuestion ? '제출' : '다음' }} <span class="arrow">&#8594;</span>
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -61,17 +60,25 @@ export default {
           answered: false
         },
         {
-          text: "당신의 관심사를 알려주세요.",
-          type: "radio",
-          options: ["운동", "여행", "패션", "맛집", "요리", "뷰티"],
-          answer: null,
-          answered: false
-        },
-        {
-          text: "당신의 취미를 알려주세요.",
+          text: "당신의 MBTI를 알려주세요.",
           type: "text",
           answer: "",
-          answered: false
+          answered: false,
+          placeholder: "ex) INTJ, ISTP, ESFP..."
+        },
+        {
+          text: "당신의 취미 또는 관심사를 알려주세요.",
+          type: "text",
+          answer: "",
+          answered: false,
+          placeholder: "ex) 운동, 여행, 패션, 맛집, 요리, 뷰티..."
+        },
+        {
+          text: "당신의 장점을 알려주세요.",
+          type: "text",
+          answer: "",
+          answered: false,
+          placeholder: "ex) 창의적, 적응력, 긍정적..."
         },
         {
           text: "당신이 만약 인플루언서가 된다면, 어느 정도까지 당신을 드러낼 수 있나요?",
@@ -91,19 +98,18 @@ export default {
           text: "좋아하거나 자주 보는 인플루언서/크리에이터가 있으신가요?",
           type: "text",
           answer: "",
-          answered: false
+          answered: false,
+          placeholder: "ex) 김계란, 이사배, 침착맨... "
         },
       ]
     };
   },
   computed: {
-
     isLastQuestion() {
       return this.currentQuestionIndex === this.questions.length - 1;
     }
   },
   methods: {
-
     handleError(event) {
       console.error('Video playback error:', event);
     },
@@ -114,7 +120,12 @@ export default {
       } else {
         question.answered = question.answer !== null;
       }
-      this.$forceUpdate(); // Vue의 반응성을 강제로 업데이트
+      this.$forceUpdate();
+    },
+    nextQuestionIfNotEmpty() {
+      if (this.questions[this.currentQuestionIndex].answer.trim() !== '') {
+        this.nextQuestion();
+      }
     },
     nextQuestion() {
       if (!this.isLastQuestion) {
@@ -124,23 +135,23 @@ export default {
       }
     },
     submitSurvey() {
-    const surveyData = {
-      age_group: this.questions[1].answer, 
-      gender: this.questions[0].answer,  
-      mbti: '', 
-      topic: this.questions[3].answer, 
-      platform: this.questions[5].answer, 
-      target_audience: '', 
-      content_style: '', 
-      post_frequency: '' 
-    };
+      const surveyData = {
+        age_group: this.questions[1].answer,
+        gender: this.questions[0].answer,
+        mbti: '',
+        topic: this.questions[3].answer,
+        platform: this.questions[5].answer,
+        target_audience: '',
+        content_style: '',
+        post_frequency: ''
+      };
 
-    console.log("Survey submitted:", surveyData);
-    this.$router.push({
-      path: '/chatbot',
-      state: { surveyData }
-    });
-  }
+      console.log("Survey submitted:", surveyData);
+      this.$router.push({
+        path: '/chatbot',
+        state: { surveyData }
+      });
+    }
 
   }
 };
