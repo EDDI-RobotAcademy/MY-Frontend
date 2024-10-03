@@ -1,22 +1,26 @@
 <template>
   <div class="chatbot-container">
-    <header class="chatbot-header">
-      <h1>Chatbot</h1>
-    </header>
-    <main class="chatbot-main">
-      <div class="message-container" ref="messageContainer">
-        <div v-for="(message, index) in messages" :key="index" 
-             :class="['message-row', message.isUser ? 'user-message' : 'bot-message']">
-          <img :src="message.isUser ? require('@/assets/images/fixed/chatbot/user_avatar.png') : require('@/assets/images/fixed/chatbot/ai_avatar.jpg')"
-               :alt="message.isUser ? 'User avatar' : 'Bot avatar'" 
-               class="message-avatar">
-          <div class="message-bubble">
-            {{ message.text }}
+    <video ref="videoPlayer" class="fullscreen-video" :src="videoSource" autoplay muted loop playsinline
+          @error="handleError"></video>
+    <div class="content-overlay">
+      <header class="chatbot-header">
+        <h1>제공해주신 답변을 기반으로<br>당신의 성향에 대해 분석해봤어요!</h1>
+      </header>
+      <main class="chatbot-main">
+        <div class="message-container" ref="messageContainer">
+          <div v-for="(message, index) in messages" :key="index" 
+               :class="['message-row', message.isUser ? 'user-message' : 'bot-message']">
+            <img :src="message.isUser ? require('@/assets/images/fixed/chatbot/user_avatar.png') : require('@/assets/images/fixed/chatbot/ai_avatar.jpg')"
+                 :alt="message.isUser ? 'User avatar' : 'Bot avatar'" 
+                 class="message-avatar">
+            <div class="message-bubble">
+              {{ message.text }}
+            </div>
           </div>
         </div>
-      </div>
-      <send-message/>
-    </main>
+        <send-message/>
+      </main>
+    </div>
   </div>
 </template>
 
@@ -28,6 +32,8 @@ export default {
   },
   data() {
     return {
+      videoSource: '/videos/survey-background.mp4',
+      videoPlayer: null,
       messages: [],
       surveyData: null,  // 설문 데이터 저장
     };
@@ -40,6 +46,9 @@ export default {
       this.sendSurveyToFastAPI();
   },
   methods: {
+    handleError(event) {
+      console.error('Video playback error:', event);
+    },
     async sendSurveyToFastAPI() {
       try{
         const strategy = await this.$store.dispatch('surveyInputModule/sendSurveyToFastAPI', this.surveyData);
@@ -62,23 +71,35 @@ export default {
 </script>
 
 <style scoped>
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap');
+
+* {
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
 .chatbot-container {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  font-family: Arial, sans-serif;
+  overflow: hidden;
+  position: relative;
 }
 
 .chatbot-header {
-  background-color: white;
-  color: #ff6033;
-  padding: 3rem;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  margin-top: 70px;
+  max-width: 800px;
+  width: 100%;
 }
 
 .chatbot-main {
   display: flex;
-  background-color: white;
   flex-direction: column;
   flex-grow: 1;
   padding: 1rem;
@@ -92,7 +113,6 @@ export default {
   max-width: 1000px;
   max-height: 500px;
   margin: 0 auto;
-  background-color: white;
   border-radius: 10px;
 }
 
@@ -132,7 +152,7 @@ export default {
 }
 
 .user-message .message-bubble {
-  background-color: #ff6033;
+  background-color: #ff9033;
   color: white;
   border-bottom-right-radius: 0;
 }
@@ -141,6 +161,28 @@ export default {
   background-color: #f1f1f1;
   color: black;
   border-bottom-left-radius: 0;
+}
+
+.fullscreen-video {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.content-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+  background-color: rgba(255, 255, 255, 0.6);
 }
 
 </style>
