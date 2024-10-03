@@ -3,14 +3,17 @@
       <div class="login-box">
         <h1 class="logo">COOING</h1>
         <p class="subtitle">로그인하여 인플루언서가 되기 위한<br>솔루션을 바로 제공 받으세요!</p>
+
+        <hr><br>
         
-        <button class="email-login">
+        <!-- <button class="email-login">
           <i class="icon-email"></i>
           이메일로 시작
-        </button>
+        </button> -->
   
         <div class="social-login">
-          <span>또는<br>소셜 계정으로 로그인</span>
+          <!-- <span>또는<br>소셜 계정으로 로그인</span> -->
+          <span>소셜 계정으로 로그인</span>
           <div class="social-icons">
             <GoogleLogin/>
             <KakaoLogin/>
@@ -79,6 +82,12 @@ export default {
   cursor: pointer;
   width: 80%;
   margin-bottom: 1rem;
+}
+
+hr {
+  width: 70%;
+  margin-left: 50px;
+  opacity: 0.5;
 }
 
 .social-login {
