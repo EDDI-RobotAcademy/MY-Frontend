@@ -50,12 +50,14 @@ export default {
       console.error('Video playback error:', event);
     },
     async sendSurveyToFastAPI() {
-      try{
+      try {
+        const waitingMessageIndex = this.messages.push({ text: `설문 데이터 결과 기다리는 중..`, isUser: false }) - 1;
         const strategy = await this.$store.dispatch('surveyInputModule/sendSurveyToFastAPI', this.surveyData);
         console.log("Strategy:", strategy);
         this.fullResponse = strategy.generatedStrategy;
 
-        // 응답 받은 성장 전략을 챗봇 메세지에 출력
+        this.messages.splice(waitingMessageIndex, 1);
+
         this.messages.push({ text: `성장 전략: ${strategy.generatedStrategy}`, isUser: false });
       } catch (error) {
         console.error("FastAPI 요청 오류:", error);
@@ -93,7 +95,7 @@ export default {
   justify-content: center;
   align-items: center;
   border-radius: 10px;
-  margin-top: 70px;
+  margin-top: 100px;
   max-width: 800px;
   width: 100%;
 }
