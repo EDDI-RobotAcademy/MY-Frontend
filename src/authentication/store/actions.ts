@@ -8,7 +8,7 @@ export type AuthenticationActions = {
         context: ActionContext<AuthenticationState, any>, email: string
     ): Promise<any>
     requestLogoutToDjango(
-        context: ActionContext<AuthenticationState, any>, userToken: string
+        context: ActionContext<AuthenticationState, any>
     ): Promise<void>
     checkAndSetAuthStatus(
         context: ActionContext<AuthenticationState, any>
@@ -34,14 +34,10 @@ const actions: AuthenticationActions = {
         }
     },
     async requestLogoutToDjango(
-        { commit }: ActionContext<AuthenticationState, any>,
-        userToken: string
+        { commit }: ActionContext<AuthenticationState, any>
     ): Promise<void> {
         try {
-            if (!userToken) {
-                console.error('유저 토큰 없음')
-                return
-            }
+            const userToken = localStorage.getItem("userToken")
 
             const res = await axiosInst.djangoAxiosInst.post('/redis_token/logout', {
                 userToken: userToken
