@@ -30,27 +30,26 @@ export default {
     ...mapState(authenticationModule, ["isAuthenticated"]),
   },
   methods: {
-    ...mapActions(authenticationModule, ["requestLogoutToDjango"]),
+    ...mapActions(authenticationModule, [
+      "requestLogoutToDjango",
+      "checkAndSetAuthStatus"
+    ]),
     goToHomePage() {
       router.push("/");
     },
     goToLoginPage() {
       router.push("/login");
     },
-    logOut() {
-      this.requestLogoutToDjango();
-      router.push("/");
+    async logOut() {
+        await this.requestLogoutToDjango();
+        this.$router.push("/");
+      },
     },
-  },
-  mounted() {
-    console.log("navigation bar mounted()");
-    const userToken = localStorage.getItem("userToken");
-    if (userToken) {
-      console.log("You already has a userToken!");
-      this.$store.state.authenticationModule.isAuthenticated = true;
-    }
-  },
-}
+    mounted() {
+      console.log("navigation bar mounted()");
+      this.checkAndSetAuthStatus();
+    },
+  }
 </script>
 
 <style scoped>
