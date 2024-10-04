@@ -17,10 +17,6 @@
         type: Array,
         required: true
       },
-      scrollToBottom: {
-        type: Function,
-        required: true
-      }
     },
     data() {
       return {
@@ -32,14 +28,8 @@
       if (this.input.trim()) {
         this.$emit('sendMessage', { text: this.input, isUser: true });
         this.input = '';
-        this.$nextTick(() => {
-          this.scrollToBottom();
-        });
         setTimeout(() => {
           this.$emit('sendMessage', { text: "안녕하세요! 아직 개발 단계에 있는 기능입니다. 추후 업데이트 예정입니다!", isUser: false });
-          this.$nextTick(() => {
-            this.scrollToBottom();
-          });
         }, 1000);
       }
     }
@@ -58,7 +48,7 @@
     border: 1px solid #ccc;
     border-radius: 20px;
     background-color: white;
-    width: 90%;
+    width: 850px;
     background-color: rgba(255, 255, 255, 0.5);
   }
   
