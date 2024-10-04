@@ -130,7 +130,7 @@ export default {
   justify-content: center;
   align-items: center;
   border-radius: 10px;
-  margin-top: 100px;
+  margin-top: 60px;
   max-width: 800px;
   width: 100%;
 }
@@ -147,10 +147,11 @@ export default {
   overflow-y: auto;
   padding: 1rem;
   width: 100%;
-  max-width: 1000px;
+  max-width: 800px;
   max-height: 500px;
   margin: 0 auto;
   border-radius: 10px;
+  margin-right: 80px;
 }
 
 .message-container::-webkit-scrollbar {
