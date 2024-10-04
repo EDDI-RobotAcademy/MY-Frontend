@@ -136,7 +136,8 @@ export default {
   methods: {
     getStarted(){
       if (!this.isAuthenticated) {
-        router.push("/login")
+        // router.push("/login")
+        router.push("/survey")  // 로그인하지 않아도 서비스 이용 가능하도록 임시 처리
       }
       else {
         router.push("/survey")
