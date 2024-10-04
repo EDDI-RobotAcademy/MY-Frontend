@@ -68,7 +68,7 @@ export default {
 
         this.messages.push({ text: `📢 당신을 위한 맟춤형 인플루언서 성장 전략을 제공해드릴게요! \n\n${strategy.generatedStrategy}`, isUser: false });
         this.messages.push({
-          text: `💬 더 나은 서비스를 제공하기 위해 설문조사에 참여해 주세요! <br> <a href="https://docs.google.com/forms/d/e/1FAIpQLSeEZsBgSc52KrSTpRiMYyq7fJKXwv-affT8On4j5teBFpcOVw/viewform" target="_blank">구글 폼 설문조사 바로가기</a>`,
+          text: `💬 더 나은 서비스를 제공하기 위해 설문조사에 참여해 주세요! <br> <a href="https://forms.gle/SZbyJAiSTwyoKtz66" target="_blank">구글 폼 설문조사 바로가기</a>`,
           isUser: false
         });
       } catch (error) {
