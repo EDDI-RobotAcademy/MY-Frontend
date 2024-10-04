@@ -35,7 +35,6 @@
         this.$nextTick(() => {
           this.scrollToBottom();
         });
-        // 봇 응답 
         setTimeout(() => {
           this.$emit('sendMessage', { text: "안녕하세요! 아직 개발 단계에 있는 기능입니다. 추후 업데이트 예정입니다!", isUser: false });
           this.$nextTick(() => {
@@ -50,13 +49,7 @@
   
   <style scoped>
   .input-wrapper {
-    display: flex;
-    align-items: center;
-    width: 80%;
-    max-width: 600px;
-    margin: 0 auto;
     border-radius: 20px;
-    padding: 0.5rem;
   }
   
   .message-input {
@@ -65,7 +58,8 @@
     border: 1px solid #ccc;
     border-radius: 20px;
     background-color: white;
-    width: 800px
+    width: 90%;
+    background-color: rgba(255, 255, 255, 0.5);
   }
   
   .send-button {
