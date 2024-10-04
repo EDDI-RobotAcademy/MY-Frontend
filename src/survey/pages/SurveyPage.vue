@@ -27,7 +27,7 @@
         </div>
         <button @click="nextQuestion" class="next-button" :class="{ 'submit-button': isLastQuestion }"
           :disabled="!questions[currentQuestionIndex].answered">
-          {{ isLastQuestion ? '제출' : '다음' }} <span class="arrow">&#8594;</span>
+          {{ isLastQuestion ? '제출' : '다음' }}
         </button>
       </div>
     </div>
@@ -320,51 +320,66 @@ input[type="radio"]:checked+.radio-button::after {
 }
 
 .next-button {
+  padding: 12px 30px;
+  border-radius: 10px;
+  border: 0;
   background-color: #ff9033;
-  color: white;
-  border: none;
-  padding: 10px 20px 12px;
-  font-size: 1rem;
+  letter-spacing: 1.5px;
+  font-size: 15px;
+  transition: all 0.3s ease;
+  box-shadow: #d67a2b 0px 10px 0px 0px;
+  color: hsl(0, 0%, 100%);
   cursor: pointer;
-  border-radius: 25px;
-  font-weight: bold;
-  margin-top: 8px;
-  margin-bottom: 5px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color 0.3s ease;
 }
 
-.next-button .arrow {
-  margin-left: 8px;
-  font-size: 1.2rem;
-  transition: transform 0.3s ease;
-}
 
-.next-button:not(:disabled):hover .arrow {
-  transform: translateX(4px);
+.next-button:active {
+  background-color: #ff9033;
+  box-shadow: #d67a2b 0px 0px 0px 0px;
+  transform: translateY(5px);
+  transition: 200ms;
 }
 
 .next-button:disabled {
   background-color: rgb(69, 69, 69);
+  box-shadow: rgb(69, 69, 69) 0px 10px 0px 0px;
   cursor: not-allowed;
 }
 
-.next-button:disabled .arrow {
-  opacity: 0.5;
+.next-button:disabled:active {
+  transform: none;
+  box-shadow: rgb(69, 69, 69) 0px 10px 0px 0px;
 }
 
 .submit-button {
+  padding: 17px 30px;
+  border-radius: 10px;
+  border: 0;
   background-color: #4CAF50;
+  letter-spacing: 1.5px;
+  font-size: 15px;
+  transition: all 0.3s ease;
+  box-shadow: #38813a 0px 10px 0px 0px;
+  color: hsl(0, 0%, 100%);
+  cursor: pointer;
 }
 
-.submit-button:hover {
-  background-color: #45a049;
+
+.submit-button:active {
+  background-color: #4CAF50;
+  box-shadow: #3c8c3f 0px 0px 0px 0px;
+  transform: translateY(5px);
+  transition: 200ms;
 }
 
 .submit-button:disabled {
   background-color: rgb(69, 69, 69);
+  box-shadow: rgb(69, 69, 69) 0px 10px 0px 0px; 
   cursor: not-allowed;
+}
+
+.submit-button:disabled:active {
+  transform: none;
+  box-shadow: rgb(69, 69, 69) 0px 10px 0px 0px;
 }
 </style>
