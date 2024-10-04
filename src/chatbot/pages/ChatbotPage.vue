@@ -20,7 +20,10 @@
             </div>
           </div>
         </div>
-        <send-message/>
+        <send-message
+        :messages="messages"
+        :scroll-to-bottom="scrollToBottom"
+        @send-message="addMessage"/>
       </main>
     </div>
   </div>
@@ -93,11 +96,13 @@ export default {
     formatMessage(message) {
       return message.replace(/\n/g, '<br>');
     },
-    // scrollToBottom() {
-    //   const container = this.$refs.messageContainer;
-    //   container.scrollTop = container.scrollHeight;
-    // }
-
+    scrollToBottom() {
+      const container = this.$refs.messageContainer;
+      container.scrollTop = container.scrollHeight;
+    },
+    addMessage(message) {
+      this.messages.push(message);
+    }
   }
 }
 </script>
