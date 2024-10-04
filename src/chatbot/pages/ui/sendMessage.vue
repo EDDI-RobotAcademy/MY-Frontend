@@ -58,7 +58,7 @@
     border: 1px solid #ccc;
     border-radius: 20px;
     background-color: white;
-    width: 90%;
+    width: 850px;
     background-color: rgba(255, 255, 255, 0.5);
   }
   
