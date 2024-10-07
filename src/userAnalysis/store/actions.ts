@@ -1,11 +1,11 @@
 import { ActionContext } from "vuex";
 import { AxiosResponse } from "axios";
 import axiosInst from "@/utility/axiosInstance";
-import { SurveyInputState } from "./states";
+import { UserAnalysisInputState } from "./states";
 
-export type SurveyInputActions = {
-    sendSurveyToFastAPI(
-        context: ActionContext<SurveyInputState, any>,
+export type UserAnalysisInputActions = {
+    sendUserAnalysisToFastAPI(
+        context: ActionContext<UserAnalysisInputState, any>,
         payload: {
             gender: string,
             age_group: string,
@@ -18,9 +18,9 @@ export type SurveyInputActions = {
         }): Promise<any>
 }
 
-const actions: SurveyInputActions = {
-    async sendSurveyToFastAPI(
-        context: ActionContext<SurveyInputState, any>,
+const actions: UserAnalysisInputActions = {
+    async sendUserAnalysisToFastAPI(
+        context: ActionContext<UserAnalysisInputState, any>,
         payload: {
             gender: string,
             age_group: string,
@@ -32,7 +32,7 @@ const actions: SurveyInputActions = {
             interested_influencer: string
         }): Promise<any> {
         try {
-            console.log('sendSurveyToFastAPI()');
+            console.log('sendUserAnalysisToFastAPI()');
             
             // Payload 구조에 맞게 데이터를 준비
             const response = await axiosInst.fastapiAxiosInst.post(
@@ -50,7 +50,7 @@ const actions: SurveyInputActions = {
             
             return response.data;
         } catch (error) {
-            console.log('sendSurveyToFastAPI() 중 문제 발생:', error);
+            console.log('sendUserAnalysisToFastAPI() 중 문제 발생:', error);
             throw error;
         }
     },

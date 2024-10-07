@@ -4,7 +4,7 @@ import googleAuthenticationModule from '@/googleAuthentication/store/GoogleAuthe
 import naverAuthenticationModule from '@/naverAuthentication/store/naverAuthenticationModule'
 import accountModule from '@/account/store/accountModule'
 import authenticationModule from '@/authentication/store/authenticationModule'
-import surveyInputModule from '@/survey/store/surveyInputModule'
+import userAnalysisInputModule from '@/userAnalysis/store/userAnalysisInputModule'
 import userInputModule from '@/chatbot/store/userInputModule'
 
 export default createStore({
@@ -22,7 +22,7 @@ export default createStore({
     naverAuthenticationModule,
     accountModule,
     authenticationModule,
-    surveyInputModule,
+    userAnalysisInputModule,
     userInputModule,
   }
 })
