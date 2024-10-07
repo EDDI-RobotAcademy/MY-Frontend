@@ -1,21 +1,24 @@
 <template>
-  <div class="NavigationMenuBar">
-    <div class="background">
-      <v-row cols="12">
-        <v-col cols="6">
-          <button @click="goToHomePage" class="logo">
-            COOING
-          </button>
-        </v-col>
-        <v-col cols="6">
-          <button v-if="!isAuthenticated" @click="goToLoginPage" class="login">
-            로그인
-          </button>
-          <button v-if="isAuthenticated" @click="logOut" class="logout">
-            로그아웃
-          </button>
-        </v-col>
-      </v-row>
+  <div class="navigation-menu-bar">
+    <button @click="goToHomePage" class="logo">COOING</button>
+    <div class="center-menu">
+      <button class="menu-item button" data-text="Manufacturing">
+        <span>Manufacturing</span>
+      </button>
+      <button class="menu-item button" data-text="Technologies">
+        <span>Technologies</span>
+      </button>
+      <button class="menu-item button" data-text="Company">
+        <span>Company</span>
+      </button>
+    </div>
+    <div class="auth-buttons">
+      <button v-if="!isAuthenticated" @click="goToLoginPage" class="login">
+        LOGIN
+      </button>
+      <button v-if="isAuthenticated" @click="logOut" class="logout">
+        LOGOUT
+      </button>
     </div>
   </div>
 </template>
@@ -41,58 +44,115 @@ export default {
       router.push("/login");
     },
     async logOut() {
-        await this.requestLogoutToDjango();
-        this.$router.push("/");
-      },
+      await this.requestLogoutToDjango();
+      this.$router.push("/");
     },
-    mounted() {
-      console.log("navigation bar mounted()");
-      this.checkAndSetAuthStatus();
-    },
-  }
+  },
+  mounted() {
+    console.log("navigation bar mounted()");
+    this.checkAndSetAuthStatus();
+  },
+}
 </script>
 
 <style scoped>
-
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap');
 
 * {
   font-family: 'Noto Sans KR', sans-serif;
 }
 
-.NavigationMenuBar {
+.navigation-menu-bar {
   position: fixed;
-  width: 100%;
-  height: 50px;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 98%;
+  height: 53px;
   z-index: 1000;
   display: flex;
   align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-
-.background {
-  width: 100%;
-  height: 100%;
-  transition: all 0.3s ease;
-  background-color: rgba(0, 0, 0, 0.6);
+  justify-content: space-between;
+  background-color: rgba(0, 0, 0, 1);
+  border-radius: 10px;
+  padding: 0 20px;
 }
 
 .logo {
-  color: #fff;
-  padding-left: 3%;
-  padding-top: 1.5%;
+  background: none;
+  border: none;
+  color: rgb(255, 255, 255, 1);
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
 }
 
-.login {
-  color: #fff;
-  padding-left: 90%;
-  padding-top: 1.5%;
+.center-menu {
+  display: flex;
+  gap: 20px;
 }
 
+.menu-item {
+  background: none;
+  border: none;
+  color: rgb(255, 255, 255, 0.7);
+  cursor: pointer;
+  font-size: 12px;
+  overflow: hidden;
+  padding: 0;
+  position: relative;
+  transition: color 0.3s;
+  transition-timing-function: cubic-bezier(0.2, 1, 0.3, 1);
+}
+
+.menu-item::after {
+  content: attr(data-text);
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  color: rgb(255, 255, 255, 1);
+  transform: translate3d(0, 25%, 0);
+}
+
+.menu-item>span {
+  display: block;
+}
+
+.menu-item::after,
+.menu-item>span {
+  padding: 0.5em 1em;
+  transition: transform 0.6s, opacity 0.6s;
+  transition-timing-function: cubic-bezier(0.2, 1, 0.3, 1);
+}
+
+.menu-item:hover {
+  color: rgb(255, 255, 255, 1);
+}
+
+.menu-item:hover::after {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+.menu-item:hover>span {
+  opacity: 0;
+  transform: translate3d(0, -25%, 0);
+}
+
+.login,
 .logout {
-  color: #fff;
-  padding-left: 88%;
-  padding-top: 1.5%;
+  background: none;
+  border: none;
+  color: rgb(255, 255, 255, 0.7);
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.auth-buttons {
+  display: flex;
+  align-items: center;
 }
 </style>
