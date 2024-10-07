@@ -6,6 +6,7 @@ import accountModule from '@/account/store/accountModule'
 import authenticationModule from '@/authentication/store/authenticationModule'
 import userAnalysisInputModule from '@/userAnalysis/store/userAnalysisInputModule'
 import userInputModule from '@/chatbot/store/userInputModule'
+import surveyModule from '@/survey/store/surveyModule'
 
 export default createStore({
   state: {
@@ -24,5 +25,6 @@ export default createStore({
     authenticationModule,
     userAnalysisInputModule,
     userInputModule,
+    surveyModule,
   }
 })
