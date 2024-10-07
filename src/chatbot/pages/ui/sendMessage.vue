@@ -29,7 +29,7 @@
         this.$emit('sendMessage', { text: this.input, isUser: true });
         this.input = '';
         setTimeout(() => {
-          this.$emit('sendMessage', { text: "안녕하세요! 아직 개발 단계에 있는 기능입니다. 추후 업데이트 예정입니다!", isUser: false });
+          this.$emit('sendMessage', { text: "안녕하세요! 챗봇은 아직 개발 중이에요. 업데이트 해서 돌아올게요.", isUser: false });
         }, 1000);
       }
     }
