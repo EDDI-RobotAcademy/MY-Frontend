@@ -32,7 +32,7 @@ export default {
       videoPlayer: null,
       messages: [],
       surveyData: null,  // 설문 데이터 저장
-      waitingMessage: '성향 분석 중(15초 정도 소요됩니다)',  // 대기 메시지 기본 값
+      waitingMessage: '성향 분석 중 (15초 정도 소요됩니다)',  // 대기 메시지 기본 값
       waitingDots: 1,    // 점의 개수
       intervalId: null   // setInterval ID
     };
@@ -60,10 +60,10 @@ export default {
         this.stopWaitingMessage();  // 대기 메시지 애니메이션 종료
 
         this.messages.push({ text: `📢 당신을 위한 맟춤형 인플루언서 성장 전략을 제공해드릴게요! \n\n${strategy.generatedStrategy}`, isUser: false });
-        this.messages.push({
-          text: `💬 더 나은 서비스를 제공하기 위해 설문조사에 참여해 주세요! <br> <a href="https://forms.gle/SZbyJAiSTwyoKtz66" target="_blank">구글 폼 설문조사 바로가기</a>`,
-          isUser: false
-        });
+        // this.messages.push({
+        //   text: `💬 더 나은 서비스를 제공하기 위해 설문조사에 참여해 주세요! <br> <a href="https://forms.gle/SZbyJAiSTwyoKtz66" target="_blank">구글 폼 설문조사 바로가기</a>`,
+        //   isUser: false
+        // });
       } catch (error) {
         console.error("FastAPI 요청 오류:", error);
       }
@@ -71,7 +71,7 @@ export default {
     startWaitingMessage() {
       this.intervalId = setInterval(() => {
         this.waitingDots = (this.waitingDots % 3) + 1;  // 점의 개수를 1, 2, 3 순서로 변경
-        this.waitingMessage = `성향 분석 중(15초 정도 소요됩니다)${'.'.repeat(this.waitingDots)}`;  // 점 개수에 따라 메시지 업데이트
+        this.waitingMessage = `성향 분석 중 (15초 정도 소요됩니다)${'.'.repeat(this.waitingDots)}`;  // 점 개수에 따라 메시지 업데이트
 
         // 마지막 메시지 업데이트
         if (this.messages.length > 0 && !this.messages[this.messages.length - 1].isUser) {

@@ -101,13 +101,13 @@ export default {
 .user-message .message-bubble {
   background-color: #ff9033;
   color: white;
-  border-bottom-right-radius: 0;
+  border-top-right-radius: 0;
 }
 
 .bot-message .message-bubble {
   background-color: #f1f1f1;
   color: black;
-  border-bottom-left-radius: 0;
+  border-top-left-radius: 0;
 }
 
 </style>
