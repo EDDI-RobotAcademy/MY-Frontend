@@ -1,20 +1,20 @@
 <template>
-    <div class="second-content">
+    <div class="fourth-content">
       <div class="content-wrapper">
-        <h2 class="subtitle">Key Point # 1</h2>
-        <h1 class="title">사용자 개인 성향 조사 데이터 분석을 통해<br>인플루언서로 성장할 최적의 솔루션을 제공해요.</h1>
+        <h2 class="subtitle">Key Point # 3</h2>
+        <h1 class="title">당신만을 위한 인플루언서 성장 로드맵을<br>PDF 형식으로 제공해드려요.</h1>
       </div>
     </div>
   </template>
   
   <script>
   export default {
-    name: 'SecondContent'
+    name: 'FourthContent'
   }
   </script>
   
   <style scoped>
-  .second-content {
+  .fourth-content {
     background-color: #000000;
     height: 100vh; /* Set the height to 100% of the viewport height */
     display: flex;
@@ -45,10 +45,11 @@
   }
   
   @media (max-height: 800px) {
-    .second-content {
+    .fourth-content {
       height: auto;
       min-height: 100vh;
       padding: 80px 0;
     }
   }
   </style>
+  

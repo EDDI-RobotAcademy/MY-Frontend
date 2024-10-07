@@ -34,7 +34,7 @@ export default {
       if (userInfo.email) {
         const response = await this.requestEmailDuplicationCheckToDjango(userInfo.email)
         if (!response) {
-          this.registerNewAccount(userInfo.email, userInfo.nickname);
+          this.registerNewAccount(userInfo.email, userInfo.name);
           router.push('/survey')
         } else {
           this.registerUserToken(userInfo.email, this.accessToken);
