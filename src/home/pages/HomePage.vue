@@ -12,18 +12,22 @@
   </SecondContent>
   <ThirdContent>
   </ThirdContent>
+  <FourthContent>
+  </FourthContent>
 </template>
 
 <script>
 import FirstContent from '../ui/FirstContent.vue'
 import SecondContent from '../ui/SecondContent.vue';
 import ThirdContent from '../ui/ThirdContent.vue';
+import FourthContent from '../ui/FourthContent.vue';
 
 export default {
   components: {
     FirstContent,
     SecondContent,
-    ThirdContent
+    ThirdContent,
+    FourthContent
   }
 }
 </script>
