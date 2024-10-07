@@ -157,6 +157,10 @@ export default {
   font-size: 12px;
 }
 
+.login:hover{
+  color: white;
+}
+
 .auth-buttons {
   display: flex;
   align-items: center;
