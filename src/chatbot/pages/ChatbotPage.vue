@@ -1,7 +1,7 @@
 <template>
   <div class="chatbot-container">
-    <video ref="videoPlayer" class="fullscreen-video" :src="videoSource" autoplay muted loop playsinline
-          @error="handleError"></video>
+    <!-- <video ref="videoPlayer" class="fullscreen-video" :src="videoSource" autoplay muted loop playsinline
+          @error="handleError"></video> -->
     <div class="content-overlay">
       <header class="chatbot-header">
         <h1>제공해주신 답변을 기반으로<br>당신의 성향에 대해 분석해봤어요!</h1>
@@ -28,8 +28,8 @@ export default {
   },
   data() {
     return {
-      videoSource: '/videos/survey-background.mp4',
-      videoPlayer: null,
+      // videoSource: '/videos/survey-background.mp4',
+      // videoPlayer: null,
       messages: [],
       surveyData: null,  // 설문 데이터 저장
       waitingMessage: '성향 분석 중 (15초 정도 소요됩니다)',  // 대기 메시지 기본 값
@@ -46,9 +46,9 @@ export default {
       this.startWaitingMessage();  // 대기 메시지 애니메이션 시작
   },
   methods: {
-    handleError(event) {
-      console.error('Video playback error:', event);
-    },
+    // handleError(event) {
+    //   console.error('Video playback error:', event);
+    // },
     async sendSurveyToFastAPI() {
       try {
         const waitingMessageIndex = this.messages.push({ text: this.waitingMessage, isUser: false }) - 1;
@@ -116,11 +116,17 @@ export default {
 }
 
 .chatbot-container {
-  display: flex;
-  flex-direction: column;
+  position: relative;
+  width: 100%;
   height: 100vh;
   overflow: hidden;
-  position: relative;
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.7);
+  background-image: url("@/assets/images/fixed/chatbot/background_gradient.png");
+  background-size: cover;
+  background-blend-mode: darken;
 }
 
 .chatbot-header {
@@ -143,12 +149,12 @@ export default {
 }
 
 
-.fullscreen-video {
+/* .fullscreen-video {
   position: absolute;
   width: 100%;
   height: 100%;
   object-fit: cover;
-}
+} */
 
 .content-overlay {
   position: absolute;
