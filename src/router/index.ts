@@ -6,6 +6,7 @@ import HomeRoutes from '@/home/router/HomeRoutes'
 import NaverAuthenticationRoutes from '@/naverAuthentication/router/NaverAuthenticationRoutes'
 import LoginRoutes from '@/account/router/LoginRoutes'
 import ChatbotRoutes from '@/chatbot/router/ChatbotRoutes'
+import SurveyRoutes from '@/survey/router/SurveyRoutes'
 
 
 
@@ -15,6 +16,7 @@ const routes: Array<RouteRecordRaw> = [
   ...KakaoAuthenticationRoutes,
   ...GoogleAuthenticationRoutes,
   ...NaverAuthenticationRoutes,
+  ...SurveyRoutes,
   ...UserAnalysisRoutes,
   ...ChatbotRoutes,
 ]
