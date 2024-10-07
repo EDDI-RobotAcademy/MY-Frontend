@@ -1,10 +1,12 @@
 <template>
   <div class="main-container">
-    <div class="video-container">
+    <!-- <div class="video-container">
       <video ref="videoPlayer" class="fullscreen-video" :src="videoSource" autoplay muted playsinline
         @play="startOverlayTimer" @error="handleError"></video>
+      <transition name="fade"> -->
+    <div class="background-container">
       <transition name="fade">
-        <div v-if="isOverlayVisible" class="overlay">
+        <div class="overlay">
           <div class="overlay-text">
             <h1 :class="{ 'fade-in': showTitle }">{{ overlayTitleOne }}</h1>
             <h1 :class="{ 'fade-in': showTitle }">{{ overlayTitleTwo }}</h1>
@@ -35,7 +37,7 @@
 </template>
 
 <script>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { ChevronDown } from 'lucide-vue-next';
 import router from "@/router";
 import { mapState, mapActions } from "vuex";
@@ -47,10 +49,10 @@ export default {
     ChevronDown
   },
   props: {
-    videoSource: {
-      type: String,
-      required: true
-    },
+    // videoSource: {
+    //   type: String,
+    //   required: true
+    // },
     overlayTitleOne: {
       type: String,
       default: ''
@@ -73,18 +75,18 @@ export default {
     }
   },
   setup(props) {
-    const videoPlayer = ref(null);
+    // const videoPlayer = ref(null);
     const isOverlayVisible = ref(false);
     const showTitle = ref(false);
     const showDescription = ref(false);
     const showButton = ref(false);
     const showArrow = ref(false);
 
-    const startOverlayTimer = () => {
-      setTimeout(() => {
-        showOverlay();
-      }, 1300);
-    };
+    // const startOverlayTimer = () => {
+    //   setTimeout(() => {
+    //     showOverlay();
+    //   }, 1300);
+    // };
 
     const showOverlay = () => {
       isOverlayVisible.value = true;
@@ -102,9 +104,9 @@ export default {
       }, 100);
     };
 
-    const handleError = (event) => {
-      console.error('Video playback error:', event);
-    };
+    // const handleError = (event) => {
+    //   console.error('Video playback error:', event);
+    // };
 
     const smoothScroll = () => {
       const startPosition = window.pageYOffset;
@@ -130,15 +132,19 @@ export default {
       requestAnimationFrame(animation);
     };
 
+    onMounted(() => {
+      showOverlay();
+    });
+
     return {
-      videoPlayer,
+      // videoPlayer,
       isOverlayVisible,
       showTitle,
       showDescription,
       showButton,
       showArrow,
-      startOverlayTimer,
-      handleError,
+      // startOverlayTimer,
+      // handleError,
       smoothScroll,
     };
   },
@@ -167,7 +173,18 @@ export default {
   overflow: hidden;
 }
 
-.video-container {
+.background-container {
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.7);
+  background-image: url("@/assets/images/fixed/login/login_background.png");
+  background-size: cover;
+  background-blend-mode: darken;
+}
+
+/* .video-container {
   position: absolute;
   top: 0;
   left: 0;
@@ -180,7 +197,7 @@ export default {
   width: 100%;
   height: 100%;
   object-fit: cover;
-}
+} */
 
 .overlay {
   position: absolute;
@@ -188,7 +205,7 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  /* background-color: rgba(0, 0, 0, 0.5); */ /* 배경색이 있으므로 오버레이 배경은 제거 */
   display: flex;
   flex-direction: column;
   justify-content: center;
