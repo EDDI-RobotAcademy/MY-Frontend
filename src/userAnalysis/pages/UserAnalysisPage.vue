@@ -1,7 +1,7 @@
 <template>
   <div class="main-container">
-    <video ref="videoPlayer" class="fullscreen-video" :src="videoSource" autoplay muted loop playsinline
-      @error="handleError"></video>
+    <!-- <video ref="videoPlayer" class="fullscreen-video" :src="videoSource" autoplay muted loop playsinline
+      @error="handleError"></video> -->
     <div class="content-overlay">
       <div class="survey-icon">
         <v-img alt="Survey Icon"></v-img>
@@ -40,8 +40,8 @@ export default {
   name: 'IntegratedComponent',
   data() {
     return {
-      videoSource: '/videos/survey-background.mp4',
-      videoPlayer: null,
+      // videoSource: '/videos/survey-background.mp4',
+      // videoPlayer: null,
       currentQuestionIndex: 0,
       questions: [
         {
@@ -151,7 +151,6 @@ export default {
         state: { surveyData }
       });
     }
-
   }
 };
 </script>
@@ -168,6 +167,13 @@ export default {
   width: 100%;
   height: 100vh;
   overflow: hidden;
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.7);
+  background-image: url("@/assets/images/fixed/chatbot/background_gradient.png");
+  background-size: cover;
+  background-blend-mode: darken;
 }
 
 .survey-icon {
@@ -181,12 +187,12 @@ export default {
   margin: auto;
 }
 
-.fullscreen-video {
+/* .fullscreen-video {
   position: absolute;
   width: 100%;
   height: 100%;
   object-fit: cover;
-}
+} */
 
 .content-overlay {
   position: absolute;
@@ -209,7 +215,6 @@ export default {
   margin: 10px 0;
   max-width: 800px;
   width: 100%;
-  font-family: 'Noto Sans KR', sans-serif;
 }
 
 .overlay-text {
