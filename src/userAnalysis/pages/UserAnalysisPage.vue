@@ -35,7 +35,6 @@
 </template>
 
 <script>
-const surveyInputModule = 'surveyInputModule'
 
 export default {
   name: 'IntegratedComponent',
