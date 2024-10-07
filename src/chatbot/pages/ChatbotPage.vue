@@ -52,7 +52,7 @@ export default {
     async sendSurveyToFastAPI() {
       try {
         const waitingMessageIndex = this.messages.push({ text: this.waitingMessage, isUser: false }) - 1;
-        const strategy = await this.$store.dispatch('surveyInputModule/sendSurveyToFastAPI', this.surveyData);
+        const strategy = await this.$store.dispatch('userAnalysisInputModule/sendUserAnalysisToFastAPI', this.surveyData);
         console.log("Strategy:", strategy);
         this.fullResponse = strategy.generatedStrategy;
 
