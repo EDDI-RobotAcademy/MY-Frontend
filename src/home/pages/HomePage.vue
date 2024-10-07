@@ -6,19 +6,24 @@
     overlayDescription="COOING은 AI 컨설팅을 통해 맞춤형 성장 전략을 제시하여 당신의 꿈을 현실로 만들어 드립니다."
     :scrollToY="765"
     :scrollDuration="1500"
-    >
+  >
   </FirstContent>
   <SecondContent>
   </SecondContent>
+  <ThirdContent>
+  </ThirdContent>
 </template>
 
 <script>
 import FirstContent from '../ui/FirstContent.vue'
 import SecondContent from '../ui/SecondContent.vue';
+import ThirdContent from '../ui/ThirdContent.vue';
+
 export default {
   components: {
     FirstContent,
-    SecondContent
+    SecondContent,
+    ThirdContent
   }
 }
 </script>
@@ -29,5 +34,4 @@ export default {
 * {
   font-family: 'Noto Sans KR', sans-serif;
 }
-
 </style>
