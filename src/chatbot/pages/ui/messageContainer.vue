@@ -15,22 +15,24 @@
 </template>
 
 <script>
+import { marked } from 'marked';
 export default {
     props: {
         messages: {
             type: Array,
             required: true
-        },
+        }
     },
     methods: {
         formatMessage(message) {
-            return message.replace(/\n/g, '<br>');
+            return marked(message);
+            // return message.replace(/\n/g, '<br>');
         }
     }
 }
 </script>
 
-<style scoped>
+<style>
 .message-container {
   flex-grow: 1;
   overflow-y: auto;
@@ -72,10 +74,28 @@ export default {
 }
 
 .message-bubble {
-  padding: 0.75rem 1rem;
+  padding: 20px 40px; 
   border-radius: 20px;
   max-width: 70%;
   word-wrap: break-word;
+  white-space: pre-wrap;
+  line-height: 1.5;
+}
+
+.message-bubble h3 {
+  margin-left: -10px; /* h3 태그를 왼쪽으로 10px 이동 */
+  margin-top: 10px;
+}
+
+/* 마크다운 리스트에 스타일 적용 */
+.message-bubble ul,
+.message-bubble ol {
+  padding-left: 20px; /* 리스트 전체를 오른쪽으로 이동 */
+  margin-top: -10px;
+}
+
+.markdown-content li {
+  margin-bottom: 10px;
 }
 
 .user-message .message-bubble {
