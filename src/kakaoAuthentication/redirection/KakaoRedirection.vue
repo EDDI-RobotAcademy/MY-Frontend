@@ -33,11 +33,10 @@ export default {
                 const response = await this.requestEmailDuplicationCheckToDjango(userInfo.kakao_account.email)
                 if (!response) {
                     this.registerNewAccount(userInfo.kakao_account.email, userInfo.kakao_account.profile.nickname);
-                    router.push('/survey')
+                    router.push('/')
                 } else {
                     this.registerUserToken(userInfo.kakao_account.email, this.accessToken);
-                    router.push('/survey')  // 임시 라우터. 성향조사 제출 여부 확인 기능 추가시 변경 예정
-                    // router.push('/')
+                    router.push('/')  // 임시 라우터. 성향조사 제출 여부 확인 기능 추가시 변경 예정
                 }
             }
         },

@@ -2,7 +2,7 @@
     <div class="message-container" ref="messageContainer">
           <div v-for="(message, index) in messages" :key="index" 
                :class="['message-row', message.isUser ? 'user-message' : 'bot-message']">
-            <img :src="message.isUser ? require('@/assets/images/fixed/chatbot/user_avatar.png') : require('@/assets/images/fixed/chatbot/ai_avatar.jpg')"
+            <img :src="message.isUser ? require('@/assets/images/fixed/chatbot/user_avatar.png') : require('@/assets/images/fixed/chatbot/cooing_logo.png')"
                  :alt="message.isUser ? 'User avatar' : 'Bot avatar'" 
                  class="message-avatar">
             <div v-if="message.isUser" class="message-bubble">

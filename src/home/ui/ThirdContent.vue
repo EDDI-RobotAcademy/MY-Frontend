@@ -2,7 +2,17 @@
   <div class="third-content">
     <div class="content-wrapper">
       <h2 class="subtitle">Key Point # 2</h2>
-      <h1 class="title">사용자에게 어울리는 콘텐츠 카테고리,<br>활동 플랫폼, 롤모델을 찾아드려요.</h1>
+      <h1 class="title">
+        <template v-for="(word, index) in words1" :key="'word1-'+index">
+          <span :ref="'word1-'+index" class="gradient-word">{{ word }}</span>
+          <span v-if="index < words1.length - 1">&nbsp;</span>
+        </template>
+        <br>
+        <template v-for="(word, index) in words2" :key="'word2-'+index">
+          <span :ref="'word2-'+index" class="gradient-word">{{ word }}</span>
+          <span v-if="index < words2.length - 1">&nbsp;</span>
+        </template>
+      </h1>
       <div class="features">
         <div class="feature-list">
           <div class="feature-item">
@@ -25,23 +35,99 @@
 
 <script>
 export default {
-  name: 'ThirdContent'
+  name: 'ThirdContent',
+  data() {
+    return {
+      observer: null,
+      words1: '사용자에게 어울리는 콘텐츠 카테고리,'.split(' '),
+      words2: '활동 플랫폼, 롤모델을 찾아드려요.'.split(' '),
+      animationDuration: 100,
+      delayBetweenWords: 100
+    }
+  },
+  mounted() {
+    this.setupIntersectionObserver();
+    this.updateAnimationDuration();
+  },
+  beforeUnmount() {
+    if (this.observer) {
+      this.observer.disconnect();
+    }
+  },
+  methods: {
+    setupIntersectionObserver() {
+      const options = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.1
+      };
+
+      this.observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            this.animateGradientText();
+          } else {
+            this.resetGradientText();
+          }
+        });
+      }, options);
+
+      this.observer.observe(this.$el);
+    },
+    updateAnimationDuration() {
+      document.documentElement.style.setProperty('--animation-duration', `${this.animationDuration}ms`);
+    },
+    animateGradientText() {
+      const animateWord = (word, delay) => {
+        setTimeout(() => {
+          word.classList.remove('animate', 'final-color');
+          void word.offsetWidth;
+          word.classList.add('animate');
+          setTimeout(() => {
+            word.classList.add('final-color');
+          }, this.animationDuration);
+        }, delay);
+      };
+
+      const words1 = this.words1.map((_, i) => this.$refs[`word1-${i}`][0]);
+      const words2 = this.words2.map((_, i) => this.$refs[`word2-${i}`][0]);
+
+      words1.forEach((word, index) => {
+        animateWord(word, index * this.delayBetweenWords);
+      });
+
+      const line1Duration = words1.length * this.delayBetweenWords;
+
+      words2.forEach((word, index) => {
+        animateWord(word, line1Duration + index * this.delayBetweenWords);
+      });
+    },
+    resetGradientText() {
+      [...this.words1, ...this.words2].forEach((_, i) => {
+        const word1 = this.$refs[`word1-${i}`];
+        const word2 = this.$refs[`word2-${i}`];
+        if (word1) word1[0].classList.remove('animate', 'final-color');
+        if (word2) word2[0].classList.remove('animate', 'final-color');
+      });
+    }
+  }
 }
 </script>
 
 <style scoped>
 .third-content {
   background-color: #f5f5f5;
-  height: 100vh; /* Set the height to 100% of the viewport height */
+  min-height: 100vh;
   display: flex;
-  align-items: center; /* Center the content vertically */
+  align-items: center;
+  padding: 80px 0;
 }
 
 .content-wrapper {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
-  width: 100%; /* Ensure the wrapper takes full width */
+  width: 100%;
 }
 
 .subtitle {
@@ -58,19 +144,42 @@ export default {
   line-height: 1.2;
 }
 
+.gradient-word {
+  background: linear-gradient(to right, rgba(211,122,47,1) 0%, rgba(211,122,47,1) 50%, rgba(0,0,0,1) 100%);
+  background-size: 200% 100%;
+  background-position: 100% 0;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+  display: inline-block;
+  transition: all 0.1s ease;
+  opacity: 0.1;
+}
+
+.gradient-word.animate {
+  animation: fillLeftToRight var(--animation-duration) forwards;
+  opacity: 1;
+}
+
+.gradient-word.final-color {
+  background: none;
+  -webkit-text-fill-color: #000000;
+  color: #000000;
+}
+
+@keyframes fillLeftToRight {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
+}
+
 .features {
   display: flex;
   justify-content: space-between;
-}
-
-.feature-text {
-  flex: 0 0 40%;
-}
-
-.feature-text h3 {
-  font-size: 24px;
-  font-weight: normal;
-  line-height: 1.4;
 }
 
 .feature-list {
