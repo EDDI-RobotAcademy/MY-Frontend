@@ -16,9 +16,9 @@ const routes: Array<RouteRecordRaw> = [
   ...KakaoAuthenticationRoutes,
   ...GoogleAuthenticationRoutes,
   ...NaverAuthenticationRoutes,
-  ...SurveyRoutes,
   ...UserAnalysisRoutes,
   ...ChatbotRoutes,
+  ...SurveyRoutes,
 ]
 
 const router = createRouter({
