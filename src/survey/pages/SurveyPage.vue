@@ -1,8 +1,8 @@
 <template>
     <div class="main-container">
         <div class="title">
-          <h1>서비스 사용 경험 설문조사</h1>
-          <h3>다음 질문들에 답변해주세요!</h3>
+          <h2>쿠잉 서비스 사용 경험 피드백</h2><br>
+          <h4>쿠잉 서비스 사용 경험에 대해 피드백을 남겨주시면<br>더 좋은 서비스를 만드는데에 사용하겠습니다.</h4>
         </div>
     </div>
   </template>
@@ -10,6 +10,7 @@
   <script>
   
   export default {
+    name: "SurveyPage",
   }
   </script>
   
