@@ -91,6 +91,7 @@ export default {
   cursor: pointer;
   font-size: 16px;
   font-weight: bold;
+  padding-bottom: 2px;
 }
 
 .center-menu {
@@ -109,6 +110,7 @@ export default {
   position: relative;
   transition: color 0.3s;
   transition-timing-function: cubic-bezier(0.2, 1, 0.3, 1);
+  padding-bottom: 2px;
 }
 
 .menu-item::after {
