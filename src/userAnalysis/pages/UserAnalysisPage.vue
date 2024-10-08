@@ -1,7 +1,5 @@
 <template>
   <div class="main-container">
-    <!-- <video ref="videoPlayer" class="fullscreen-video" :src="videoSource" autoplay muted loop playsinline
-      @error="handleError"></video> -->
     <div class="content-overlay">
       <div class="survey-icon">
         <v-img alt="Survey Icon"></v-img>
@@ -24,11 +22,14 @@
         <div v-else-if="questions[currentQuestionIndex].type === 'text'" class="text-input">
           <input @keyup.enter="nextQuestionIfNotEmpty" type="text" v-model="questions[currentQuestionIndex].answer"
             :placeholder="questions[currentQuestionIndex].placeholder" @input="answerQuestion(currentQuestionIndex)">
+          <p v-if="mbtiError" class="error-message">{{ mbtiError }}</p>
         </div>
-        <button @click="nextQuestion" class="next-button" :class="{ 'submit-button': isLastQuestion }"
-          :disabled="!questions[currentQuestionIndex].answered">
-          {{ isLastQuestion ? '제출' : '다음' }}
-        </button>
+        <div class="button-container">
+          <button @click="prevQuestion" class="prev-button" :disabled="currentQuestionIndex === 0">←  이전</button>
+          <button @click="nextQuestion" class="next-button" :disabled="!canProceed">
+            {{ isLastQuestion ? '제출' : '다음  →' }}
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -40,8 +41,6 @@ export default {
   name: 'IntegratedComponent',
   data() {
     return {
-      // videoSource: '/videos/survey-background.mp4',
-      // videoPlayer: null,
       currentQuestionIndex: 0,
       questions: [
         {
@@ -100,12 +99,23 @@ export default {
           answered: false,
           placeholder: "ex) 김계란, 이사배, 침착맨... "
         },
-      ]
+      ],
+      mbtiError: '',
     };
   },
   computed: {
     isLastQuestion() {
       return this.currentQuestionIndex === this.questions.length - 1;
+    },
+    isFirstQuestion() {
+      return this.currentQuestionIndex === 0;
+    },
+    canProceed() {
+      const currentQuestion = this.questions[this.currentQuestionIndex];
+      if (this.currentQuestionIndex === 2) { // MBTI 질문
+        return currentQuestion.answered && !this.mbtiError;
+      }
+      return currentQuestion.answered;
     }
   },
   methods: {
@@ -116,6 +126,9 @@ export default {
       const question = this.questions[index];
       if (question.type === 'text') {
         question.answered = question.answer.trim() !== '';
+        if (index === 2) {
+          this.validateMBTI(question.answer);
+        }
       } else {
         question.answered = question.answer !== null;
       }
@@ -127,10 +140,20 @@ export default {
       }
     },
     nextQuestion() {
+      if (this.currentQuestionIndex === 2 && this.mbtiError) {
+        return; // MBTI 오류가 있으면 다음 질문으로 넘어가지 않음
+      }
       if (!this.isLastQuestion) {
         this.currentQuestionIndex++;
       } else {
         this.submitSurvey();
+      }
+    },
+    prevQuestion() {
+      if (!this.isFirstQuestion) {
+        this.currentQuestionIndex--;
+        // 이전 질문의 답변 상태 확인
+        this.checkAnswerStatus(this.currentQuestionIndex);
       }
     },
     submitSurvey() {
@@ -150,7 +173,29 @@ export default {
         path: '/user-analysis/result',
         state: { surveyData }
       });
-    }
+    },
+    validateMBTI(mbti) {
+      const mbtiRegex = /^[EI][NS][FT][JP]$/;
+      if (mbtiRegex.test(mbti.toUpperCase())) {
+        this.mbtiError = '';
+        this.questions[2].answered = true;
+      } else {
+        this.mbtiError = 'MBTI 형식이 올바르지 않습니다.';
+        this.questions[2].answered = false;
+      }
+    },
+    checkAnswerStatus(index) {
+      const question = this.questions[index];
+      if (question.type === 'text') {
+        question.answered = question.answer.trim() !== '';
+        if (index === 2) { // MBTI 질문
+          this.validateMBTI(question.answer);
+        }
+      } else {
+        question.answered = question.answer !== null;
+      }
+      this.$forceUpdate();
+    },
   }
 };
 </script>
@@ -186,13 +231,6 @@ export default {
   width: 120px;
   margin: auto;
 }
-
-/* .fullscreen-video {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-} */
 
 .content-overlay {
   position: absolute;
@@ -248,6 +286,8 @@ export default {
   padding: 20px;
   border-radius: 10px;
   background-color: rgba(255, 255, 255, .5);
+  justify-content: center;
+  align-items: center;
 }
 
 .survey-icon {
@@ -285,6 +325,7 @@ export default {
 .option-text {
   font-size: 1.3rem;
   color: #000;
+  text-align: center;
 }
 
 input[type="radio"] {
@@ -314,6 +355,13 @@ input[type="radio"]:checked+.radio-button::after {
   border-radius: 50%;
 }
 
+.text-input {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
 .text-input input {
   width: 70%;
   padding: 10px;
@@ -321,58 +369,56 @@ input[type="radio"]:checked+.radio-button::after {
   border-radius: 5px;
   font-size: 16px;
   margin-bottom: 12px;
+  text-align: center;
 }
 
-.next-button {
-  padding: 12px 30px;
-  border-radius: 10px;
-  border: 0;
+.button-container {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+button {
+  margin: 0 20px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+button:disabled {
+  background-color: #cecece;
+  cursor: not-allowed;
+  color: white;
+}
+
+button.next-button:not(:disabled) {
   background-color: #ff9033;
-  letter-spacing: 1.5px;
-  font-size: 15px;
-  transition: all 0.3s ease;
-  color: hsl(0, 0%, 100%);
-  cursor: pointer;
+  color: white;
 }
 
-
-.next-button:active {
-  background-color: #af682d;
-  transition: 200ms;
-}
-
-.next-button:disabled {
-  cursor: not-allowed;
-}
-
-.next-button:disabled:active {
-  transform: none;
-}
-
-.submit-button {
-  padding: 12px 30px;
-  border-radius: 10px;
-  border: 0;
-  background-color: #4CAF50;
-  letter-spacing: 1.5px;
-  font-size: 15px;
-  transition: all 0.3s ease;
-  color: hsl(0, 0%, 100%);
-  cursor: pointer;
-}
-
-
-.submit-button:active {
-  background-color: #2f6a31;
-  transition: 200ms;
-}
-
-.submit-button:disabled {
+button.prev-button:not(:disabled) {
   background-color: rgb(69, 69, 69);
-  cursor: not-allowed;
+  color: white;
 }
 
-.submit-button:disabled:active {
-  transform: none;
+/* 호버 효과 */
+button:not(:disabled):hover {
+  opacity: 0.8;
+}
+
+.error-message {
+  color: red;
+  font-size: 0.9rem;
+  margin-top: 5px;
+  min-height: 1.2em; /* 에러 메시지 영역의 최소 높이 설정 */
+}
+
+.text-input {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
 }
 </style>
