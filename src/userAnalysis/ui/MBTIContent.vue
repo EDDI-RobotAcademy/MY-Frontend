@@ -26,6 +26,9 @@
                 </div>
             </div>
         </div>
+        <div class="footer" ref="footer">
+            <p>{{ strategyText }}</p>
+        </div>
     </div>
 </template>
 
@@ -44,6 +47,10 @@ export default {
             required: true
         },
         mbtiType: {
+            type: String,
+            required: true
+        },
+        strategyText: {
             type: String,
             required: true
         }
@@ -119,6 +126,13 @@ export default {
                     duration: 600
                 }, '-=400');
             });
+
+            timeline.add({
+                targets: this.$refs.footer,
+                opacity: [0, 1],
+                translateY: ['20px', '0px'],
+                duration: 800
+            }, '+=200');
         }
     }
 }
@@ -188,6 +202,7 @@ p {
     margin-top: 20px;
     font-style: italic;
     text-align: center;
-    font-size: 20px;
+    font-size: 14px;
+    opacity: 0;
 }
 </style>
