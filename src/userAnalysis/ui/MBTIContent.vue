@@ -1,6 +1,7 @@
 <template>
     <div class="mbti-container" ref="container">
-        <h1 class="title" ref="title">ENTJ</h1>
+        <h1 class="main-title" ref="mainTitle">{{ mainTitle }}</h1>
+        <h1 class="mbti-title" ref="title">{{ mbti}}</h1>
         <div class="content">
             <div class="strengths">
                 <h2 class="section-title" ref="strengthsTitle">장점</h2>
@@ -34,9 +35,11 @@
 import anime from 'animejs/lib/anime.es.js';
 
 export default {
-    name: 'ENTJPersonality',
+    name: 'MBTIPersonality',
     data() {
         return {
+            mainTitle: '2. 성향 분석',
+            mbti: 'ENTJ',
             strengths: [
                 { emoji: '🏆', title: '리더십과 조직력', description: '뛰어난 조직력과 계획 능력으로 콘텐츠 제작과 일정 관리에서 강점을 가질 수 있습니다.' },
                 { emoji: '🔍', title: '분석적 사고', description: '오리 과정이나 레시피를 체계적으로 정리하고 설명할 수 있어, 교육적인 콘텐츠 제작에 유리합니다.' },
@@ -72,6 +75,13 @@ export default {
         animateContent() {
             const timeline = anime.timeline({
                 easing: 'easeOutExpo'
+            });
+
+            timeline.add({
+                targets: this.$refs.mainTitle,
+                opacity: [0, 1],
+                translateY: ['-30px', '0px'],
+                duration: 500
             });
 
             timeline.add({
@@ -133,7 +143,13 @@ export default {
     margin-bottom: 50px;
 }
 
-.title {
+.main-title {
+    text-align: center;
+    font-size: 2em;
+    margin-bottom: 30px;
+}
+
+.mbti-title {
     text-align: center;
     font-size: 2.5em;
     margin-bottom: 30px;
