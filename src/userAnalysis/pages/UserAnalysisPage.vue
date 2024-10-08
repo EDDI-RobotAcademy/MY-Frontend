@@ -147,7 +147,7 @@ export default {
 
       console.log("Survey submitted:", surveyData);
       this.$router.push({
-        path: '/chatbot',
+        path: '/user-analysis/result',
         state: { surveyData }
       });
     }
@@ -350,7 +350,7 @@ input[type="radio"]:checked+.radio-button::after {
 }
 
 .submit-button {
-  padding: 17px 30px;
+  padding: 12px 30px;
   border-radius: 10px;
   border: 0;
   background-color: #4CAF50;
