@@ -1,132 +1,40 @@
 <template>
-    <div class="survey-container">
-        <h1 class="survey-title">MBTI가 무엇입니까?</h1>
-        <div class="options">
-            <label class="option">
-                <input type="radio" value="ISTJ" v-model="selectedMBTI" />
-                ISTJ
-            </label>
-            <label class="option">
-                <input type="radio" value="ISFJ" v-model="selectedMBTI" />
-                ISFJ
-            </label>
-            <label class="option">
-                <input type="radio" value="INFJ" v-model="selectedMBTI" />
-                INFJ
-            </label>
-            <label class="option">
-                <input type="radio" value="INTJ" v-model="selectedMBTI" />
-                INTJ
-            </label>
-            <label class="option">
-                <input type="radio" value="ISTP" v-model="selectedMBTI" />
-                ISTP
-            </label>
-            <label class="option">
-                <input type="radio" value="ISFP" v-model="selectedMBTI" />
-                ISFP
-            </label>
-            <label class="option">
-                <input type="radio" value="INFP" v-model="selectedMBTI" />
-                INFP
-            </label>
-            <label class="option">
-                <input type="radio" value="INTP" v-model="selectedMBTI" />
-                INTP
-            </label>
-            <label class="option">
-                <input type="radio" value="ESTP" v-model="selectedMBTI" />
-                ESTP
-            </label>
-            <label class="option">
-                <input type="radio" value="ESFP" v-model="selectedMBTI" />
-                ESFP
-            </label>
-            <label class="option">
-                <input type="radio" value="ENFP" v-model="selectedMBTI" />
-                ENFP
-            </label>
-            <label class="option">
-                <input type="radio" value="ENTP" v-model="selectedMBTI" />
-                ENTP
-            </label>
-            <label class="option">
-                <input type="radio" value="ESTJ" v-model="selectedMBTI" />
-                ESTJ
-            </label>
-            <label class="option">
-                <input type="radio" value="ESFJ" v-model="selectedMBTI" />
-                ESFJ
-            </label>
-            <label class="option">
-                <input type="radio" value="ENFJ" v-model="selectedMBTI" />
-                ENFJ
-            </label>
-            <label class="option">
-                <input type="radio" value="ENTJ" v-model="selectedMBTI" />
-                ENTJ
-            </label>
+    <div class="main-container">
+        <div class="title">
+          <h2>쿠잉 서비스 사용 경험 피드백</h2><br>
+          <h4>쿠잉 서비스 사용 경험에 대해 피드백을 남겨주시면<br>더 좋은 서비스를 만드는데에 사용하겠습니다.</h4>
         </div>
-        <button class="submit-button" @click="submit">확인</button>
     </div>
-</template>
+  </template>
+  
+  <script>
+  
+  export default {
+    name: "SurveyPage",
+  }
+  </script>
+  
+  <style scoped>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap');
+  
+  * {
+    font-family: 'Noto Sans KR', sans-serif;
+  }
 
-<script>
-import { ref } from 'vue';
-
-export default {
-    setup () {
-        const selectedMBTI = ref('');
-
-        const submit = () => {
-            console.log('선택된 MBTI:', selectedMBTI.value);
-        }
-
-        return { selectedMBTI, submit }
-    }
-}
-</script>
-
-<style>
-.survey-container {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    background-color: #f9f9f9;
+  .main-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
 }
 
-.survey-title {
-    text-align: center;
-    color: #333;
+.title {
+    margin-top: 100px;
+  font-size: 32px;
+  font-weight: bold;
+  color: #000;
+  margin-bottom: 40px;
+  line-height: 1.2;
+  text-align: center;
 }
-
-.options {
-    display: flex;
-    flex-wrap: wrap;
-    margin: 20px 0;
-}
-
-.option {
-    width: 45%;
-    margin: 10px 2.5%;
-    font-size: 18px;
-}
-
-.submit-button {
-    width: 100%;
-    padding: 10px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-}
-
-.submit-button:hover {
-    background-color: #0056b3;
-}
-</style>
+  </style>

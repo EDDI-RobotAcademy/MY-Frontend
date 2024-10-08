@@ -5,7 +5,7 @@ import { AxiosResponse } from "axios"
 export type googleAuthenticationActions = {
     requestGoogleOauthRedirectionToDjango(): Promise<void>
     requestAccessTokenToDjangoRedirection(context: ActionContext<any, any>, payload: { code: string }): Promise<void>
-    requestUserInfoToDjango(context: ActionContext<any, any>): Promise<any>
+    requestGoogleUserInfoToDjango(context: ActionContext<any, any>, payload: { accessToken: string }): Promise<any>
 }
 const actions: googleAuthenticationActions = {
     async requestGoogleOauthRedirectionToDjango(): Promise<void> {
@@ -21,21 +21,21 @@ const actions: googleAuthenticationActions = {
             const { code } = payload
             const response = await axiosInst.djangoAxiosInst.post(
                 '/google_oauth/google/access-token', { code })
-            console.log('accessToken:', response.data.accessToken.access_token)
-            localStorage.setItem("accessToken", response.data.accessToken.access_token)
+            return response.data.accessToken.access_token
         } catch (error) {
             console.log('Access Token 요청 중 문제 발생:', error)
             throw error
         }
     },
-    async requestUserInfoToDjango(
-        context: ActionContext<any, any>): Promise<any> {
+    async requestGoogleUserInfoToDjango(
+        context: ActionContext<any, any>,
+        payload: { accessToken: string }): Promise<void> {
         try {
-            const accessToken = localStorage.getItem("accessToken")
-            const userInfoResponse: AxiosResponse<any> = 
-                await axiosInst.djangoAxiosInst.post('/google_oauth/google/user-info', { access_token: accessToken })
+            const { accessToken } = payload
+            const userInfoResponse: AxiosResponse<any> =
+                await axiosInst.djangoAxiosInst.post('/google_oauth/google/user-info', { access_token: accessToken });
+            console.log("userInfoResponse.data.user_info",userInfoResponse.data.user_info)
             const userInfo = userInfoResponse.data.user_info
-            
             return userInfo
         } catch (error) {
             alert('사용자 정보 가져오기 실패!')

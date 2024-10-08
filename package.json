@@ -10,9 +10,12 @@
   },
   "dependencies": {
     "@mdi/font": "5.9.55",
+    "animejs": "^3.2.2",
     "axios": "^1.7.7",
     "core-js": "^3.8.3",
     "lucide-vue-next": "^0.446.0",
+    "markdown-it": "^14.1.0",
+    "marked": "^14.1.2",
     "roboto-fontface": "*",
     "vue": "^3.2.13",
     "vue-router": "^4.0.3",

@@ -7,8 +7,7 @@ export type KakaoAuthenticationActions = {
     requestAccessTokenToDjangoRedirection(
         context: ActionContext<any, any>,
         payload: { code: string }): Promise<void>
-    requestUserInfoToDjango(
-        context: ActionContext<any, any>): Promise<any>
+    requestKakaoUserInfoToDjango(context: ActionContext<any, any>, payload: { accessToken: string }): Promise<any>
 }
 
 const actions: KakaoAuthenticationActions = {
@@ -28,17 +27,17 @@ const actions: KakaoAuthenticationActions = {
             const response = await axiosInst.djangoAxiosInst.post(
                 'kakao_oauth/kakao/access-token', { code })
             console.log('accessToken:', response.data.accessToken.access_token)
-            localStorage.setItem("accessToken", response.data.accessToken.access_token)
+            return response.data.accessToken.access_token
         } catch (error) {
             console.log('Access Token 요청 중 문제 발생:', error)
             throw error
         }
     },
-    async requestUserInfoToDjango(
-        context: ActionContext<any, any>): Promise<any> {
+    async requestKakaoUserInfoToDjango(
+        context: ActionContext<any, any>,
+        payload: { accessToken: string }): Promise<void> {
         try {
-            const accessToken = localStorage.getItem("accessToken");
-            console.log('accessToken:', accessToken);
+            const { accessToken } = payload
             const userInfoResponse: AxiosResponse<any> =
                 await axiosInst.djangoAxiosInst.post(
                     '/kakao_oauth/kakao/user-info',
@@ -53,4 +52,4 @@ const actions: KakaoAuthenticationActions = {
     }
 };
 
-    export default actions;
+export default actions;
