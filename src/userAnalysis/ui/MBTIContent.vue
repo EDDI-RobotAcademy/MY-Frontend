@@ -1,7 +1,7 @@
 <template>
     <div class="mbti-container" ref="container">
         <h1 class="main-title" ref="mainTitle">{{ mainTitle }}</h1>
-        <h1 class="mbti-title" ref="title">{{ mbti}}</h1>
+        <h1 class="mbti-title" ref="title">{{ mbtiType }}</h1>
         <div class="content">
             <div class="strengths">
                 <h2 class="section-title" ref="strengthsTitle">장점</h2>
@@ -26,8 +26,6 @@
                 </div>
             </div>
         </div>
-        <p class="footer" ref="footer">ENTJ의 장점을 활용하여 체계적이고 교육적인 콘텐츠를 제작하고, 긍정적인 에너지를 통해 팬들과의 관계를 강화하세요. 완벽주의를 줄이고, 실수를
-            인정하는 자세가 필요합니다.</p>
     </div>
 </template>
 
@@ -36,19 +34,18 @@ import anime from 'animejs/lib/anime.es.js';
 
 export default {
     name: 'MBTIPersonality',
-    data() {
-        return {
-            mainTitle: '2. 성향 분석',
-            mbti: 'ENTJ',
-            strengths: [
-                { emoji: '🏆', title: '리더십과 조직력', description: '뛰어난 조직력과 계획 능력으로 콘텐츠 제작과 일정 관리에서 강점을 가질 수 있습니다.' },
-                { emoji: '🔍', title: '분석적 사고', description: '오리 과정이나 레시피를 체계적으로 정리하고 설명할 수 있어, 교육적인 콘텐츠 제작에 유리합니다.' },
-                { emoji: '💪', title: '긍정적인 에너지', description: '긍정적인 태도로 팬들과 소통하며, 유쾌한 분위기를 만들어낼 수 있습니다.' }
-            ],
-            weaknesses: [
-                { emoji: '🏃', title: '완벽주의', description: '모든 것이 완벽해야 한다는 압박감이 있을 수 있어, 콘텐츠 제작에 부담을 느낄 수 있습니다.' }
-            ],
-            observer: null
+    props: {
+        strengths: {
+            type: Array,
+            required: true
+        },
+        weaknesses: {
+            type: Array,
+            required: true
+        },
+        mbtiType: {
+            type: String,
+            required: true
         }
     },
     mounted() {
@@ -122,13 +119,6 @@ export default {
                     duration: 600
                 }, '-=400');
             });
-
-            timeline.add({
-                targets: this.$refs.footer,
-                opacity: [0, 1],
-                translateY: ['20px', '0px'],
-                duration: 800
-            }, '-=200');
         }
     }
 }
