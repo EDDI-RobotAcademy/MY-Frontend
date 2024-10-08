@@ -331,28 +331,22 @@ input[type="radio"]:checked+.radio-button::after {
   letter-spacing: 1.5px;
   font-size: 15px;
   transition: all 0.3s ease;
-  box-shadow: #d67a2b 0px 10px 0px 0px;
   color: hsl(0, 0%, 100%);
   cursor: pointer;
 }
 
 
 .next-button:active {
-  background-color: #ff9033;
-  box-shadow: #d67a2b 0px 0px 0px 0px;
-  transform: translateY(5px);
+  background-color: #af682d;
   transition: 200ms;
 }
 
 .next-button:disabled {
-  background-color: rgb(69, 69, 69);
-  box-shadow: rgb(69, 69, 69) 0px 10px 0px 0px;
   cursor: not-allowed;
 }
 
 .next-button:disabled:active {
   transform: none;
-  box-shadow: rgb(69, 69, 69) 0px 10px 0px 0px;
 }
 
 .submit-button {
@@ -363,27 +357,22 @@ input[type="radio"]:checked+.radio-button::after {
   letter-spacing: 1.5px;
   font-size: 15px;
   transition: all 0.3s ease;
-  box-shadow: #38813a 0px 10px 0px 0px;
   color: hsl(0, 0%, 100%);
   cursor: pointer;
 }
 
 
 .submit-button:active {
-  background-color: #4CAF50;
-  box-shadow: #3c8c3f 0px 0px 0px 0px;
-  transform: translateY(5px);
+  background-color: #2f6a31;
   transition: 200ms;
 }
 
 .submit-button:disabled {
   background-color: rgb(69, 69, 69);
-  box-shadow: rgb(69, 69, 69) 0px 10px 0px 0px; 
   cursor: not-allowed;
 }
 
 .submit-button:disabled:active {
   transform: none;
-  box-shadow: rgb(69, 69, 69) 0px 10px 0px 0px;
 }
 </style>
