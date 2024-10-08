@@ -2,14 +2,11 @@
   <div class="navigation-menu-bar">
     <button @click="goToHomePage" class="logo">COOING</button>
     <div class="center-menu">
-      <button class="menu-item button" data-text="설문조사" @click="goToSurveyPage">
-        <span>설문조사</span>
+      <button class="menu-item button" data-text="피드백" @click="goToSurveyPage">
+        <span>피드백</span>
       </button>
       <button class="menu-item button" data-text="성향 분석하기" @click="goToUserAnalysisPage">
         <span >성향 분석하기</span>
-      </button>
-      <button class="menu-item button" data-text="둘러보기">
-        <span>둘러보기</span>
       </button>
     </div>
     <div class="auth-buttons">
