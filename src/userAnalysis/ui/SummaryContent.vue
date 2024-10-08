@@ -16,14 +16,21 @@ import anime from 'animejs/lib/anime.es.js';
 
 export default {
   name: 'SummaryContent',
+  props: {
+    data: {
+      type: Object,
+      required: true
+    }
+  },
   data() {
     return {
       observer: null,
       title: '1. 입력 요약',
-      summary: '당신은 20대 여성, ENFJ 성향으로 뷰티 분야에서 인플루언서로 성장하고 싶어하며, 이사배와 같은 뷰티 인플루언서에 관심이 많습니다. 긍정적인 성격을 가지고 있으며, 얼굴을 공개하고 유튜브에서 활동하고 싶어합니다.',
+      summary: this.data,
     }
   },
   mounted() {
+    console.log("SummaryContent 출력",this.data);
     this.setupIntersectionObserver();
   },
   beforeUnmount() {
