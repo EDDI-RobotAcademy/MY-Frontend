@@ -4,7 +4,7 @@
     <SummaryContent :data="Summary" />
     <MBTIContent :strengths="parsedStrengths" :weaknesses="parsedWeaknesses" :mbtiType="mbtiType"
       :strategyText="strategyText" />
-    <StrategyContent :strategies="parsedStrategies" />
+    <StrategyContent :strategies="parsedStrategies" :subtitle="contentStrategySubtitle" />
   </div>
 </template>
 
@@ -13,6 +13,7 @@ import SummaryContent from '../ui/SummaryContent.vue'
 import MBTIContent from '../ui/MBTIContent.vue'
 import LoadingContent from '../ui/LoadingContent.vue';
 import StrategyContent from '../ui/StrategyContent.vue';
+
 export default {
   components: {
     SummaryContent,
@@ -28,7 +29,8 @@ export default {
       mbtiType: '',
       strategyText: '',
       surveyData: null,
-      strategies: [],
+      parsedStrategies: [],
+      contentStrategySubtitle: '',
     };
   },
   created() {
@@ -37,6 +39,7 @@ export default {
 
     const storedData = localStorage.getItem('userAnalysisData');
     if (storedData) {
+      console.log("storedData", storedData)
       const parsedData = JSON.parse(storedData);
       this.processAnalysisData(parsedData);
     } else if (this.surveyData) {
@@ -65,10 +68,42 @@ export default {
       const strategyMatch = data.generatedStrategy.match(/전략:\s*\*?\*?\s*(.*?)(?:\n|$)/);
       this.strategyText = strategyMatch ? strategyMatch[1].trim() : '';
 
-      console.log("MBTI Type:", this.mbtiType);
-      console.log("Strengths:", this.parsedStrengths);
-      console.log("Weaknesses:", this.parsedWeaknesses);
-      console.log("Strategy Text:", this.strategyText);
+      const contentStrategyMatch = data.generatedStrategy.match(/4\. 콘텐츠 전략:[\s\S]*?5\./);
+      if (contentStrategyMatch) {
+        const contentStrategyText = contentStrategyMatch[0].replace(/4\. 콘텐츠 전략:/, '').replace(/5\..*$/, '').trim();
+        const parsedContent = this.parseContentStrategy(contentStrategyText);
+        this.contentStrategySubtitle = parsedContent.subtitle;
+        this.parsedStrategies = parsedContent.strategies;
+      }
+
+      console.log("Content Strategy Subtitle:", this.contentStrategySubtitle);
+      console.log("Parsed Strategies:", this.parsedStrategies);
+    },
+    parseContentStrategy(text) {
+      text = text.replace(/\*\*|\*/g, '');
+
+      const lines = text.split('\n').filter(line => line.trim() !== '');
+
+      const subtitle = lines[1].trim();
+
+      const strategies = [];
+      const regex = /^(.*?)\s+(.*?):\s*(.*)$/;
+
+      lines.slice(2).forEach(line => {
+        const match = line.match(regex);
+        if (match) {
+          strategies.push({
+            emoji: match[1].trim(),
+            title: match[2].trim(),
+            description: match[3].trim()
+          });
+        }
+      });
+
+      return {
+        subtitle: subtitle,
+        strategies: strategies
+      };
     },
     extractMBTITypeAndTraits(data) {
       const mbtiMatch = data.match(/\*\*([A-Z]{4})의 장점:\*\*/);
@@ -89,7 +124,6 @@ export default {
         this.parsedWeaknesses = [];
       }
     },
-
     parseTraits(traitsString) {
       const traits = traitsString.split('\n')
         .filter(line => line.trim().startsWith('*'))
@@ -109,8 +143,8 @@ export default {
 
       return traits;
     }
-  },
-}
+  }
+};
 </script>
 
 <style>
