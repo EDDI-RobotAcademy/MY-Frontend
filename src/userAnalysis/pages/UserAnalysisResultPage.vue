@@ -5,6 +5,7 @@
     <MBTIContent :strengths="parsedStrengths" :weaknesses="parsedWeaknesses" :mbtiType="mbtiType"
       :strategyText="strategyText" />
     <StrategyContent :strategies="parsedStrategies" :subtitle="contentStrategySubtitle" />
+    <FinalSummaryContent/>
   </div>
 </template>
 
@@ -13,13 +14,15 @@ import SummaryContent from '../ui/SummaryContent.vue'
 import MBTIContent from '../ui/MBTIContent.vue'
 import LoadingContent from '../ui/LoadingContent.vue';
 import StrategyContent from '../ui/StrategyContent.vue';
+import FinalSummaryContent from '../ui/FinalSummaryContent.vue'
 
 export default {
   components: {
     SummaryContent,
     MBTIContent,
     LoadingContent,
-    StrategyContent
+    StrategyContent,
+    FinalSummaryContent,
   },
   data() {
     return {
