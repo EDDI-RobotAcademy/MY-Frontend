@@ -17,6 +17,9 @@ export type SurveyActions = {
     ): Promise<AxiosResponse>,
     requestListSurveyQuestionToDjango(context: ActionContext<SurveyState,any>,
         surveyId: string
+    ): Promise<void>,
+    requestListSurveySelectionToDjango(context: ActionContext<SurveyState, any>,
+        questionId: string
     ): Promise<void>
 }
 
@@ -87,6 +90,23 @@ const actions: SurveyActions = {
             throw error
         }
     },
+    async requestListSurveySelectionToDjango(
+        context: ActionContext<SurveyState, any>,
+        questionId: string
+      ): Promise<void> {
+        try {
+          const res: AxiosResponse<any, any> = await axiosInst.djangoAxiosInst.post('survey/list-selection', {
+            question_Id: questionId 
+          });
+          
+          const data = res.data;
+        //   context.commit(REQUEST_LIST_SURVEY_SELECTION_TO_DJANGO, data);
+          return data
+        } catch (error) {
+            console.error('requestListSurveySelectionToDjango() 중 에러 발생')
+            throw error
+        }
+      },
 }
 
 export default actions;

@@ -64,7 +64,7 @@
       }
     },
     methods: {
-      ...mapActions('surveyModule', ['requestListSurveyQuestionToDjango']),
+      ...mapActions('surveyModule', ['requestListSurveyQuestionToDjango', 'requestListSurveySelectionToDjango']),
       
       async loadSurvey() {
         try {
@@ -72,10 +72,42 @@
           const questions = await this.requestListSurveyQuestionToDjango(this.surveyId);
           this.questions = questions;
           console.log(questions);
-          // ... 생략된 코드 ...
+
+          let allSelections = []
+
+        // 각 질문에 대해 선택지를 로드하여 selections 배열에 추가
+        for (const question of this.questions) {
+            console.log(`질문 ID: ${question.id}, survey_type: ${question.survey_type}`);
+
+            if (question.survey_type === "1") {
+              console.log(`질문 ID ${question.id}는 서술형 질문입니다. 선택지 없음`)
+              continue
+            } 
+
+            let options = await this.requestListSurveySelectionToDjango(question.id);
+
+            // 선택지가 배열이 아닌 경우 빈 배열로 초기화
+            if (!Array.isArray(options)) {
+              options = [];
+            }
+            console.log('질문당 선택지:', options);
+            
+            // 선택지가 있는 경우 각 질문에 대한 선택지들을 하나의 리스트로 합침
+            allSelections = [...allSelections, ...options]
+
+            console.log(`질문 ID ${question.id}에 대한 선택지 요청 완료`);
+        }
+        this.selections = allSelections
+        console.log('합쳐진 선택지: ', JSON.stringify(this.selections))
+        
         } catch (error) {
           console.error('설문조사 로딩 중 오류 발생:', error);
         }
+      },
+      answerQuestion(index) {
+        const question = this.questions[index];
+        // 답변 처리(질문이 서술형인지 확인)
+        question.answered = question.survey_type === 1 ? question.answer.trim() !== '' : question.answer !== null;
       },
     },
     created() {
