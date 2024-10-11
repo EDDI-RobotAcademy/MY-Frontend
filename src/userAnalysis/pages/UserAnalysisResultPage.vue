@@ -5,7 +5,7 @@
     <MBTIContent :strengths="parsedStrengths" :weaknesses="parsedWeaknesses" :mbtiType="mbtiType"
       :strategyText="strategyText" />
     <StrategyContent :strategies="parsedStrategies" :subtitle="contentStrategySubtitle" />
-    <FinalSummaryContent/>
+    <FinalSummaryContent />
   </div>
 </template>
 
@@ -109,14 +109,14 @@ export default {
       };
     },
     extractMBTITypeAndTraits(data) {
-      const mbtiMatch = data.match(/\*\*([A-Z]{4})의 장점:\*\*/);
+      const mbtiMatch = data.match(/\*\*([A-Z]{4})의 장점:/);
       this.mbtiType = mbtiMatch ? mbtiMatch[1] : '';
 
       if (this.mbtiType) {
         const strengthsRegex = new RegExp(`\\*\\*${this.mbtiType}의 장점:\\*\\*\\s*([\\s\\S]*?)(?=\\*\\*${this.mbtiType}의 단점:\\*\\*)`);
-        const strengths = data.match(strengthsRegex);
-
         const weaknessesRegex = new RegExp(`\\*\\*${this.mbtiType}의 단점:\\*\\*\\s*([\\s\\S]*?)(?=\\*\\*전략:\\*\\*)`);
+
+        const strengths = data.match(strengthsRegex);
         const weaknesses = data.match(weaknessesRegex);
 
         this.parsedStrengths = this.parseTraits(strengths ? strengths[1] : '');
@@ -127,16 +127,17 @@ export default {
         this.parsedWeaknesses = [];
       }
     },
+
     parseTraits(traitsString) {
       const traits = traitsString.split('\n')
-        .filter(line => line.trim().startsWith('*'))
+        .filter(line => line.trim().startsWith('-'))
         .map(line => {
-          const match = line.match(/\* (.*?) \*\*(.*?):\*\* (.*)/);
+          const match = line.match(/- (?:([^\s]+)\s+)?(?:\*\*(.*?):\*\*\s*)?(.*)/);
           if (match) {
             return {
-              emoji: match[1].trim(),
-              title: match[2],
-              description: match[3]
+              emoji: match[1] || '',
+              title: match[2] || '',
+              description: match[3].trim()
             };
           }
           return null;
