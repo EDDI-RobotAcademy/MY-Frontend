@@ -1,5 +1,5 @@
 import { Action, ActionContext } from "vuex"
-import { SurveyState } from "./states"
+import { SurveyState, SurveyAnswer } from "./states"
 import axios, { AxiosResponse } from "axios"
 import axiosInst from "@/utility/axiosInstance"
 import { REQUEST_LIST_SURVEY_QUESTION_TO_DJANGO } from "./mutation-types"
@@ -20,7 +20,10 @@ export type SurveyActions = {
     ): Promise<void>,
     requestListSurveySelectionToDjango(context: ActionContext<SurveyState, any>,
         questionId: string
-    ): Promise<void>
+    ): Promise<void>,
+    requestSubmitSurveyAnswerToDjango(context: ActionContext<SurveyState, any>,
+        payload: { survey_answer: SurveyAnswer[], account_id: string | null }
+    ): Promise<AxiosResponse>
 }
 
 const actions: SurveyActions = {
@@ -93,7 +96,7 @@ const actions: SurveyActions = {
     async requestListSurveySelectionToDjango(
         context: ActionContext<SurveyState, any>,
         questionId: string
-      ): Promise<void> {
+    ): Promise<void> {
         try {
           const res: AxiosResponse<any, any> = await axiosInst.djangoAxiosInst.post('survey/list-selection', {
             question_Id: questionId 
@@ -106,7 +109,21 @@ const actions: SurveyActions = {
             console.error('requestListSurveySelectionToDjango() 중 에러 발생')
             throw error
         }
-      },
+        },
+      async requestSubmitSurveyAnswerToDjango(context: ActionContext<SurveyState, any>,
+        payload: { survey_answer: SurveyAnswer[], account_id: string | null }
+    ): Promise<AxiosResponse> {
+        const { survey_answer, account_id } = payload
+        try {
+            const res: AxiosResponse = await axiosInst.djangoAxiosInst.post('survey/submit-answer', {
+                survey_answer, account_id
+            })
+            return res.data
+        } catch (error) {
+            console.log('requestSubmitSurveyAnswerToDjango() 중 에러 발생')
+            throw error
+        }
+    }
 }
 
 export default actions;

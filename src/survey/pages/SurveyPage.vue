@@ -64,7 +64,7 @@
       }
     },
     methods: {
-      ...mapActions('surveyModule', ['requestListSurveyQuestionToDjango', 'requestListSurveySelectionToDjango']),
+      ...mapActions('surveyModule', ['requestListSurveyQuestionToDjango', 'requestListSurveySelectionToDjango', 'requestSubmitSurveyAnswerToDjango']),
       
       async loadSurvey() {
         try {
@@ -109,6 +109,22 @@
         // 답변 처리(질문이 서술형인지 확인)
         question.answered = question.survey_type === 1 ? question.answer.trim() !== '' : question.answer !== null;
       },
+      async submitSurvey() {
+        console.log("Survey submitted:", JSON.stringify(this.questions));
+        const surveyAnswers = this.questions.map(question => ({
+          question_id: question.id,
+          answer_data: question.answer || '' // 답변이 없을 경우 빈 문자열로 설정
+        }))
+
+        const accountId = null
+
+        try {
+            const response = await this.requestSubmitSurveyAnswerToDjango({ survey_answer: surveyAnswers, account_id: accountId })
+            console.log('설문이 제출되었습니다:', response)
+        } catch (error) {
+          console.error('설문 제출 중 오류 발생: ', error)
+        }
+      }
     },
     created() {
       this.loadSurvey();

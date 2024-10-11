@@ -28,6 +28,10 @@ export interface Selection {
     value: string; // 선택지 값 추가
 }
 
+export interface SurveyAnswer {
+    question_id: number;
+    answer_data: string | number | boolean;
+}
 
 const state: SurveyState = {
     surveys: [],
