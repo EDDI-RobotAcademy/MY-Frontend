@@ -108,7 +108,7 @@ export default {
       };
     },
     extractMBTITypeAndTraits(data) {
-      let mbtiMatch = data.match(/##.*?(\w{4}).*?인플루언서/);
+      let mbtiMatch = data.match(/\*\*(\w{4})의 장점:/);
       console.log("mbtiMatch", mbtiMatch);
 
       this.mbtiType = mbtiMatch ? mbtiMatch[1] : '';
@@ -123,8 +123,11 @@ export default {
         console.log("weaknesses 출력", weaknesses);
 
         const extractContent = (text) => {
-          const colonIndex = text.indexOf(':');
-          return colonIndex !== -1 ? text.slice(colonIndex + 1).trim() : '';
+          return text.split('\n')
+            .slice(1)  // 첫 번째 줄(제목) 제거
+            .map(line => line.trim())
+            .filter(line => line.length > 0 && !line.includes('장점:') && !line.includes('단점:'))
+            .join('\n');
         };
 
         const extractedStrengths = strengths ? extractContent(strengths[0]) : '';
@@ -144,30 +147,41 @@ export default {
         this.parsedWeaknesses = [];
       }
     },
-
     parseTraits(traitsString) {
-      // 불필요한 문자 제거 및 줄바꿈으로 분리
       const traitLines = traitsString.split('\n')
         .map(line => line.trim())
-        .filter(line => line.length > 0 && !line.includes('장점:') && !line.includes('단점:'));
+        .filter(line => line.length > 0 && !line.startsWith('⛔'));
 
       const traits = traitLines.map(line => {
-        line = line.replace(/\*/g, '').trim();
-        const match = line.match(/^(.*?)\s*:\s*(.*)$/);
-        if (match) {
-          return {
-            title: match[1].trim(),
-            description: match[2].trim()
-          };
-        } else {
-          return {
-            title: '',
-            description: line.trim()
-          };
-        }
-      }).filter(trait => trait.description);
+        // '*'와 '-' 제거
+        line = line.replace(/^[-*\s]+/, '').replace(/\*/g, '').trim();
 
-      return traits.slice(0, 3);
+        // 이모지 추출
+        const emojiRegex = /^(\p{Emoji}(\u200D\p{Emoji})*)/u;
+        const emojiMatch = line.match(emojiRegex);
+        const emoji = emojiMatch ? emojiMatch[1] : '';
+        let remainingText = emojiMatch ? line.slice(emojiMatch[0].length).trim() : line;
+
+        // 제목과 설명 분리
+        let title = '';
+        let description = '';
+        const titleMatch = remainingText.match(/^(.+?):\s*(.+)$/);
+        if (titleMatch) {
+          title = titleMatch[1].trim();
+          description = titleMatch[2].trim();
+        } else {
+          // ':' 구분자가 없는 경우, 전체를 제목으로 처리
+          title = remainingText;
+        }
+
+        return {
+          emoji,
+          title,
+          description
+        };
+      }).filter(trait => trait.emoji || trait.title || trait.description);
+
+      return traits;
     }
   }
 };
