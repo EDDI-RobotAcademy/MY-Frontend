@@ -35,11 +35,12 @@ export default {
         { title: '목소리 활용 극대화', period: '주 2-3번', content: '목소리를 활용한 콘텐츠를 통해 팬들과의 소통을 극대화하세요.' }
       ],
       observer: null,
-      animationInProgress: false
+      animationCompleted: false
     };
   },
   mounted() {
     this.setupIntersectionObserver();
+    this.initializeCardPositions();
   },
   beforeUnmount() {
     if (this.observer) {
@@ -55,21 +56,25 @@ export default {
       };
 
       this.observer = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && !this.animationInProgress) {
+        if (entries[0].isIntersecting && !this.animationCompleted) {
           this.animateCards();
+          this.animationCompleted = true;
         }
       }, options);
 
       this.observer.observe(this.$refs.content);
     },
+    initializeCardPositions() {
+      this.cards.forEach((_, index) => {
+        const card = this.$refs[`card-${index}`][0];
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(50px)';
+      });
+    },
     animateCards() {
-      this.animationInProgress = true;
       const timeline = anime.timeline({
         easing: 'easeOutQuad',
-        duration: 250,
-        complete: () => {
-          this.animationInProgress = false;
-        }
+        duration: 250
       });
 
       this.cards.forEach((_, index) => {
@@ -79,13 +84,6 @@ export default {
           opacity: [0, 1],
           delay: index * 100
         });
-      });
-    },
-    resetCards() {
-      this.cards.forEach((_, index) => {
-        const card = this.$refs[`card-${index}`][0];
-        card.style.transform = 'translateY(100px)';
-        card.style.opacity = '0';
       });
     },
     onMouseEnter(event, index) {
