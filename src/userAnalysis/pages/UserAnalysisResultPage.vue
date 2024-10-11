@@ -42,7 +42,6 @@ export default {
 
     const storedData = localStorage.getItem('userAnalysisData');
     if (storedData) {
-      console.log("storedData", storedData)
       const parsedData = JSON.parse(storedData);
       this.processAnalysisData(parsedData);
     } else if (this.surveyData) {
@@ -109,18 +108,36 @@ export default {
       };
     },
     extractMBTITypeAndTraits(data) {
-      const mbtiMatch = data.match(/\*\*([A-Z]{4})의 장점:/);
+      let mbtiMatch = data.match(/##.*?(\w{4}).*?인플루언서/);
+      console.log("mbtiMatch", mbtiMatch);
+
       this.mbtiType = mbtiMatch ? mbtiMatch[1] : '';
 
       if (this.mbtiType) {
-        const strengthsRegex = new RegExp(`\\*\\*${this.mbtiType}의 장점:\\*\\*\\s*([\\s\\S]*?)(?=\\*\\*${this.mbtiType}의 단점:\\*\\*)`);
-        const weaknessesRegex = new RegExp(`\\*\\*${this.mbtiType}의 단점:\\*\\*\\s*([\\s\\S]*?)(?=\\*\\*전략:\\*\\*)`);
+        const strengthsRegex = new RegExp(`${this.mbtiType}의 장점:[\\s\\S]*?(?=${this.mbtiType}의 단점:|$)`);
+        const weaknessesRegex = new RegExp(`${this.mbtiType}의 단점:[\\s\\S]*?(?=전략:|$)`);
 
         const strengths = data.match(strengthsRegex);
         const weaknesses = data.match(weaknessesRegex);
+        console.log("strengths 출력", strengths);
+        console.log("weaknesses 출력", weaknesses);
 
-        this.parsedStrengths = this.parseTraits(strengths ? strengths[1] : '');
-        this.parsedWeaknesses = this.parseTraits(weaknesses ? weaknesses[1] : '');
+        const extractContent = (text) => {
+          const colonIndex = text.indexOf(':');
+          return colonIndex !== -1 ? text.slice(colonIndex + 1).trim() : '';
+        };
+
+        const extractedStrengths = strengths ? extractContent(strengths[0]) : '';
+        const extractedWeaknesses = weaknesses ? extractContent(weaknesses[0]) : '';
+
+        console.log("추출된 장점:", extractedStrengths);
+        console.log("추출된 단점:", extractedWeaknesses);
+
+        this.parsedStrengths = this.parseTraits(extractedStrengths);
+        this.parsedWeaknesses = this.parseTraits(extractedWeaknesses);
+
+        console.log("파싱된 장점:", this.parsedStrengths);
+        console.log("파싱된 단점:", this.parsedWeaknesses);
       } else {
         console.error("MBTI 타입을 찾을 수 없습니다.");
         this.parsedStrengths = [];
@@ -129,23 +146,28 @@ export default {
     },
 
     parseTraits(traitsString) {
-      const traits = traitsString.split('\n')
-        .filter(line => line.trim().startsWith('-'))
-        .map(line => {
-          const match = line.match(/- (?:([^\s]+)\s+)?(?:\*\*(.*?):\*\*\s*)?(.*)/);
-          if (match) {
-            return {
-              emoji: match[1] || '',
-              title: match[2] || '',
-              description: match[3].trim()
-            };
-          }
-          return null;
-        })
-        .filter(trait => trait !== null)
-        .slice(0, 3);
+      // 불필요한 문자 제거 및 줄바꿈으로 분리
+      const traitLines = traitsString.split('\n')
+        .map(line => line.trim())
+        .filter(line => line.length > 0 && !line.includes('장점:') && !line.includes('단점:'));
 
-      return traits;
+      const traits = traitLines.map(line => {
+        line = line.replace(/\*/g, '').trim();
+        const match = line.match(/^(.*?)\s*:\s*(.*)$/);
+        if (match) {
+          return {
+            title: match[1].trim(),
+            description: match[2].trim()
+          };
+        } else {
+          return {
+            title: '',
+            description: line.trim()
+          };
+        }
+      }).filter(trait => trait.description);
+
+      return traits.slice(0, 3);
     }
   }
 };
