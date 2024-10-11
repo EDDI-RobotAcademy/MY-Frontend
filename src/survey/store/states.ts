@@ -1,6 +1,8 @@
 export interface SurveyState {
     surveys: Survey[];
     survey: Survey | null;
+    selections: Selection[]; // 선택지 배열
+    questions: Question[]; // 질문 배열
 }
 
 export interface Survey {
@@ -12,19 +14,28 @@ export interface Survey {
 
 export interface Question {
     id: number;
-    text: string;
-    type: number;
-    selections?: Selection[]; // 선택지를 가질 수 있는 질문
+    question_text: string;
+    survey_type: string; // 질문 유형
+    answer?: string | null; // 사용자 입력 답변
+    answered?: boolean; // 질문이 답변되었는지
+    selections?: Selection[]; // 선택지가 있을 경우
 }
 
 export interface Selection {
     id: number;
-    text: string;
+    question_id: number;
+    custom_text: string;
+    value: string; // 선택지 값 추가
 }
+
 
 const state: SurveyState = {
     surveys: [],
     survey: null,
+    selections: [],
+    questions: []
 };
 
 export default state;
+
+
