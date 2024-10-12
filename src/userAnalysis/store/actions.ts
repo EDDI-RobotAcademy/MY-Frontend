@@ -1,7 +1,7 @@
 import { ActionContext } from "vuex";
 import { AxiosResponse } from "axios";
 import axiosInst from "@/utility/axiosInstance";
-import { UserAnalysisInputState } from "./states";
+import { UserAnalysisInputState, UserAnalysisInputAnswer } from "./states";
 import { 
     REQUEST_USER_ANALYSIS_INPUT_TO_FASTAPI, REQUEST_LIST_QUESTION_TO_DJANGO, REQUEST_LIST_SELECTION_TO_DJANGO 
 } from "./mutation-types";
@@ -26,6 +26,9 @@ export type UserAnalysisInputActions = {
     requestListSelectionToDjango(context: ActionContext<UserAnalysisInputState, any>,
         questionId: string
     ): Promise<void>,
+    requestSubmitAnswerToDjango(context: ActionContext<UserAnalysisInputState, any>,
+        payload: { user_analysis_answer: UserAnalysisInputAnswer[], account_id: string | null }
+    ): Promise<AxiosResponse>
 }
 
 const actions: UserAnalysisInputActions = {
@@ -96,6 +99,20 @@ const actions: UserAnalysisInputActions = {
             throw error
         }
     },
+    async requestSubmitAnswerToDjango(context: ActionContext<UserAnalysisInputState, any>,
+        payload: { user_analysis_answer: UserAnalysisInputAnswer[], account_id: string | null }
+    ): Promise<AxiosResponse> {
+        const { user_analysis_answer, account_id } = payload
+        try {
+            const res: AxiosResponse = await axiosInst.djangoAxiosInst.post('user_analysis/submit-answer', {
+                user_analysis_answer, account_id
+            })
+            return res.data
+        } catch (error) {
+            console.log('requestSubmitAnswerToDjango() 중 에러 발생')
+            throw error
+        }
+    }
 }
 
 export default actions;

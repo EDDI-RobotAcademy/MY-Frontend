@@ -172,6 +172,19 @@ export default {
       this.$forceUpdate();
     },
     async submitSurvey() {
+        const UserAnalysisInputAnswers = this.questions.map(question => ({
+          question_id: question.id,
+          answer_data: question.answer || '' // 답변이 없을 경우 빈 문자열로 설정
+        }))
+        console.log("Survey submitted:", JSON.stringify(this.questions));
+
+
+        const accountId = null
+
+        try {
+            const response = await this.requestSubmitAnswerToDjango({ user_analysis_answer: UserAnalysisInputAnswers, account_id: accountId })
+            console.log('설문이 제출되었습니다:', response)
+            
             // FastAPI로 추가 요청 보내기
             const surveyData = {
               gender: this.questions[0].answer,
@@ -186,6 +199,9 @@ export default {
 
             // UserAnalysisResultPage로 라우터 푸시
             this.$router.push({ path: '/user-analysis/result', state: { surveyData } });
+        } catch (error) {
+          console.error('설문 제출 중 오류 발생: ', error)
+        }
       },
    },
   created() {
