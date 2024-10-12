@@ -15,7 +15,7 @@ export interface Survey {
 export interface Question {
     id: number;
     question_text: string;
-    survey_type: string; // 질문 유형
+    survey_type: number; // 질문 유형
     answer?: string | null; // 사용자 입력 답변
     answered?: boolean; // 질문이 답변되었는지
     selections?: Selection[]; // 선택지가 있을 경우
