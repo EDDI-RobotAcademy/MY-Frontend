@@ -1,18 +1,22 @@
 <template>
-  <div class="about-page">
-    <h1 class="about-title">총정리</h1>
-    <div class="image-container">
-      <img :src="require(`@/assets/images/fixed/FinalSummaryContent/남자.webp`)" alt="Summary Image"
-        class="centered-image">
-    </div>
-    <div class="content" ref="content">
-      <div v-for="(card, index) in cards" :key="index" class="card-container" :ref="`cardContainer-${index}`"
-        @mouseenter="onMouseEnter($event, index)" @mouseleave="onMouseLeave($event, index)">
-        <div class="card" :ref="`card-${index}`">
-          <div class="card-content">
-            <h3>{{ card.title }}</h3>
-            <p class="period">{{ card.period }}</p>
-            <p class="description">{{ card.content }}</p>
+  <div class="about-page-wrapper">
+    <div class="about-page">
+      <h1 class="about-title">총정리</h1>
+      <div class="image-container">
+        <img :src="require(`@/assets/images/fixed/FinalSummaryContent/남자.webp`)" alt="Summary Image"
+          class="centered-image">
+      </div>
+      <div class="content" ref="content">
+        <div v-for="(card, index) in cards" :key="index" class="card-container" :ref="`cardContainer-${index}`"
+          @mouseenter="onMouseEnter($event, index)" @mouseleave="onMouseLeave($event, index)">
+          <div class="card" :ref="`card-${index}`">
+            <div class="card-content">
+              <h3>{{ card.title }}</h3>
+              <p class="period">{{ card.period }}</p>
+              <div class="description-container">
+                <p class="description">{{ card.content }}</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -111,11 +115,18 @@ export default {
 </script>
 
 <style scoped>
+.about-page-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
 .about-page {
   font-family: Arial, sans-serif;
   max-width: 1200px;
-  margin: 10% auto 5%;
-  padding: 20px;
+  width: 100%;
 }
 
 .about-title {
@@ -139,13 +150,13 @@ export default {
 .content {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
+  justify-content: center;
   gap: 20px;
 }
 
 .card-container {
   width: calc(20% - 16px);
-  aspect-ratio: 1;
+  min-height: 300px;
 }
 
 .card {
@@ -153,18 +164,15 @@ export default {
   border-radius: 10px;
   padding: 20px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   transition: all 0.3s ease;
+  min-height: 170px;
 }
 
 .card-content {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  height: 100%;
 }
 
 h3 {
@@ -172,13 +180,23 @@ h3 {
   font-size: 1em;
   text-align: center;
   margin-bottom: 5px;
+  flex-shrink: 0;
 }
 
 .period {
   color: #666;
   font-size: 0.8em;
   text-align: center;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
+  flex-shrink: 0;
+}
+
+.description-container {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
 }
 
 .description {
@@ -186,10 +204,11 @@ h3 {
   line-height: 1.3;
   font-size: 0.9em;
   text-align: center;
-  flex-grow: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  margin: 0;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
 }
 
 @media (max-width: 1200px) {
