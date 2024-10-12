@@ -2,7 +2,7 @@ import { Action, ActionContext } from "vuex"
 import { SurveyState, SurveyAnswer } from "./states"
 import axios, { AxiosResponse } from "axios"
 import axiosInst from "@/utility/axiosInstance"
-import { REQUEST_LIST_SURVEY_QUESTION_TO_DJANGO } from "./mutation-types"
+import { REQUEST_LIST_SURVEY_QUESTION_TO_DJANGO, REQUEST_LIST_SURVEY_SELECTION_TO_DJANGO } from "./mutation-types"
 
 export type SurveyActions = {
     requestCreateSurveyToDjango(context: ActionContext<SurveyState, any>, 
