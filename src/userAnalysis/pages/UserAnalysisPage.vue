@@ -85,7 +85,17 @@ export default {
 
         for (const question of this.questions) {
           console.log(`질문 ID: ${question.id}, user_analysis_type: ${question.user_analysis_type}`);
+          const options = await this.requestListSelectionToDjango(question.id)
+          this.selections[question.id] = options
+          console.log(`질문 ID ${question.id}에 대한 선택지 요청 완료`)
         }
+
+        this.$nextTick(() => {
+          const flattenedSelections = Object.values(this.selections)
+            .filter(selection => selection !== null && typeof selection === 'object') // null 및 비객체 필터링
+            .flat(); // 리스트를 하나로 합침
+          console.log('업데이트된 선택지:', JSON.stringify(flattenedSelections));
+        });
 
       } catch (error) {
         console.error('성향조사 로딩 중 오류 발생:', error);
@@ -162,7 +172,6 @@ export default {
       this.$forceUpdate();
     },
     async submitSurvey() {
-        try {
             // FastAPI로 추가 요청 보내기
             const surveyData = {
               gender: this.questions[0].answer,
@@ -177,9 +186,6 @@ export default {
 
             // UserAnalysisResultPage로 라우터 푸시
             this.$router.push({ path: '/user-analysis/result', state: { surveyData } });
-        } catch (error) {
-          console.error('설문 제출 중 오류 발생: ', error)
-        }
       },
    },
   created() {
