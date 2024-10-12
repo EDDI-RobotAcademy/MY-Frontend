@@ -98,7 +98,7 @@
           const payload = {
             survey: this.surveyId,
             question: this.question.questionText,
-            survey_type: this.question.surveyType.toString() // survey_type은 문자열로 전송
+            survey_type: this.question.surveyType // survey_type은 문자열로 전송
           };
           const response = await this.requestCreateSurveyQuestionToDjango(payload);
           this.questionId = response.questionId; // 질문 ID 저장
