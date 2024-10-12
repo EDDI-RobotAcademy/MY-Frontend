@@ -1,11 +1,13 @@
 <template>
   <div class="strategy-container" ref="container">
     <h1 class="main-title" ref="mainTitle">콘텐츠 전략</h1>
-    <p class="subtitle" ref="subtitle">{{ subtitle }}</p>
+    <p class="subtitle" ref="subtitle">{{ parsedSubtitle }}</p>
     <div class="content">
-      <div v-for="(strategy, index) in strategies" :key="strategy.title" class="strategy-item"
+      <div v-for="(strategy, index) in filteredStrategies" :key="index" class="strategy-item"
         :ref="el => { if (el) strategyRefs[index] = el }">
-        <span class="emoji">{{ strategy.emoji }}</span>
+        <div class="emoji-container">
+          <span class="emoji">{{ strategy.emoji }}</span>
+        </div>
         <div class="strategy-text">
           <h3>{{ strategy.title }}</h3>
           <p>{{ strategy.description }}</p>
@@ -21,39 +23,74 @@ import anime from 'animejs/lib/anime.es.js';
 export default {
   name: 'StrategyContent',
   props: {
-    strategies: {
-      type: Array,
+    rawStrategies: {
+      type: String,
       required: true
     },
-    subtitle: {
+    rawSubtitle: {
       type: String,
       required: true
     }
   },
+  computed: {
+    filteredStrategies() {
+      return this.parsedStrategies.filter(strategy => strategy.title);
+    }
+  },
   data() {
     return {
+      parsedStrategies: [],
+      parsedSubtitle: '',
       strategyRefs: []
     }
   },
   mounted() {
-    this.setupIntersectionObserver()
+    this.parseContentStrategy();
+    this.setupIntersectionObserver();
   },
   beforeUnmount() {
     if (this.observer) {
-      this.observer.disconnect()
+      this.observer.disconnect();
     }
   },
   methods: {
+    parseContentStrategy() {
+      const lines = this.rawStrategies.split('\n').filter(line => line.trim() !== '');
+
+      this.parsedStrategies = lines.map(line => {
+        // Remove '-', '*', and leading/trailing whitespace
+        line = line.replace(/^[-*\s]+/, '').replace(/\*/g, '').trim();
+
+        const emojiRegex = /^(\p{Emoji}(\u200D\p{Emoji})*)/u;
+        const emojiMatch = line.match(emojiRegex);
+        const emoji = emojiMatch ? emojiMatch[1] : '';
+        let remainingText = emojiMatch ? line.slice(emojiMatch[0].length).trim() : line;
+
+        const titleMatch = remainingText.match(/^(.+?):\s*(.+)$/);
+        let title = '';
+        let description = '';
+        if (titleMatch) {
+          title = titleMatch[1].trim();
+          description = titleMatch[2].trim();
+        } else {
+          title = remainingText;
+        }
+
+        return { emoji, title, description };
+      });
+
+      this.parsedSubtitle = this.rawSubtitle.replace(/^\*\*|\*\*$/g, '').trim();
+    },
     setupIntersectionObserver() {
       this.observer = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            this.animateContent()
-            this.observer.disconnect()
+            this.animateContent();
+            this.observer.disconnect();
           }
-        })
-      }, { threshold: 0.1 })
-      this.observer.observe(this.$refs.container)
+        });
+      }, { threshold: 0.1 });
+      this.observer.observe(this.$refs.container);
     },
     animateContent() {
       const timeline = anime.timeline({
@@ -87,12 +124,13 @@ export default {
 
 <style scoped>
 .strategy-container {
-  background-color: #1a1a1a;
-  padding: 40px;
-  max-width: 800px;
-  margin: 0 auto;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background-color: #000000;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px;
 }
 
 .main-title {
@@ -111,44 +149,82 @@ export default {
 
 .content {
   display: flex;
-  flex-direction: column;
-  gap: 30px;
+  justify-content: center;
+  gap: 20px;
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 20px 0;
 }
 
 .strategy-item {
-  display: flex;
-  align-items: flex-start;
+  width: 180px;
+  height: 180px;
+  flex-shrink: 0;
+  border-radius: 50%;
   background-color: #2a2a2a;
-  padding: 20px;
-  border-radius: 8px;
-  transition: transform 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: center;
+  padding: 10px;
+  position: relative;
+  overflow: hidden;
 }
 
-.strategy-item:hover {
-  transform: translateY(-5px);
+.emoji-container {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .emoji {
-  font-size: 2.5em;
-  margin-right: 20px;
-  min-width: 50px;
-  text-align: center;
+  font-size: 2em;
 }
 
 .strategy-text {
-  flex: 1;
+  margin-top: 40px;
+  padding: 0 5px;
 }
 
 h3 {
-  margin: 0 0 10px 0;
+  margin: 0 0 5px 0;
   color: #ffffff;
-  font-size: 1.3em;
+  font-size: 0.9em;
 }
 
 p {
   margin: 0;
   color: #cccccc;
-  font-size: 1em;
-  line-height: 1.5;
+  font-size: 0.7em;
+  line-height: 1.3;
+}
+
+@media (max-width: 1024px) {
+  .content {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+  }
+
+  .strategy-item {
+    width: 150px;
+    height: 150px;
+  }
+
+  .strategy-text {
+    margin-top: 35px;
+  }
+
+  h3 {
+    font-size: 0.8em;
+  }
+
+  p {
+    font-size: 0.6em;
+  }
 }
 </style>

@@ -143,8 +143,7 @@ export default {
     max-width: 800px;
     padding: 20px;
     margin: 0 auto;
-    margin-top: 20px;
-    margin-bottom: 50px;
+    min-height: 100vh;
 }
 
 .main-title {
@@ -157,6 +156,7 @@ export default {
     text-align: center;
     font-size: 2.5em;
     margin-bottom: 30px;
+    margin-top: 20%;
 }
 
 .content {
@@ -199,7 +199,7 @@ p {
 }
 
 .footer {
-    margin-top: 20px;
+    margin-top: 50px;
     font-style: italic;
     text-align: center;
     font-size: 14px;

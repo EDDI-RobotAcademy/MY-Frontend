@@ -4,7 +4,7 @@
     <SummaryContent :data="Summary" />
     <MBTIContent :strengths="parsedStrengths" :weaknesses="parsedWeaknesses" :mbtiType="mbtiType"
       :strategyText="strategyText" />
-    <StrategyContent :strategies="parsedStrategies" :subtitle="contentStrategySubtitle" />
+    <StrategyContent :rawStrategies="contentStrategyText" :rawSubtitle="contentStrategySubtitle" />
     <FinalSummaryContent />
   </div>
 </template>
@@ -32,7 +32,7 @@ export default {
       mbtiType: '',
       strategyText: '',
       surveyData: null,
-      parsedStrategies: [],
+      contentStrategyText: '',
       contentStrategySubtitle: '',
     };
   },
@@ -70,42 +70,16 @@ export default {
       const strategyMatch = data.generatedStrategy.match(/전략:\s*\*?\*?\s*(.*?)(?:\n|$)/);
       this.strategyText = strategyMatch ? strategyMatch[1].trim() : '';
 
-      const contentStrategyMatch = data.generatedStrategy.match(/4\. 콘텐츠 전략:[\s\S]*?5\./);
+      const contentStrategyMatch = data.generatedStrategy.match(/4\. 콘텐츠 전략:([\s\S]*?)5\./);
       if (contentStrategyMatch) {
-        const contentStrategyText = contentStrategyMatch[0].replace(/4\. 콘텐츠 전략:/, '').replace(/5\..*$/, '').trim();
-        const parsedContent = this.parseContentStrategy(contentStrategyText);
-        this.contentStrategySubtitle = parsedContent.subtitle;
-        this.parsedStrategies = parsedContent.strategies;
+        const contentStrategyText = contentStrategyMatch[1].trim();
+        const lines = contentStrategyText.split('\n').filter(line => line.trim() !== '');
+        this.contentStrategySubtitle = lines[0].trim();
+        this.contentStrategyText = lines.slice(1).join('\n');
       }
 
       console.log("Content Strategy Subtitle:", this.contentStrategySubtitle);
-      console.log("Parsed Strategies:", this.parsedStrategies);
-    },
-    parseContentStrategy(text) {
-      text = text.replace(/\*\*|\*/g, '');
-
-      const lines = text.split('\n').filter(line => line.trim() !== '');
-
-      const subtitle = lines[1].trim();
-
-      const strategies = [];
-      const regex = /^(.*?)\s+(.*?):\s*(.*)$/;
-
-      lines.slice(2).forEach(line => {
-        const match = line.match(regex);
-        if (match) {
-          strategies.push({
-            emoji: match[1].trim(),
-            title: match[2].trim(),
-            description: match[3].trim()
-          });
-        }
-      });
-
-      return {
-        subtitle: subtitle,
-        strategies: strategies
-      };
+      console.log("Content Strategy Text:", this.contentStrategyText);
     },
     extractMBTITypeAndTraits(data) {
       let mbtiMatch = data.match(/\*\*(\w{4})의 장점:/);
@@ -153,16 +127,13 @@ export default {
         .filter(line => line.length > 0 && !line.startsWith('⛔'));
 
       const traits = traitLines.map(line => {
-        // '*'와 '-' 제거
         line = line.replace(/^[-*\s]+/, '').replace(/\*/g, '').trim();
 
-        // 이모지 추출
         const emojiRegex = /^(\p{Emoji}(\u200D\p{Emoji})*)/u;
         const emojiMatch = line.match(emojiRegex);
         const emoji = emojiMatch ? emojiMatch[1] : '';
         let remainingText = emojiMatch ? line.slice(emojiMatch[0].length).trim() : line;
 
-        // 제목과 설명 분리
         let title = '';
         let description = '';
         const titleMatch = remainingText.match(/^(.+?):\s*(.+)$/);
@@ -170,7 +141,6 @@ export default {
           title = titleMatch[1].trim();
           description = titleMatch[2].trim();
         } else {
-          // ':' 구분자가 없는 경우, 전체를 제목으로 처리
           title = remainingText;
         }
 
