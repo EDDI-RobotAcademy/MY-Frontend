@@ -2,6 +2,9 @@ import { ActionContext } from "vuex";
 import { AxiosResponse } from "axios";
 import axiosInst from "@/utility/axiosInstance";
 import { UserAnalysisInputState } from "./states";
+import { 
+    REQUEST_USER_ANALYSIS_INPUT_TO_FASTAPI, REQUEST_LIST_QUESTION_TO_DJANGO } from "./mutation-types";
+
 
 export type UserAnalysisInputActions = {
     sendUserAnalysisToFastAPI(
@@ -15,7 +18,10 @@ export type UserAnalysisInputActions = {
             reveal: string,
             platform: string,
             interested_influencer: string
-        }): Promise<any>
+        }): Promise<any>,
+    requestListQuestionToDjango(context: ActionContext<UserAnalysisInputState,any>,
+        userAnalysisId: string
+    ): Promise<void>,
 }
 
 const actions: UserAnalysisInputActions = {
@@ -52,6 +58,21 @@ const actions: UserAnalysisInputActions = {
         } catch (error) {
             console.log('sendUserAnalysisToFastAPI() 중 문제 발생:', error);
             throw error;
+        }
+    },
+    async requestListQuestionToDjango(context: ActionContext<UserAnalysisInputState,any>,
+        userAnalysisId: string
+    ): Promise<void> {
+        try {
+            const res: AxiosResponse<any, any> = await axiosInst.djangoAxiosInst.post('user_analysis/list-question',
+                { user_analysis_Id: userAnalysisId }
+            )
+            const data = res.data
+            console.log('질문 리스트: ', data)
+            return data
+        } catch (error) {
+            console.error('requestListQuestionToDjango() 중 에러 발생')
+            throw error
         }
     },
 }

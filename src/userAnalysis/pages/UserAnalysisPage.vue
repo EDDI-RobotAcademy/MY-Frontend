@@ -8,20 +8,22 @@
         <h1>COOING은 인플루언서가 되고 싶은 당신을 위해<br>가장 비슷한 롤 모델을 찾고, 성장 방향을 알려주는 서비스에요.</h1>
         <h3>당신이 어떤 성향인지 알고싶어요. 다음 질문들에 답변해주세요!</h3>
       </div>
-      <div class="survey-container">
-        <h2>{{ questions[currentQuestionIndex].text }}</h2>
-        <div v-if="questions[currentQuestionIndex].type === 'radio'" class="options">
-          <label v-for="(option, optionIndex) in questions[currentQuestionIndex].options" :key="optionIndex"
+      <div class="survey-container" v-if="questions.length > 0">
+        <h2>{{ questions[currentQuestionIndex].question_text }}</h2>
+        <!-- 선택형 질문 -->
+        <div v-if="questions[currentQuestionIndex].user_analysis_type === '4'" class="options">
+          <label v-for="(option, optionIndex) in currentQuestionOptions" :key="optionIndex"
             class="option-label">
-            <input type="radio" :name="'question-' + currentQuestionIndex" :value="option"
+            <input type="radio" :name="'question-' + currentQuestionIndex" :value="option.custom_text"
               v-model="questions[currentQuestionIndex].answer" @change="answerQuestion(currentQuestionIndex)">
             <span class="radio-button"></span>
-            <span class="option-text">{{ option }}</span>
+            <span class="option-text">{{ option.custom_text }}</span>
           </label>
         </div>
-        <div v-else-if="questions[currentQuestionIndex].type === 'text'" class="text-input">
+        <!-- 텍스트 입력 질문 -->
+        <div v-else-if="questions[currentQuestionIndex].user_analysis_type === '1'" class="text-input">
           <input @keyup.enter="nextQuestionIfNotEmpty" type="text" v-model="questions[currentQuestionIndex].answer"
-            :placeholder="questions[currentQuestionIndex].placeholder" @input="answerQuestion(currentQuestionIndex)">
+            placeholder="답변을 입력해주세요." @input="answerQuestion(currentQuestionIndex)">
           <p v-if="mbtiError" class="error-message">{{ mbtiError }}</p>
         </div>
         <div class="button-container">
@@ -36,74 +38,21 @@
 </template>
 
 <script>
+import { mapActions, mapState } from 'vuex';
 
 export default {
-  name: 'IntegratedComponent',
+  name: 'AnalysisTestPage',
   data() {
     return {
       currentQuestionIndex: 0,
-      questions: [
-        {
-          text: "당신의 성별을 선택하세요.",
-          type: "radio",
-          options: ["남성", "여성"],
-          answer: null,
-          answered: false
-        },
-        {
-          text: "당신의 연령을 선택하세요.",
-          type: "radio",
-          options: ["10대", "20대", "30대", "40대", "50대 이상"],
-          answer: null,
-          answered: false
-        },
-        {
-          text: "당신의 MBTI를 알려주세요.",
-          type: "text",
-          answer: "",
-          answered: false,
-          placeholder: "ex) INTJ, ISTP, ESFP..."
-        },
-        {
-          text: "당신의 취미 또는 관심사를 알려주세요.",
-          type: "text",
-          answer: "",
-          answered: false,
-          placeholder: "ex) 운동, 여행, 패션, 맛집, 요리, 뷰티..."
-        },
-        {
-          text: "당신의 장점을 알려주세요.",
-          type: "text",
-          answer: "",
-          answered: false,
-          placeholder: "ex) 창의적, 적응력, 긍정적..."
-        },
-        {
-          text: "당신이 만약 인플루언서가 된다면, 어느 정도까지 당신을 드러낼 수 있나요?",
-          type: "radio",
-          options: ["얼굴", "목소리", "아예 드러내고 싶지 않음"],
-          answer: null,
-          answered: false
-        },
-        {
-          text: "당신이 만약 인플루언서가 된다면, 주로 어떤 플랫폼에서 활동하고 싶으신가요?",
-          type: "radio",
-          options: ["유튜브", "인스타그램", "틱톡", "트위터(X)"],
-          answer: null,
-          answered: false
-        },
-        {
-          text: "좋아하거나 자주 보는 인플루언서/크리에이터가 있으신가요?",
-          type: "text",
-          answer: "",
-          answered: false,
-          placeholder: "ex) 김계란, 이사배, 침착맨... "
-        },
-      ],
-      mbtiError: '',
+      userAnalysisInputId: '1', // 실제 설문 ID
+      questions: [],
+      selections: [],
+      mbtiError: ''
     };
   },
   computed: {
+    ...mapState('userAnalysisInputModule', ['questions', 'selections']),
     isLastQuestion() {
       return this.currentQuestionIndex === this.questions.length - 1;
     },
@@ -112,32 +61,48 @@ export default {
     },
     canProceed() {
       const currentQuestion = this.questions[this.currentQuestionIndex];
-      if (this.currentQuestionIndex === 2) { // MBTI 질문
-        return currentQuestion.answered && !this.mbtiError;
+      if (currentQuestion.user_analysis_type === 1) {
+        return currentQuestion.answer && currentQuestion.answer.trim() !== '';
       }
-      return currentQuestion.answered;
-    }
+      return currentQuestion.answer !== null;
+    },
+    currentQuestionOptions() {
+      const currentQuestion = this.questions[this.currentQuestionIndex];
+      if (!currentQuestion) return []; // 현재 질문이 없을 경우 빈 배열 반환
+      console.log(`현재 질문 ID: ${currentQuestion.id}`);
+      const options = this.selections[currentQuestion.id] || [];
+      console.log(`질문 ID ${currentQuestion.id}의 선택지:`, options);
+      return options;
+    },
   },
   methods: {
+    ...mapActions('userAnalysisInputModule', ['requestListQuestionToDjango', 'requestListSelectionToDjango', 'requestSubmitAnswerToDjango']),
+    async loadSurvey() {
+      try {
+        const questions = await this.requestListQuestionToDjango(this.userAnalysisInputId);
+        this.questions = questions
+        console.log('성향조사 질문 목록: ', this.questions);
+
+        for (const question of this.questions) {
+          console.log(`질문 ID: ${question.id}, user_analysis_type: ${question.user_analysis_type}`);
+        }
+
+      } catch (error) {
+        console.error('성향조사 로딩 중 오류 발생:', error);
+      }
+    },
+    getQuestionType(user_analysis_type) {
+      switch (user_analysis_type) {
+        case 1: return 'text';
+        case 2: case 3: case 4: return 'radio';
+        default: return 'text';
+      }
+    },
+    getOptionText(option) {
+      return option.custom_text; // 선택지 텍스트 가져오기
+    },
     handleError(event) {
       console.error('Video playback error:', event);
-    },
-    answerQuestion(index) {
-      const question = this.questions[index];
-      if (question.type === 'text') {
-        question.answered = question.answer.trim() !== '';
-        if (index === 2) {
-          this.validateMBTI(question.answer);
-        }
-      } else {
-        question.answered = question.answer !== null;
-      }
-      this.$forceUpdate();
-    },
-    nextQuestionIfNotEmpty() {
-      if (this.questions[this.currentQuestionIndex].answer.trim() !== '') {
-        this.nextQuestion();
-      }
     },
     nextQuestion() {
       if (this.currentQuestionIndex === 2 && this.mbtiError) {
@@ -156,23 +121,18 @@ export default {
         this.checkAnswerStatus(this.currentQuestionIndex);
       }
     },
-    submitSurvey() {
-      const surveyData = {
-        gender: this.questions[0].answer,
-        age_group: this.questions[1].answer,
-        mbti: this.questions[2].answer,
-        topic: this.questions[3].answer,
-        strength: this.questions[4].answer,
-        reveal: this.questions[5].answer,
-        platform: this.questions[6].answer,
-        interested_influencer: this.questions[7].answer,
-      };
-
-      console.log("Survey submitted:", surveyData);
-      this.$router.push({
-        path: '/user-analysis/result',
-        state: { surveyData }
-      });
+    answerQuestion(index) {
+      const question = this.questions[index];
+      if (question.user_analysis_type === '1') {
+        question.answer = question.answer || ''
+        question.answered = question.answer.trim() !== '';
+        if (index === 2) {
+          this.validateMBTI(question.answer);
+        }
+      } else {
+        question.answered = question.answer !== null;
+      }
+      this.$forceUpdate();
     },
     validateMBTI(mbti) {
       const mbtiRegex = /^[EI][NS][FT][JP]$/;
@@ -184,9 +144,14 @@ export default {
         this.questions[2].answered = false;
       }
     },
+    nextQuestionIfNotEmpty() {
+      if (this.canProceed) {
+        this.nextQuestion();
+      }
+    },
     checkAnswerStatus(index) {
       const question = this.questions[index];
-      if (question.type === 'text') {
+      if (question.user_analysis_type === '1') {
         question.answered = question.answer.trim() !== '';
         if (index === 2) { // MBTI 질문
           this.validateMBTI(question.answer);
@@ -196,6 +161,29 @@ export default {
       }
       this.$forceUpdate();
     },
+    async submitSurvey() {
+        try {
+            // FastAPI로 추가 요청 보내기
+            const surveyData = {
+              gender: this.questions[0].answer,
+              age_group: this.questions[1].answer,
+              mbti: this.questions[2].answer,
+              topic: this.questions[3].answer,
+              strength: this.questions[4].answer,
+              reveal: this.questions[5].answer,
+              platform: this.questions[6].answer,
+              interested_influencer: this.questions[7].answer,
+            };
+
+            // UserAnalysisResultPage로 라우터 푸시
+            this.$router.push({ path: '/user-analysis/result', state: { surveyData } });
+        } catch (error) {
+          console.error('설문 제출 중 오류 발생: ', error)
+        }
+      },
+   },
+  created() {
+    this.loadSurvey();
   }
 };
 </script>
