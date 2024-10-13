@@ -30,7 +30,7 @@ export default {
     }
   },
   mounted() {
-    console.log("SummaryContent 출력",this.data);
+    console.log("SummaryContent 출력", this.data);
     this.setupIntersectionObserver();
   },
   beforeUnmount() {
@@ -55,19 +55,19 @@ export default {
       anime.timeline({
         easing: 'easeOutExpo',
       })
-      .add({
-        targets: this.$refs.mainTitle,
-        opacity: [0, 1],
-        translateY: ['-30px', '0px'],
-        duration: 500,
-      })
-      .add({
-        targets: this.$refs.summary,
-        opacity: [0, 1],
-        translateY: ['-20px', '0px'],
-        duration: 1000,
-        delay: 0
-      });
+        .add({
+          targets: this.$refs.mainTitle,
+          opacity: [0, 1],
+          translateY: ['-30px', '0px'],
+          duration: 500,
+        })
+        .add({
+          targets: this.$refs.summary,
+          opacity: [0, 1],
+          translateY: ['-20px', '0px'],
+          duration: 1000,
+          delay: 0
+        });
     },
   }
 }
@@ -94,7 +94,8 @@ export default {
   color: #ffffff;
   margin-bottom: 20px;
   text-align: center;
-  opacity: 0; /* 초기에 투명하게 설정 */
+  opacity: 0;
+  /* 초기에 투명하게 설정 */
 }
 
 .summary {
@@ -104,7 +105,8 @@ export default {
   margin-bottom: 40px;
   line-height: 1.2;
   text-align: center;
-  opacity: 0; /* 초기에 투명하게 설정 */
+  opacity: 0;
+  /* 초기에 투명하게 설정 */
 }
 
 @media (max-height: 800px) {

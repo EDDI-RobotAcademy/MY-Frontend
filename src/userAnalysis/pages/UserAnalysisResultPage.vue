@@ -4,6 +4,8 @@
     <SummaryContent :data="Summary" />
     <MBTIContent :strengths="parsedStrengths" :weaknesses="parsedWeaknesses" :mbtiType="mbtiType"
       :strategyText="strategyText" />
+    <StrategyContent :rawStrategies="contentStrategyText" :rawSubtitle="contentStrategySubtitle" />
+    <FinalSummaryContent :surveyData="surveyData" />
   </div>
 </template>
 
@@ -11,12 +13,16 @@
 import SummaryContent from '../ui/SummaryContent.vue'
 import MBTIContent from '../ui/MBTIContent.vue'
 import LoadingContent from '../ui/LoadingContent.vue';
+import StrategyContent from '../ui/StrategyContent.vue';
+import FinalSummaryContent from '../ui/FinalSummaryContent.vue'
 
 export default {
   components: {
     SummaryContent,
     MBTIContent,
-    LoadingContent
+    LoadingContent,
+    StrategyContent,
+    FinalSummaryContent,
   },
   data() {
     return {
@@ -26,6 +32,8 @@ export default {
       mbtiType: '',
       strategyText: '',
       surveyData: null,
+      contentStrategyText: '',
+      contentStrategySubtitle: '',
     };
   },
   created() {
@@ -44,7 +52,7 @@ export default {
     async sendSurveyToFastAPI() {
       try {
         const response = await this.$store.dispatch('userAnalysisInputModule/sendUserAnalysisToFastAPI', this.surveyData);
-        console.log("응답 데이터", response.generatedStrategy);
+        console.log("응답 데이터", response);
 
         this.processAnalysisData(response);
 
@@ -54,60 +62,103 @@ export default {
       }
     },
     processAnalysisData(data) {
-      const inputSummary = data.generatedStrategy.match(/\*\*1\. 입력 요약:\*\*\s*([\s\S]*?)(?=\*\*2\. 성향 분석:\*\*)/);
+      this.surveyData = data;
+
+      const generatedStrategy = data.generatedStrategy;
+
+      const inputSummary = generatedStrategy.match(/\*\*1\. 입력 요약:\*\*\s*([\s\S]*?)(?=\*\*2\. 성향 분석:\*\*)/);
       this.Summary = inputSummary ? inputSummary[1].trim() : '';
 
-      this.extractMBTITypeAndTraits(data.generatedStrategy);
+      this.extractMBTITypeAndTraits(generatedStrategy);
 
-      const strategyMatch = data.generatedStrategy.match(/전략:\s*\*?\*?\s*(.*?)(?:\n|$)/);
+      const strategyMatch = generatedStrategy.match(/전략:\s*\*?\*?\s*(.*?)(?:\n|$)/);
       this.strategyText = strategyMatch ? strategyMatch[1].trim() : '';
 
-      console.log("MBTI Type:", this.mbtiType);
-      console.log("Strengths:", this.parsedStrengths);
-      console.log("Weaknesses:", this.parsedWeaknesses);
-      console.log("Strategy Text:", this.strategyText);
+      const contentStrategyMatch = generatedStrategy.match(/4\. 콘텐츠 전략:([\s\S]*?)5\./);
+      if (contentStrategyMatch) {
+        const contentStrategyText = contentStrategyMatch[1].trim();
+        const lines = contentStrategyText.split('\n').filter(line => line.trim() !== '');
+        this.contentStrategySubtitle = lines[0].trim();
+        this.contentStrategyText = lines.slice(1).join('\n');
+      }
+
+      console.log("Content Strategy Subtitle:", this.contentStrategySubtitle);
+      console.log("Content Strategy Text:", this.contentStrategyText);
     },
     extractMBTITypeAndTraits(data) {
-      const mbtiMatch = data.match(/\*\*([A-Z]{4})의 장점:\*\*/);
+      let mbtiMatch = data.match(/\*\*(\w{4})의 장점:/);
+      console.log("mbtiMatch", mbtiMatch);
+
       this.mbtiType = mbtiMatch ? mbtiMatch[1] : '';
 
       if (this.mbtiType) {
-        const strengthsRegex = new RegExp(`\\*\\*${this.mbtiType}의 장점:\\*\\*\\s*([\\s\\S]*?)(?=\\*\\*${this.mbtiType}의 단점:\\*\\*)`);
+        const strengthsRegex = new RegExp(`${this.mbtiType}의 장점:[\\s\\S]*?(?=${this.mbtiType}의 단점:|$)`);
+        const weaknessesRegex = new RegExp(`${this.mbtiType}의 단점:[\\s\\S]*?(?=전략:|$)`);
+
         const strengths = data.match(strengthsRegex);
-
-        const weaknessesRegex = new RegExp(`\\*\\*${this.mbtiType}의 단점:\\*\\*\\s*([\\s\\S]*?)(?=\\*\\*전략:\\*\\*)`);
         const weaknesses = data.match(weaknessesRegex);
+        console.log("strengths 출력", strengths);
+        console.log("weaknesses 출력", weaknesses);
 
-        this.parsedStrengths = this.parseTraits(strengths ? strengths[1] : '');
-        this.parsedWeaknesses = this.parseTraits(weaknesses ? weaknesses[1] : '');
+        const extractContent = (text) => {
+          return text.split('\n')
+            .slice(1)  // 첫 번째 줄(제목) 제거
+            .map(line => line.trim())
+            .filter(line => line.length > 0 && !line.includes('장점:') && !line.includes('단점:'))
+            .join('\n');
+        };
+
+        const extractedStrengths = strengths ? extractContent(strengths[0]) : '';
+        const extractedWeaknesses = weaknesses ? extractContent(weaknesses[0]) : '';
+
+        console.log("추출된 장점:", extractedStrengths);
+        console.log("추출된 단점:", extractedWeaknesses);
+
+        this.parsedStrengths = this.parseTraits(extractedStrengths);
+        this.parsedWeaknesses = this.parseTraits(extractedWeaknesses);
+
+        console.log("파싱된 장점:", this.parsedStrengths);
+        console.log("파싱된 단점:", this.parsedWeaknesses);
       } else {
         console.error("MBTI 타입을 찾을 수 없습니다.");
         this.parsedStrengths = [];
         this.parsedWeaknesses = [];
       }
     },
-
     parseTraits(traitsString) {
-      const traits = traitsString.split('\n')
-        .filter(line => line.trim().startsWith('*'))
-        .map(line => {
-          const match = line.match(/\* (.*?) \*\*(.*?):\*\* (.*)/);
-          if (match) {
-            return {
-              emoji: match[1].trim(),
-              title: match[2],
-              description: match[3]
-            };
-          }
-          return null;
-        })
-        .filter(trait => trait !== null)
-        .slice(0, 3);
+      const traitLines = traitsString.split('\n')
+        .map(line => line.trim())
+        .filter(line => line.length > 0 && !line.startsWith('⛔'));
+
+      const traits = traitLines.map(line => {
+        line = line.replace(/^[-*\s]+/, '').replace(/\*/g, '').trim();
+
+        const emojiRegex = /^(\p{Emoji}(\u200D\p{Emoji})*)/u;
+        const emojiMatch = line.match(emojiRegex);
+        const emoji = emojiMatch ? emojiMatch[1] : '';
+        let remainingText = emojiMatch ? line.slice(emojiMatch[0].length).trim() : line;
+
+        let title = '';
+        let description = '';
+        const titleMatch = remainingText.match(/^(.+?):\s*(.+)$/);
+        if (titleMatch) {
+          title = titleMatch[1].trim();
+          description = titleMatch[2].trim();
+        } else {
+          title = remainingText;
+        }
+
+        return {
+          emoji,
+          title,
+          description
+        };
+      }).filter(trait => trait.emoji || trait.title || trait.description);
 
       return traits;
     }
-  },
-}
+  }
+};
 </script>
 
 <style>

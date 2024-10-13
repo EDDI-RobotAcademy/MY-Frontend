@@ -26,7 +26,7 @@ export default {
       words1: '당신만을 위한 인플루언서 성장 로드맵을'.split(' '),
       words2: 'PDF 형식으로 제공해드려요.'.split(' '),
       animationDuration: 100,
-      delayBetweenWords: 100
+      delayBetweenWords: 150
     }
   },
   mounted() {
