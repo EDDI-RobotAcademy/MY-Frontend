@@ -31,6 +31,10 @@ export type UserAnalysisInputActions = {
     ): Promise<AxiosResponse>,
     requestCreateUserAnalysisToDjango(context: ActionContext<UserAnalysisInputState, any>, 
         payload: {title: string, description: string}): Promise<AxiosResponse>,
+    requestCreateUserAnalysisQuestionToDjango(
+        context: ActionContext<UserAnalysisInputState, any>, 
+        payload: { user_analysis: number, question: string, user_analysis_type: number }
+    ): Promise<AxiosResponse>,
 }
 
 const actions: UserAnalysisInputActions = {
@@ -119,16 +123,35 @@ const actions: UserAnalysisInputActions = {
         payload: {
             title: string, 
             description: string
-        }): Promise<AxiosResponse> {
-            const { title, description } = payload
-            try {
-                const res: AxiosResponse = await axiosInst.djangoAxiosInst.post('/user_analysis/create', payload)
-                return res.data
-            } catch (error) {
-                console.log('requestCreateUserAnalysisToDjango() 중 에러 발생')
-                throw error
-            } 
-        },
+    }): Promise<AxiosResponse> {
+        const { title, description } = payload
+        try {
+            const res: AxiosResponse = await axiosInst.djangoAxiosInst.post('/user_analysis/create', payload)
+            return res.data
+        } catch (error) {
+            console.log('requestCreateUserAnalysisToDjango() 중 에러 발생')
+            throw error
+        } 
+    },
+    async requestCreateUserAnalysisQuestionToDjango(
+        context: ActionContext<UserAnalysisInputState, any>, 
+        payload: { user_analysis: number, question: string, user_analysis_type: number }
+    ): Promise<AxiosResponse> {
+        const { user_analysis, question, user_analysis_type } = payload
+        try {
+            const res: AxiosResponse = await axiosInst.djangoAxiosInst.post('user_analysis/create-question', {
+                user_analysis,
+                question,
+                user_analysis_type
+            })
+            console.log(res.data)
+            return res.data
+        } catch (error) {
+            console.log('requestCreateSurveyQuestionToDjango() 중 에러 발생')
+            throw error
+        }
+    },
+    
 }
 
 export default actions;
