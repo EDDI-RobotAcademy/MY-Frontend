@@ -26,7 +26,7 @@ export default {
       words1: '사용자 개인 성향 조사 데이터 분석을 통해'.split(' '),
       words2: '인플루언서로 성장할 최적의 솔루션을 제공해요.'.split(' '),
       animationDuration: 100,
-      delayBetweenWords: 100
+      delayBetweenWords: 150
     }
   },
   mounted() {
