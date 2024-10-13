@@ -25,6 +25,47 @@
           </div>
         </div>
 
+        <!-- 점수 선택지 (survey_type === '2') -->
+        <div v-if="question.survey_type === '2'" class="options">
+          <div v-for="selection in getSelectionsForQuestion(question)" :key="selection.id" class="option">
+            <input
+              type="radio"
+              :id="`question-${question.id}-${selection.id}`"
+              :name="'question-' + question.id"
+              :value="selection.value || selection.score"
+              v-model="question.answer"
+              @change="answerQuestion(index)"
+            />
+            <label :for="`question-${question.id}-${selection.id}`" class="option-text">
+              {{ selection.score }}점
+              <span v-if="selection.score !== undefined">
+                {{ selection.score === 1 ? '매우 나쁨' : 
+                  selection.score === 2 ? '나쁨' : 
+                  selection.score === 3 ? '보통' : 
+                  selection.score === 4 ? '좋음' : 
+                  selection.score === 5 ? '매우 좋음' : '' }}
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <!-- 불리언 선택지 (survey_type === '3') -->
+        <div v-if="question.survey_type === '3'" class="options">
+          <div v-for="selection in getSelectionsForQuestion(question)" :key="selection.id" class="option">
+            <input
+              type="radio"
+              :id="`question-${question.id}-${selection.id}`"
+              :name="'question-' + question.id"
+              :value="selection.value || selection.is_true"
+              v-model="question.answer"
+              @change="answerQuestion(index)"
+            />
+            <label :for="`question-${question.id}-${selection.id}`" class="option-text">
+              {{ selection.is_true ? '예' : '아니오' }}
+            </label>
+          </div>
+        </div>
+
         <!-- 서술형 질문 -->
         <div v-if="question.survey_type === '1'" class="text-input">
           <textarea
@@ -51,7 +92,7 @@
     name: "SurveyPage",
     data() {
       return {
-        surveyId: '1',
+        surveyId: 9, // 실제 설문 id로 바꿔줘야 함
         questions: [], // 설문 질문 목록
         selections: []
       };
@@ -113,7 +154,7 @@
         console.log("Survey submitted:", JSON.stringify(this.questions));
         const surveyAnswers = this.questions.map(question => ({
           question_id: question.id,
-          answer_data: question.answer || '' // 답변이 없을 경우 빈 문자열로 설정
+          answer_data: question.answer === 'true' ? true : question.answer === 'false' ? false : question.answer || '' // 불리언 값으로 변환
         }))
 
         const accountId = null
@@ -123,6 +164,25 @@
             console.log('설문이 제출되었습니다:', response)
         } catch (error) {
           console.error('설문 제출 중 오류 발생: ', error)
+        }
+        this.$router.push('/')
+      },
+      getSelectionsForQuestion(question) {
+        if (question.survey_type === '2') {
+          return [1, 2, 3, 4, 5].map(score => ({
+            id: score,
+            question_id: question.id,
+            // custom_text: `${score}점`,
+            score: score,
+            value: score 
+          }));
+        } else if (question.survey_type === '3') {
+          return [
+            { id: 1, question_id: question.id, custom_text: '예', value: 'True', is_true: true },
+            { id: 2, question_id: question.id, custom_text: '아니오', value: 'False', is_true: false }
+          ];
+        } else {
+          return question.selections || [];
         }
       }
     },
@@ -195,6 +255,15 @@
   margin-bottom: 10px;
 }
 
+.option-container input[type="radio"] {
+  margin-right: 20px; /* 라디오 버튼과 텍스트 사이의 간격 */
+}
+
+.option-text {
+  margin-left: 10px; /* 추가적인 왼쪽 마진 */
+  position: relative;
+  top: -0.5px
+}
 
 .text-input textarea {
   width: 100%;
