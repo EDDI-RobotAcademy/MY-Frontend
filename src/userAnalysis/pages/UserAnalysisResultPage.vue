@@ -5,7 +5,7 @@
     <MBTIContent :strengths="parsedStrengths" :weaknesses="parsedWeaknesses" :mbtiType="mbtiType"
       :strategyText="strategyText" />
     <StrategyContent :rawStrategies="contentStrategyText" :rawSubtitle="contentStrategySubtitle" />
-    <FinalSummaryContent />
+    <FinalSummaryContent :surveyData="surveyData" />
   </div>
 </template>
 
@@ -52,7 +52,7 @@ export default {
     async sendSurveyToFastAPI() {
       try {
         const response = await this.$store.dispatch('userAnalysisInputModule/sendUserAnalysisToFastAPI', this.surveyData);
-        console.log("응답 데이터", response.generatedStrategy);
+        console.log("응답 데이터", response);
 
         this.processAnalysisData(response);
 
@@ -62,15 +62,19 @@ export default {
       }
     },
     processAnalysisData(data) {
-      const inputSummary = data.generatedStrategy.match(/\*\*1\. 입력 요약:\*\*\s*([\s\S]*?)(?=\*\*2\. 성향 분석:\*\*)/);
+      this.surveyData = data;
+
+      const generatedStrategy = data.generatedStrategy;
+
+      const inputSummary = generatedStrategy.match(/\*\*1\. 입력 요약:\*\*\s*([\s\S]*?)(?=\*\*2\. 성향 분석:\*\*)/);
       this.Summary = inputSummary ? inputSummary[1].trim() : '';
 
-      this.extractMBTITypeAndTraits(data.generatedStrategy);
+      this.extractMBTITypeAndTraits(generatedStrategy);
 
-      const strategyMatch = data.generatedStrategy.match(/전략:\s*\*?\*?\s*(.*?)(?:\n|$)/);
+      const strategyMatch = generatedStrategy.match(/전략:\s*\*?\*?\s*(.*?)(?:\n|$)/);
       this.strategyText = strategyMatch ? strategyMatch[1].trim() : '';
 
-      const contentStrategyMatch = data.generatedStrategy.match(/4\. 콘텐츠 전략:([\s\S]*?)5\./);
+      const contentStrategyMatch = generatedStrategy.match(/4\. 콘텐츠 전략:([\s\S]*?)5\./);
       if (contentStrategyMatch) {
         const contentStrategyText = contentStrategyMatch[1].trim();
         const lines = contentStrategyText.split('\n').filter(line => line.trim() !== '');
