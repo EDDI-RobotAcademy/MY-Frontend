@@ -12,7 +12,7 @@
           <div class="card" :ref="`card-${index}`">
             <div class="card-content">
               <h3>{{ card.title }}</h3>
-              <p class="period">{{ card.period }}</p>
+              <p class="period" v-if="card.period">{{ card.period }}</p>
               <div class="description-container">
                 <p class="description">{{ card.content }}</p>
               </div>
@@ -28,19 +28,38 @@
 import anime from 'animejs/lib/anime.es.js';
 
 export default {
-  name: 'AboutPage',
+  name: 'FinalSummaryContent',
+  props: {
+    surveyData: {
+      type: Object,
+      required: true
+    }
+  },
   data() {
     return {
-      cards: [
-        { title: '콘텐츠 제작 및 업로드', period: '지속적', content: '정기적으로 콘텐츠를 제작하여 팬들의 기대감을 유지하세요' },
-        { title: '아이디어 발굴', period: '1-2개월', content: '독특한 캐릭터나 스타일을 찾아내고, 운동 콘텐츠 아이디어를 구상하세요.' },
-        { title: '팬과의 소통 강화', period: '지속적', content: '댓글과 메시지에 적극적으로 응답하며 팬들과의 유대감을 형성하세요.' },
-        { title: '협업 및 네트워킹', period: '2-6개월', content: '다른 인플루언서와의 협업을 통해 새로운 팬층을 확보하세요.' },
-        { title: '목소리 활용 극대화', period: '주 2-3번', content: '목소리를 활용한 콘텐츠를 통해 팬들과의 소통을 극대화하세요.' }
-      ],
       observer: null,
       animationCompleted: false
     };
+  },
+  computed: {
+    cards() {
+      const generatedStrategy = this.surveyData.generatedStrategy;
+      const summarySection = generatedStrategy.match(/5\. 총정리:([\s\S]*?)$/);
+
+      if (!summarySection) return [];
+
+      const items = summarySection[0].match(/\d️.*?(?=\d️|$)/gs);
+
+      return items.map(item => {
+        const [titleWithEmoji, content] = item.split(':');
+        const [title, period] = titleWithEmoji.split(/\s*\(([^)]+)\)\s*$/);
+        return {
+          title: title.replace(/^\d️\s*/, '').trim().replace(/\*\*/g, ''),
+          period: period ? period.trim() : '',
+          content: content.trim().replace(/\*\*/g, '')
+        };
+      });
+    }
   },
   mounted() {
     this.setupIntersectionObserver();
@@ -69,10 +88,14 @@ export default {
       this.observer.observe(this.$refs.content);
     },
     initializeCardPositions() {
-      this.cards.forEach((_, index) => {
-        const card = this.$refs[`card-${index}`][0];
-        card.style.opacity = '0';
-        card.style.transform = 'translateY(50px)';
+      this.$nextTick(() => {
+        this.cards.forEach((_, index) => {
+          if (this.$refs[`card-${index}`] && this.$refs[`card-${index}`][0]) {
+            const card = this.$refs[`card-${index}`][0];
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(50px)';
+          }
+        });
       });
     },
     animateCards() {
@@ -82,33 +105,39 @@ export default {
       });
 
       this.cards.forEach((_, index) => {
-        timeline.add({
-          targets: this.$refs[`card-${index}`][0],
-          translateY: [50, 0],
-          opacity: [0, 1],
-          delay: index * 100
-        });
+        if (this.$refs[`card-${index}`] && this.$refs[`card-${index}`][0]) {
+          timeline.add({
+            targets: this.$refs[`card-${index}`][0],
+            translateY: [50, 0],
+            opacity: [0, 1],
+            delay: index * 100
+          });
+        }
       });
     },
     onMouseEnter(event, index) {
-      anime({
-        targets: this.$refs[`card-${index}`][0],
-        scale: 1.1,
-        translateY: -10,
-        boxShadow: '0 15px 30px rgba(0, 0, 0, 0.2)',
-        duration: 150,
-        easing: 'easeOutQuad'
-      });
+      if (this.$refs[`card-${index}`] && this.$refs[`card-${index}`][0]) {
+        anime({
+          targets: this.$refs[`card-${index}`][0],
+          scale: 1.1,
+          translateY: -10,
+          boxShadow: '0 15px 30px rgba(0, 0, 0, 0.2)',
+          duration: 150,
+          easing: 'easeOutQuad'
+        });
+      }
     },
     onMouseLeave(event, index) {
-      anime({
-        targets: this.$refs[`card-${index}`][0],
-        scale: 1,
-        translateY: 0,
-        boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
-        duration: 300,
-        easing: 'easeOutQuad'
-      });
+      if (this.$refs[`card-${index}`] && this.$refs[`card-${index}`][0]) {
+        anime({
+          targets: this.$refs[`card-${index}`][0],
+          scale: 1,
+          translateY: 0,
+          boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
+          duration: 300,
+          easing: 'easeOutQuad'
+        });
+      }
     }
   }
 }
@@ -120,13 +149,13 @@ export default {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  padding: 20px;
 }
 
 .about-page {
   font-family: Arial, sans-serif;
   max-width: 1200px;
   width: 100%;
+  padding-top: 80px;
 }
 
 .about-title {
@@ -134,6 +163,7 @@ export default {
   text-align: center;
   font-size: 2.5em;
   margin-bottom: 30px;
+  margin-top: 50px;
 }
 
 .image-container {
@@ -184,8 +214,8 @@ h3 {
 }
 
 .period {
-  color: #666;
-  font-size: 0.8em;
+  color: rgba(102, 102, 102, 0.7);
+  font-size: 0.7em;
   text-align: center;
   margin-bottom: 15px;
   flex-shrink: 0;
