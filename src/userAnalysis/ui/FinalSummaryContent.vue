@@ -3,7 +3,7 @@
     <div class="about-page">
       <h1 class="about-title">총정리</h1>
       <div class="image-container">
-        <img :src="require(`@/assets/images/fixed/FinalSummaryContent/남자.webp`)" alt="Summary Image"
+        <img :src="require(`@/assets/images/fixed/FinalSummaryContent/${imageName}`)" alt="Summary Image"
           class="centered-image">
       </div>
       <div class="content" ref="content">
@@ -42,13 +42,36 @@ export default {
     };
   },
   computed: {
+    imageName() {
+      const inputSummary = this.surveyData.generatedStrategy.match(/1\. 입력 요약:[\s\S]*?(?=\n\n)/);
+      const totalSummary = this.surveyData.generatedStrategy.match(/5\. 총정리:[\s\S]*?$/);
+
+      let gender = '남자'; // Default to male
+      if (inputSummary && inputSummary[0].includes('여성')) {
+        gender = '여자';
+      }
+
+      const keywords = ['여행', '음악', '운동', '음식'];
+      let matchedKeyword = '';
+
+      if (totalSummary) {
+        for (const keyword of keywords) {
+          if (totalSummary[0].includes(keyword)) {
+            matchedKeyword = keyword;
+            break;
+          }
+        }
+      }
+
+      return matchedKeyword ? `${gender}_${matchedKeyword}.webp` : `${gender}.webp`;
+    },
     cards() {
       const generatedStrategy = this.surveyData.generatedStrategy;
-      const summarySection = generatedStrategy.match(/5\. 총정리:([\s\S]*?)$/);
+      const summarySection = generatedStrategy.match(/5\. 총정리:[\s\S]*?$/);
 
       if (!summarySection) return [];
 
-      const items = summarySection[0].match(/\d️.*?(?=\d️|$)/gs);
+      const items = summarySection[0].match(/\d️.*?(?=\d️|$)/gs) || [];
 
       return items.map(item => {
         const [titleWithEmoji, content] = item.split(':');
@@ -56,7 +79,7 @@ export default {
         return {
           title: title.replace(/^\d️\s*/, '').trim().replace(/\*\*/g, ''),
           period: period ? period.trim() : '',
-          content: content.trim().replace(/\*\*/g, '')
+          content: content ? content.trim().replace(/\*\*/g, '') : ''
         };
       });
     }
