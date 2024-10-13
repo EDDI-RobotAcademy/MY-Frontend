@@ -25,7 +25,7 @@ export interface Selection {
     id: number;
     question_id: number;
     custom_text: string;
-    value: string; // 선택지 값 추가
+    value: string | boolean | number; // 선택지 값 추가
 }
 
 export interface SurveyAnswer {
