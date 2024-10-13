@@ -1,7 +1,11 @@
 import { ActionContext } from "vuex";
 import { AxiosResponse } from "axios";
 import axiosInst from "@/utility/axiosInstance";
-import { UserAnalysisInputState } from "./states";
+import { UserAnalysisInputState, UserAnalysisInputAnswer } from "./states";
+import { 
+    REQUEST_USER_ANALYSIS_INPUT_TO_FASTAPI, REQUEST_LIST_QUESTION_TO_DJANGO, REQUEST_LIST_SELECTION_TO_DJANGO 
+} from "./mutation-types";
+
 
 export type UserAnalysisInputActions = {
     sendUserAnalysisToFastAPI(
@@ -15,7 +19,16 @@ export type UserAnalysisInputActions = {
             reveal: string,
             platform: string,
             interested_influencer: string
-        }): Promise<any>
+        }): Promise<any>,
+    requestListQuestionToDjango(context: ActionContext<UserAnalysisInputState,any>,
+        userAnalysisId: string
+    ): Promise<void>,
+    requestListSelectionToDjango(context: ActionContext<UserAnalysisInputState, any>,
+        questionId: string
+    ): Promise<void>,
+    requestSubmitAnswerToDjango(context: ActionContext<UserAnalysisInputState, any>,
+        payload: { user_analysis_answer: UserAnalysisInputAnswer[], account_id: string | null }
+    ): Promise<AxiosResponse>
 }
 
 const actions: UserAnalysisInputActions = {
@@ -54,6 +67,52 @@ const actions: UserAnalysisInputActions = {
             throw error;
         }
     },
+    async requestListQuestionToDjango(context: ActionContext<UserAnalysisInputState,any>,
+        userAnalysisId: string
+    ): Promise<void> {
+        try {
+            const res: AxiosResponse<any, any> = await axiosInst.djangoAxiosInst.post('user_analysis/list-question',
+                { user_analysis_Id: userAnalysisId }
+            )
+            const data = res.data
+            console.log('질문 리스트: ', data)
+            return data
+        } catch (error) {
+            console.error('requestListQuestionToDjango() 중 에러 발생')
+            throw error
+        }
+    },
+    async requestListSelectionToDjango(
+        context: ActionContext<UserAnalysisInputState, any>,
+        questionId: string
+    ): Promise<void> {
+        try {
+          const res: AxiosResponse<any, any> = await axiosInst.djangoAxiosInst.post('user_analysis/list-selection', {
+            question_Id: questionId 
+          });
+          
+          const data = res.data;
+        //   context.commit(REQUEST_LIST_SURVEY_SELECTION_TO_DJANGO, data);
+          return data
+        } catch (error) {
+            console.error('requestListSelectionToDjango() 중 에러 발생')
+            throw error
+        }
+    },
+    async requestSubmitAnswerToDjango(context: ActionContext<UserAnalysisInputState, any>,
+        payload: { user_analysis_answer: UserAnalysisInputAnswer[], account_id: string | null }
+    ): Promise<AxiosResponse> {
+        const { user_analysis_answer, account_id } = payload
+        try {
+            const res: AxiosResponse = await axiosInst.djangoAxiosInst.post('user_analysis/submit-answer', {
+                user_analysis_answer, account_id
+            })
+            return res.data
+        } catch (error) {
+            console.log('requestSubmitAnswerToDjango() 중 에러 발생')
+            throw error
+        }
+    }
 }
 
 export default actions;
