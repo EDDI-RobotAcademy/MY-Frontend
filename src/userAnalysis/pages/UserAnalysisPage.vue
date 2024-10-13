@@ -23,7 +23,7 @@
         <!-- 텍스트 입력 질문 -->
         <div v-else-if="questions[currentQuestionIndex].user_analysis_type === '1'" class="text-input">
           <input @keyup.enter="nextQuestionIfNotEmpty" type="text" v-model="questions[currentQuestionIndex].answer"
-            placeholder="답변을 입력해주세요." @input="answerQuestion(currentQuestionIndex)">
+            :placeholder="getPlaceholder(currentQuestionIndex)" @input="answerQuestion(currentQuestionIndex)">
           <p v-if="mbtiError" class="error-message">{{ mbtiError }}</p>
         </div>
         <div class="button-container">
@@ -170,6 +170,18 @@ export default {
         question.answered = question.answer !== null;
       }
       this.$forceUpdate();
+    },
+    getPlaceholder(index) {
+      if (this.questions[index].user_analysis_type === '1') {
+        const placeholders = {
+          2: "ex) INTJ, ISTP, ESFP...",
+          3: "ex) 운동, 여행, 패션, 맛집, 요리, 뷰티... ",
+          4: "ex) 창의적, 적응력, 긍정적...",
+          7: "ex) 김계란, 이사배, 침착맨..."
+        }
+        return placeholders[index]
+      }
+      
     },
     async submitSurvey() {
         const UserAnalysisInputAnswers = this.questions.map(question => ({
