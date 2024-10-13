@@ -35,6 +35,10 @@ export type UserAnalysisInputActions = {
         context: ActionContext<UserAnalysisInputState, any>, 
         payload: { user_analysis: number, question: string, user_analysis_type: number }
     ): Promise<AxiosResponse>,
+    requestCreateUserAnalysisSelectionToDjango(
+        constext: ActionContext<UserAnalysisInputState, any>,
+        payload: { question_id: number, custom_text: string }
+    ): Promise<AxiosResponse>,
 }
 
 const actions: UserAnalysisInputActions = {
@@ -151,6 +155,23 @@ const actions: UserAnalysisInputActions = {
             throw error
         }
     },
+    async requestCreateUserAnalysisSelectionToDjango(
+        constext: ActionContext<UserAnalysisInputState, any>,
+        payload: { question_id: number, custom_text: string }
+    ): Promise<AxiosResponse> {
+        const { question_id, custom_text } = payload
+        try {
+            const res: AxiosResponse = await axiosInst.djangoAxiosInst.post('user_analysis/create-user-analysis-selection', {
+                question_id,
+                custom_text
+            })
+            console.log(res.data)
+            return res.data
+        } catch (error) {
+            console.log('requestCreateUserAnalysisSelectionToDjango() 중 에러 발생')
+            throw error
+        }
+    }
     
 }
 
