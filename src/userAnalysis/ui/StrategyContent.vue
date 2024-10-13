@@ -1,7 +1,7 @@
 <template>
   <div class="strategy-container" ref="container">
     <h1 class="main-title" ref="mainTitle">콘텐츠 전략</h1>
-    <p class="subtitle" ref="subtitle">{{ parsedSubtitle }}</p>
+    <p class="subtitle" ref="subtitle">{{ contentStrategySubtitle }}</p>
     <div class="content">
       <div v-for="(strategy, index) in filteredStrategies" :key="index" class="strategy-item"
         :ref="el => { if (el) strategyRefs[index] = el }">
@@ -26,21 +26,20 @@ export default {
     rawStrategies: {
       type: String,
       required: true
-    },
-    rawSubtitle: {
-      type: String,
-      required: true
     }
   },
   computed: {
     filteredStrategies() {
-      return this.parsedStrategies.filter(strategy => strategy.title);
+      return this.parsedStrategies.slice(1, -1);
+    },
+    contentStrategySubtitle() {
+      const firstStrategy = this.parsedStrategies[0];
+      return firstStrategy ? `${firstStrategy.emoji} ${firstStrategy.title}` : '';
     }
   },
   data() {
     return {
       parsedStrategies: [],
-      parsedSubtitle: '',
       strategyRefs: []
     }
   },
@@ -58,13 +57,16 @@ export default {
       const lines = this.rawStrategies.split('\n').filter(line => line.trim() !== '');
 
       this.parsedStrategies = lines.map(line => {
-        // Remove '-', '*', and leading/trailing whitespace
-        line = line.replace(/^[-*\s]+/, '').replace(/\*/g, '').trim();
+        // Remove '-' and trim the line
+        line = line.replace(/^-/, '').trim();
 
         const emojiRegex = /^(\p{Emoji}(\u200D\p{Emoji})*)/u;
         const emojiMatch = line.match(emojiRegex);
         const emoji = emojiMatch ? emojiMatch[1] : '';
         let remainingText = emojiMatch ? line.slice(emojiMatch[0].length).trim() : line;
+
+        // Remove any remaining '*' characters
+        remainingText = remainingText.replace(/\*/g, '').trim();
 
         const titleMatch = remainingText.match(/^(.+?):\s*(.+)$/);
         let title = '';
@@ -78,8 +80,6 @@ export default {
 
         return { emoji, title, description };
       });
-
-      this.parsedSubtitle = this.rawSubtitle.replace(/^\*\*|\*\*$/g, '').trim();
     },
     setupIntersectionObserver() {
       this.observer = new IntersectionObserver((entries) => {
