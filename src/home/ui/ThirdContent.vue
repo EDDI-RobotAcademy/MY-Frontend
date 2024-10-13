@@ -42,7 +42,7 @@ export default {
       words1: '사용자에게 어울리는 콘텐츠 카테고리,'.split(' '),
       words2: '활동 플랫폼, 롤모델을 찾아드려요.'.split(' '),
       animationDuration: 100,
-      delayBetweenWords: 100
+      delayBetweenWords: 150
     }
   },
   mounted() {
