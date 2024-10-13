@@ -28,7 +28,9 @@ export type UserAnalysisInputActions = {
     ): Promise<void>,
     requestSubmitAnswerToDjango(context: ActionContext<UserAnalysisInputState, any>,
         payload: { user_analysis_answer: UserAnalysisInputAnswer[], account_id: string | null }
-    ): Promise<AxiosResponse>
+    ): Promise<AxiosResponse>,
+    requestCreateUserAnalysisToDjango(context: ActionContext<UserAnalysisInputState, any>, 
+        payload: {title: string, description: string}): Promise<AxiosResponse>,
 }
 
 const actions: UserAnalysisInputActions = {
@@ -112,7 +114,21 @@ const actions: UserAnalysisInputActions = {
             console.log('requestSubmitAnswerToDjango() 중 에러 발생')
             throw error
         }
-    }
+    },
+    async requestCreateUserAnalysisToDjango(context: ActionContext<UserAnalysisInputState, any>, 
+        payload: {
+            title: string, 
+            description: string
+        }): Promise<AxiosResponse> {
+            const { title, description } = payload
+            try {
+                const res: AxiosResponse = await axiosInst.djangoAxiosInst.post('/user_analysis/create', payload)
+                return res.data
+            } catch (error) {
+                console.log('requestCreateUserAnalysisToDjango() 중 에러 발생')
+                throw error
+            } 
+        },
 }
 
 export default actions;
