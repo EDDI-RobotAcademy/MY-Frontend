@@ -9,7 +9,7 @@ export type SurveyActions = {
         payload: {title: string, description: string}): Promise<AxiosResponse>,
     requestCreateSurveyQuestionToDjango(
         context: ActionContext<SurveyState, any>, 
-        payload: { survey: number, question: string, survey_type: number }
+        payload: { survey: number, question: string, survey_type: number, is_essential: boolean }
     ): Promise<AxiosResponse>,
     requestCreateSurveySelectionToDjango(
         constext: ActionContext<SurveyState, any>,
@@ -17,7 +17,7 @@ export type SurveyActions = {
     ): Promise<AxiosResponse>,
     requestListSurveyQuestionToDjango(context: ActionContext<SurveyState,any>,
         surveyId: string
-    ): Promise<void>,
+    ): Promise<any>,
     requestListSurveySelectionToDjango(context: ActionContext<SurveyState, any>,
         questionId: string
     ): Promise<void>,
@@ -53,14 +53,16 @@ const actions: SurveyActions = {
         payload: {
             survey: number, 
             question: string, 
-            survey_type: number 
+            survey_type: number,
+            is_essential: boolean
     }): Promise<AxiosResponse> {
-        const { survey, question, survey_type } = payload
+        const { survey, question, survey_type, is_essential } = payload
         try {
             const res: AxiosResponse = await axiosInst.djangoAxiosInst.post('survey/create-question', {
                 survey,
                 question,
-                survey_type
+                survey_type,
+                is_essential
             })
             console.log(res.data)
             return res.data
@@ -88,7 +90,7 @@ const actions: SurveyActions = {
     },
     async requestListSurveyQuestionToDjango(context: ActionContext<SurveyState,any>,
         surveyId: string
-    ): Promise<void> {
+    ): Promise<any> {
         try {
             const res: AxiosResponse<any, any> = await axiosInst.djangoAxiosInst.post('survey/list-question',
                 { survey_Id: surveyId }
