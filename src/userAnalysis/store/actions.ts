@@ -27,7 +27,7 @@ export type UserAnalysisInputActions = {
         questionId: string
     ): Promise<void>,
     requestSubmitAnswerToDjango(context: ActionContext<UserAnalysisInputState, any>,
-        payload: { user_analysis_answer: UserAnalysisInputAnswer[], account_id: string | null }
+        payload: { user_analysis_answer: UserAnalysisInputAnswer[], userToken: string | null }
     ): Promise<AxiosResponse>,
     requestCreateUserAnalysisToDjango(context: ActionContext<UserAnalysisInputState, any>, 
         payload: {title: string, description: string}): Promise<AxiosResponse>,
@@ -110,12 +110,14 @@ const actions: UserAnalysisInputActions = {
         }
     },
     async requestSubmitAnswerToDjango(context: ActionContext<UserAnalysisInputState, any>,
-        payload: { user_analysis_answer: UserAnalysisInputAnswer[], account_id: string | null }
+        payload: { user_analysis_answer: UserAnalysisInputAnswer[], userToken: string | null }
     ): Promise<AxiosResponse> {
-        const { user_analysis_answer, account_id } = payload
+        const { user_analysis_answer, userToken } = payload
         try {
+            const userToken = localStorage.getItem('userToken')
+            console.log("userToken: ", userToken)
             const res: AxiosResponse = await axiosInst.djangoAxiosInst.post('user_analysis/submit-answer', {
-                user_analysis_answer, account_id
+                user_analysis_answer, userToken
             })
             return res.data
         } catch (error) {
