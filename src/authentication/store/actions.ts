@@ -57,6 +57,7 @@ const actions: AuthenticationActions = {
         const userToken = localStorage.getItem("userToken")
         if (userToken) {
             console.log("User token found in localStorage")
+            console.log("userToken: ", userToken)
             commit(REQUEST_IS_AUTHENTICATED_TO_DJANGO, true)
         } else {
             commit(REQUEST_IS_AUTHENTICATED_TO_DJANGO, false)
