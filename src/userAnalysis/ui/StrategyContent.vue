@@ -57,15 +57,13 @@ export default {
       const lines = this.rawStrategies.split('\n').filter(line => line.trim() !== '');
 
       this.parsedStrategies = lines.map(line => {
-        // Remove '-' and trim the line
-        line = line.replace(/^-/, '').trim();
+        line = line.replace(/^[*-]\s*/, '').trim();
 
         const emojiRegex = /^(\p{Emoji}(\u200D\p{Emoji})*)/u;
         const emojiMatch = line.match(emojiRegex);
         const emoji = emojiMatch ? emojiMatch[1] : '';
         let remainingText = emojiMatch ? line.slice(emojiMatch[0].length).trim() : line;
 
-        // Remove any remaining '*' characters
         remainingText = remainingText.replace(/\*/g, '').trim();
 
         const titleMatch = remainingText.match(/^(.+?):\s*(.+)$/);
