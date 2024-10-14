@@ -30,7 +30,7 @@ export type SurveyActions = {
         }
     ): Promise<void>,
     requestSubmitSurveyAnswerToDjango(context: ActionContext<SurveyState, any>,
-        payload: { survey_answer: SurveyAnswer[], account_id: string | null }
+        payload: { survey_answer: SurveyAnswer[], userToken: string | null }
     ): Promise<AxiosResponse>
 }
 
@@ -141,12 +141,14 @@ const actions: SurveyActions = {
         }
     },
     async requestSubmitSurveyAnswerToDjango(context: ActionContext<SurveyState, any>,
-        payload: { survey_answer: SurveyAnswer[], account_id: string | null }
+        payload: { survey_answer: SurveyAnswer[], userToken: string | null }
     ): Promise<AxiosResponse> {
-        const { survey_answer, account_id } = payload
+        const { survey_answer, userToken } = payload
         try {
+            const userToken = localStorage.getItem('userToken');
+            console.log("userToken : " , userToken)
             const res: AxiosResponse = await axiosInst.djangoAxiosInst.post('survey/submit-answer', {
-                survey_answer, account_id
+                survey_answer, userToken
             })
             return res.data
         } catch (error) {
