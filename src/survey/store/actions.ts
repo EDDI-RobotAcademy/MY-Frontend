@@ -21,6 +21,14 @@ export type SurveyActions = {
     requestListSurveySelectionToDjango(context: ActionContext<SurveyState, any>,
         questionId: string
     ): Promise<void>,
+    requestListSurveyAnswerToDjango(context: ActionContext<SurveyState, any>,
+        payload: {
+            filter: string,
+            survey_Id: number | null,
+            question_Id: number | null,
+            account_Id: number | null
+        }
+    ): Promise<void>,
     requestSubmitSurveyAnswerToDjango(context: ActionContext<SurveyState, any>,
         payload: { survey_answer: SurveyAnswer[], account_id: string | null }
     ): Promise<AxiosResponse>
@@ -109,8 +117,30 @@ const actions: SurveyActions = {
             console.error('requestListSurveySelectionToDjango() 중 에러 발생')
             throw error
         }
-        },
-      async requestSubmitSurveyAnswerToDjango(context: ActionContext<SurveyState, any>,
+    },
+    async requestListSurveyAnswerToDjango(
+        context: ActionContext<SurveyState, any>,
+        payload: {
+            filter: string,
+            survey_Id: number | null,
+            question_Id: number | null,
+            account_Id: number | null
+        }
+    ): Promise<void> {
+        const { filter, survey_Id, question_Id, account_Id  } = payload
+        try {
+          const res: AxiosResponse<any, any> = await axiosInst.djangoAxiosInst.post('survey/list-answer', {
+            filter, survey_Id, question_Id, account_Id
+          });
+          
+          const data = res.data;
+          return data
+        } catch (error) {
+            console.error('requestListSurveySelectionToDjango() 중 에러 발생')
+            throw error
+        }
+    },
+    async requestSubmitSurveyAnswerToDjango(context: ActionContext<SurveyState, any>,
         payload: { survey_answer: SurveyAnswer[], account_id: string | null }
     ): Promise<AxiosResponse> {
         const { survey_answer, account_id } = payload
