@@ -124,7 +124,7 @@ export default {
   justify-content: center;
   align-items: center;
   background-color: rgba(255, 255, 255, 0.7);
-  background-image: url("@/assets/images/fixed/chatbot/background_gradient.png");
+  background-image: url("@/assets/images/fixed/chatbot/background_gradient.webp");
   background-size: cover;
   background-blend-mode: darken;
 }
