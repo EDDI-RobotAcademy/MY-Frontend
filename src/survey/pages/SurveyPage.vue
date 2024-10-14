@@ -157,10 +157,10 @@
           answer_data: question.answer === 'true' ? true : question.answer === 'false' ? false : question.answer || '' // 불리언 값으로 변환
         }))
 
-        const accountId = null
+        const userToken = null
 
         try {
-            const response = await this.requestSubmitSurveyAnswerToDjango({ survey_answer: surveyAnswers, account_id: accountId })
+            const response = await this.requestSubmitSurveyAnswerToDjango({ survey_answer: surveyAnswers, userToken: userToken })
             console.log('설문이 제출되었습니다:', response)
         } catch (error) {
           console.error('설문 제출 중 오류 발생: ', error)
