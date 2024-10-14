@@ -6,7 +6,9 @@
     </div>
     <div class="survey-container">
       <div v-for="(question, index) in questions" :key="index" :ref="`question-${index}`" class="question-box">
-        <h2>{{ question.question_text }}</h2>
+        <h2>{{ question.question_text }}
+          <span v-if="question.isEssential" class="essential">*필수</span>
+        </h2>
 
         <!-- 선택형 질문 -->
         <div v-if="question.survey_type === '4'" class="custom">
@@ -101,7 +103,13 @@
       ...mapState('surveyModule', ['questions', 'selections']),
       
       allQuestionsAnswered() {
-        return this.questions.every(q => q.answered)
+        return this.questions.every(q => {
+          // 필수 질문에 대한 답변 여부 확인
+          if (q.answered) {
+            return q.answer !== null && q.answer !== undefined && q.answer.trim() !== ''
+          }
+          return true // 필수 질문이 아닐 경우 true 반환
+        })
       }
     },
     methods: {
@@ -111,7 +119,10 @@
         try {
           // 질문 목록 요청
           const questions = await this.requestListSurveyQuestionToDjango(this.surveyId);
-          this.questions = questions;
+          this.questions = questions.map(question => ({
+            ...question,
+            isEssential: question.is_essential
+          }))
           console.log(questions);
 
           let allSelections = []
@@ -238,6 +249,13 @@
   margin-bottom: 30px;
   padding-bottom: 20px;
   border-bottom: 1px solid #eee;
+}
+
+.essential {
+  color: red;
+  font-size: 0.5em;
+  position: relative;
+  top: -0.5em;
 }
 
 .question-box h2 {
