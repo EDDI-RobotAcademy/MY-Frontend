@@ -109,7 +109,7 @@
     },
     created() {
       // 페이지 로딩 시 전체 답변 로드
-      this.loadFilteredAnswers();
+      
     }
   };
   </script>
@@ -125,6 +125,7 @@
   .title {
     text-align: center;
     margin-bottom: 20px;
+    margin-top: 50px;
   }
   
   .filter-section {

@@ -19,14 +19,15 @@
         <div>
           <label for="question">질문:</label>
           <input id="question" v-model="question.questionText" type="text" required />
+          <input type="checkbox" v-model="question.isEssential">필수 질문
         </div>
         <div>
           <label for="surveyType">질문 타입:</label>
           <select v-model="question.surveyType" id="surveyType" @change="handleSurveyTypeChange">
-            <option :value="1">일반</option>
-            <option :value="2">5점</option>
-            <option :value="3">불리언</option>
-            <option :value="4">사용자 지정</option>
+            <option :value="1">서술형</option>
+            <option :value="2">5점(Five-score)</option>
+            <option :value="3">Boolean</option>
+            <option :value="4">선택형(Custom)</option>
           </select>
         </div>
         <v-btn type="submit">질문 추가</v-btn>
@@ -69,7 +70,8 @@
         surveyId: null,
         question: {
           questionText: '',
-          surveyType: 1 // 기본값을 일반으로 설정
+          surveyType: 1 ,// 기본값을 일반으로 설정
+          isEssential: true
         },
         questions: [],
         customSelections: [''], // 선택 항목 배열
@@ -98,7 +100,8 @@
           const payload = {
             survey: this.surveyId,
             question: this.question.questionText,
-            survey_type: this.question.surveyType // survey_type은 문자열로 전송
+            survey_type: this.question.surveyType, // survey_type은 문자열로 전송
+            is_essential: this.question.isEssential
           };
           const response = await this.requestCreateSurveyQuestionToDjango(payload);
           this.questionId = response.questionId; // 질문 ID 저장
@@ -109,6 +112,7 @@
           this.questions.push({
             question: this.question.questionText,
             surveyType: this.question.surveyType,
+            isEssential: this.question.isEssential
             // options: []
           });
   
