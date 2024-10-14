@@ -122,7 +122,7 @@ export default {
 
 <style scoped>
 .strategy-container {
-  background-color: #000000;
+  background-color: #fff;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -135,14 +135,14 @@ export default {
   text-align: center;
   font-size: 2.5em;
   margin-bottom: 20px;
-  color: #ffffff;
+  color: #000;
 }
 
 .subtitle {
   text-align: center;
   font-size: 1.2em;
   margin-bottom: 40px;
-  color: #cccccc;
+  color: #000;
 }
 
 .content {
@@ -155,8 +155,8 @@ export default {
 }
 
 .strategy-item {
-  width: 180px;
-  height: 180px;
+  width: 245px;
+  height: 245px;
   flex-shrink: 0;
   border-radius: 50%;
   background-color: #2a2a2a;
@@ -165,9 +165,10 @@ export default {
   align-items: center;
   justify-content: flex-start;
   text-align: center;
-  padding: 10px;
+  padding: 20px;
   position: relative;
   overflow: hidden;
+  font-size: 24px;
 }
 
 .emoji-container {
@@ -181,6 +182,7 @@ export default {
 }
 
 .emoji {
+  margin-bottom: 20px;
   font-size: 2em;
 }
 
