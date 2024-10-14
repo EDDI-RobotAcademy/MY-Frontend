@@ -2,6 +2,7 @@ import UserAnalysisPage from "@/userAnalysis/pages/UserAnalysisPage.vue"
 import UserAnalysisResultPage from "@/userAnalysis/pages/UserAnalysisResultPage.vue"
 import UserAnalysisRegisterPage from "../pages/register/UserAnalysisRegisterPage.vue"
 import UserAnalysisDashboardPage from "../pages/dashboard/UserAnalysisDashboardPage.vue"
+import UserAnalysisVisualizationPage from "../pages/dashboard/UserAnalysisVisualizationPage.vue"
 
 const UserAnalysisRoutes = [
     {
@@ -24,6 +25,11 @@ const UserAnalysisRoutes = [
         name: 'UserAnalysisDashboardPage',
         component: UserAnalysisDashboardPage
     },
+    {
+        path: '/user-analysis/visualization',
+        name: 'UserAnalysisVisualizationPage',
+        component: UserAnalysisVisualizationPage
+    }
 ]
 
 export default UserAnalysisRoutes
