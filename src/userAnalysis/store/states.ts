@@ -4,6 +4,7 @@ export interface UserAnalysisInputState {
     userAnalysisSurvey: UserAnalysisSurvey | null;
     selections: Selection[]; // 선택지 배열
     questions: Question[]; // 질문 배열
+    answers: Answer[];
 }
 
 export interface UserAnalysisSurvey {
@@ -34,12 +35,26 @@ export interface UserAnalysisInputAnswer {
     answer_data: string | number | boolean;
 }
 
+export interface Answer {
+    id: number;
+    user_analysis_title: string;
+    profile_nickname: string;
+    question_text: string;
+    user_analysis_custom_selection_text: string;
+    answer_text: string;
+    boolean_selection: string;
+    five_score_selection: number;
+    response_order: number;
+    created_at: string
+}
+
 const state: UserAnalysisInputState = {
     userAnalysisInput: "",
     userAnalysisSurveys: [],
     userAnalysisSurvey: null,
-    questions: [],
     selections: [],
+    questions: [],
+    answers: []
 }
 
 export default state

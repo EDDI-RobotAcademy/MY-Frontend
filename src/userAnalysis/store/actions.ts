@@ -35,10 +35,19 @@ export type UserAnalysisInputActions = {
         context: ActionContext<UserAnalysisInputState, any>, 
         payload: { user_analysis: number, question: string, user_analysis_type: number }
     ): Promise<AxiosResponse>,
+    requestListUserAnalysisAnswerToDjango(context: ActionContext<UserAnalysisInputState, any>,
+        payload: {
+            filter: string,
+            user_analysis_Id: number | null,
+            question_Id: number | null,
+            account_Id: number | null
+        }
+    ): Promise<void>,
     requestCreateUserAnalysisSelectionToDjango(
         constext: ActionContext<UserAnalysisInputState, any>,
         payload: { question_id: number, custom_text: string }
     ): Promise<AxiosResponse>,
+
 }
 
 const actions: UserAnalysisInputActions = {
@@ -157,12 +166,35 @@ const actions: UserAnalysisInputActions = {
             throw error
         }
     },
+    async requestListUserAnalysisAnswerToDjango(
+        context: ActionContext<UserAnalysisInputState, any>,
+        payload: {
+            filter: string,
+            user_analysis_Id: number | null,
+            question_Id: number | null,
+            account_Id: number | null
+        }
+    ): Promise<void> {
+        const { filter, user_analysis_Id, question_Id, account_Id  } = payload
+        try {
+          const res: AxiosResponse<any, any> = await axiosInst.djangoAxiosInst.post('user_analysis/list-answer', {
+            filter, user_analysis_Id, question_Id, account_Id
+          });
+          
+          const data = res.data;
+          return data
+        } catch (error) {
+            console.error('requestListUserAnalysisAnswerToDjango() 중 에러 발생')
+            throw error
+        }
+    },
     async requestCreateUserAnalysisSelectionToDjango(
         constext: ActionContext<UserAnalysisInputState, any>,
         payload: { question_id: number, custom_text: string }
     ): Promise<AxiosResponse> {
         const { question_id, custom_text } = payload
         try {
+            console.log(payload)
             const res: AxiosResponse = await axiosInst.djangoAxiosInst.post('user_analysis/create-user-analysis-selection', {
                 question_id,
                 custom_text
@@ -173,7 +205,8 @@ const actions: UserAnalysisInputActions = {
             console.log('requestCreateUserAnalysisSelectionToDjango() 중 에러 발생')
             throw error
         }
-    }
+    },
+    
     
 }
 
