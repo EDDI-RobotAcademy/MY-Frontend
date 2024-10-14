@@ -152,6 +152,8 @@ export default {
   max-width: 100%;
   overflow-x: auto;
   padding: 20px 0;
+  color: #000;
+
 }
 
 .strategy-item {
@@ -159,7 +161,6 @@ export default {
   height: 245px;
   flex-shrink: 0;
   border-radius: 50%;
-  background-color: #2a2a2a;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -169,6 +170,7 @@ export default {
   position: relative;
   overflow: hidden;
   font-size: 24px;
+  color: #000;
 }
 
 .emoji-container {
@@ -193,13 +195,13 @@ export default {
 
 h3 {
   margin: 0 0 5px 0;
-  color: #ffffff;
+  color:#000;
   font-size: 0.9em;
 }
 
 p {
   margin: 0;
-  color: #cccccc;
+  color: #000;
   font-size: 0.7em;
   line-height: 1.3;
 }
