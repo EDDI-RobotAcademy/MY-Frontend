@@ -47,7 +47,7 @@ export default {
   align-items: center;
   height: 100vh;
   background-color: rgba(0, 0, 0, 0.7);
-  background-image: url("@/assets/images/fixed/login/login_background.png");
+  background-image: url("@/assets/images/fixed/login/login_background.webp");
   background-size: cover;
   background-blend-mode: darken;
 }
