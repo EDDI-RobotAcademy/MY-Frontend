@@ -124,6 +124,7 @@
   .title {
     text-align: center;
     margin-bottom: 20px;
+    margin-top: 50px;
   }
   
   .filter-section {
