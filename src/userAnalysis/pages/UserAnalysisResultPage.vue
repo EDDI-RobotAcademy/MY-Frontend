@@ -4,23 +4,26 @@
     <SummaryContent :data="Summary" />
     <MBTIContent :strengths="parsedStrengths" :weaknesses="parsedWeaknesses" :mbtiType="mbtiType"
       :strategyText="strategyText" />
+    <InfluencerAnalysis :surveyData="surveyData" />
     <StrategyContent :rawStrategies="contentStrategyText" :rawSubtitle="contentStrategySubtitle" />
     <FinalSummaryContent :surveyData="surveyData" />
   </div>
 </template>
 
 <script>
-import SummaryContent from '../ui/SummaryContent.vue'
-import MBTIContent from '../ui/MBTIContent.vue'
-import LoadingContent from '../ui/LoadingContent.vue';
-import StrategyContent from '../ui/StrategyContent.vue';
-import FinalSummaryContent from '../ui/FinalSummaryContent.vue'
+import SummaryContent from '../ui/UserAnalysisResultPage/SummaryContent.vue'
+import MBTIContent from '../ui/UserAnalysisResultPage/MBTIContent.vue'
+import LoadingContent from '../ui/UserAnalysisResultPage/LoadingContent.vue';
+import InfluencerAnalysis from '../ui/UserAnalysisResultPage/InfluencerAnalysis.vue';
+import StrategyContent from '../ui/UserAnalysisResultPage/StrategyContent.vue';
+import FinalSummaryContent from '../ui/UserAnalysisResultPage/FinalSummaryContent.vue'
 
 export default {
   components: {
     SummaryContent,
     MBTIContent,
     LoadingContent,
+    InfluencerAnalysis,
     StrategyContent,
     FinalSummaryContent,
   },
