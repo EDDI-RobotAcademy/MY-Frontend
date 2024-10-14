@@ -92,7 +92,7 @@
     name: "SurveyPage",
     data() {
       return {
-        surveyId: 9, // 실제 설문 id로 바꿔줘야 함
+        surveyId: 1, // 실제 설문 id로 바꿔줘야 함
         questions: [], // 설문 질문 목록
         selections: []
       };

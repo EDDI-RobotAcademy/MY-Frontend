@@ -1,11 +1,16 @@
 import { MutationTree } from "vuex";
-import { SurveyState, Survey, Question, Selection } from "./states";
-import { REQUEST_LIST_SURVEY_QUESTION_TO_DJANGO, REQUEST_LIST_SURVEY_SELECTION_TO_DJANGO } from "./mutation-types";
+import { SurveyState, Survey, Question, Selection, Answer } from "./states";
+import { 
+    REQUEST_LIST_SURVEY_QUESTION_TO_DJANGO,
+    REQUEST_LIST_SURVEY_SELECTION_TO_DJANGO,
+    REQUEST_LIST_SURVEY_ANSWER_TO_DJANGO
+ } from "./mutation-types";
 
 
 export interface SurveyMutations extends MutationTree<SurveyState> {
     [REQUEST_LIST_SURVEY_QUESTION_TO_DJANGO](state: SurveyState, receivedData: Survey): void;
     [REQUEST_LIST_SURVEY_SELECTION_TO_DJANGO](state: SurveyState, selections: Selection[]): void; // 선택지 변이 추가
+    [REQUEST_LIST_SURVEY_ANSWER_TO_DJANGO](state: SurveyState, answers: Answer[]): void;
 }
 
 const mutations: MutationTree<SurveyState> = {
@@ -17,6 +22,10 @@ const mutations: MutationTree<SurveyState> = {
     [REQUEST_LIST_SURVEY_SELECTION_TO_DJANGO](state: SurveyState, selections: Selection[]): void {
         console.log('Mutations에서 받은 선택지: ', selections)
         state.selections = selections; // 선택지 저장
+    },
+    [REQUEST_LIST_SURVEY_ANSWER_TO_DJANGO](state: SurveyState, answers: Answer[]): void {
+        console.log('Mutations에서 받은 답변: ', answers)
+        state.answers = answers; // 선택지 저장
     }
 };
 

@@ -3,6 +3,7 @@ export interface SurveyState {
     survey: Survey | null;
     selections: Selection[]; // 선택지 배열
     questions: Question[]; // 질문 배열
+    answers: Answer[];
 }
 
 export interface Survey {
@@ -33,11 +34,25 @@ export interface SurveyAnswer {
     answer_data: string | number | boolean;
 }
 
+export interface Answer {
+    id: number;
+    survey_title: string;
+    profile_nickname: string;
+    question_text: string;
+    survey_custom_selection_text: string;
+    answer_text: string;
+    boolean_selection: string;
+    five_score_selection: number;
+    response_order: number;
+    created_at: string
+}
+
 const state: SurveyState = {
     surveys: [],
     survey: null,
     selections: [],
-    questions: []
+    questions: [],
+    answers: []
 };
 
 export default state;
