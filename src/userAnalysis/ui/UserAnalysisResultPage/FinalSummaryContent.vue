@@ -172,6 +172,7 @@ export default {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
+  background-color: #000;
 }
 
 .about-page {
@@ -182,7 +183,7 @@ export default {
 }
 
 .about-title {
-  color: #000;
+  color: #fff;
   text-align: center;
   font-size: 2.5em;
   margin-bottom: 30px;
