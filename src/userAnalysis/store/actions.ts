@@ -28,7 +28,17 @@ export type UserAnalysisInputActions = {
     ): Promise<void>,
     requestSubmitAnswerToDjango(context: ActionContext<UserAnalysisInputState, any>,
         payload: { user_analysis_answer: UserAnalysisInputAnswer[], account_id: string | null }
-    ): Promise<AxiosResponse>
+    ): Promise<AxiosResponse>,
+    requestCreateUserAnalysisToDjango(context: ActionContext<UserAnalysisInputState, any>, 
+        payload: {title: string, description: string}): Promise<AxiosResponse>,
+    requestCreateUserAnalysisQuestionToDjango(
+        context: ActionContext<UserAnalysisInputState, any>, 
+        payload: { user_analysis: number, question: string, user_analysis_type: number }
+    ): Promise<AxiosResponse>,
+    requestCreateUserAnalysisSelectionToDjango(
+        constext: ActionContext<UserAnalysisInputState, any>,
+        payload: { question_id: number, custom_text: string }
+    ): Promise<AxiosResponse>,
 }
 
 const actions: UserAnalysisInputActions = {
@@ -112,7 +122,57 @@ const actions: UserAnalysisInputActions = {
             console.log('requestSubmitAnswerToDjango() 중 에러 발생')
             throw error
         }
+    },
+    async requestCreateUserAnalysisToDjango(context: ActionContext<UserAnalysisInputState, any>, 
+        payload: {
+            title: string, 
+            description: string
+    }): Promise<AxiosResponse> {
+        const { title, description } = payload
+        try {
+            const res: AxiosResponse = await axiosInst.djangoAxiosInst.post('/user_analysis/create', payload)
+            return res.data
+        } catch (error) {
+            console.log('requestCreateUserAnalysisToDjango() 중 에러 발생')
+            throw error
+        } 
+    },
+    async requestCreateUserAnalysisQuestionToDjango(
+        context: ActionContext<UserAnalysisInputState, any>, 
+        payload: { user_analysis: number, question: string, user_analysis_type: number }
+    ): Promise<AxiosResponse> {
+        const { user_analysis, question, user_analysis_type } = payload
+        try {
+            const res: AxiosResponse = await axiosInst.djangoAxiosInst.post('user_analysis/create-question', {
+                user_analysis,
+                question,
+                user_analysis_type
+            })
+            console.log(res.data)
+            return res.data
+        } catch (error) {
+            console.log('requestCreateSurveyQuestionToDjango() 중 에러 발생')
+            throw error
+        }
+    },
+    async requestCreateUserAnalysisSelectionToDjango(
+        constext: ActionContext<UserAnalysisInputState, any>,
+        payload: { question_id: number, custom_text: string }
+    ): Promise<AxiosResponse> {
+        const { question_id, custom_text } = payload
+        try {
+            const res: AxiosResponse = await axiosInst.djangoAxiosInst.post('user_analysis/create-user-analysis-selection', {
+                question_id,
+                custom_text
+            })
+            console.log(res.data)
+            return res.data
+        } catch (error) {
+            console.log('requestCreateUserAnalysisSelectionToDjango() 중 에러 발생')
+            throw error
+        }
     }
+    
 }
 
 export default actions;
