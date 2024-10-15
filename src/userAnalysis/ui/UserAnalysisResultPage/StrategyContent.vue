@@ -47,13 +47,29 @@ export default {
     this.parseContentStrategy();
     this.setupIntersectionObserver();
   },
-  beforeUnmount() {
-    if (this.observer) {
-      this.observer.disconnect();
-    }
-  },
   methods: {
     parseContentStrategy() {
+      try {
+        const parsedData = JSON.parse(this.rawStrategies);
+        if (parsedData.generatedStrategy) {
+          const strategies = parsedData.generatedStrategy.split('\n\n');
+          this.parsedStrategies = strategies.map(strategy => {
+            const lines = strategy.split('\n');
+            const emojiMatch = lines[0].match(/(\p{Emoji}|\d️⃣)/u);
+            const emoji = emojiMatch ? emojiMatch[0] : '';
+            const title = lines[0].replace(/^\d+\.\s*\*\*|\*\*:\s*$|\s*️⃣/g, '').trim();
+            const description = lines.slice(1).join('\n').trim();
+            return { emoji, title, description };
+          });
+        } else {
+          this.fallbackParsing();
+        }
+      } catch (error) {
+        console.error('Error parsing strategy:', error);
+        this.fallbackParsing();
+      }
+    },
+    fallbackParsing() {
       const lines = this.rawStrategies.split('\n').filter(line => line.trim() !== '');
 
       this.parsedStrategies = lines.map(line => {
@@ -195,7 +211,7 @@ export default {
 
 h3 {
   margin: 0 0 5px 0;
-  color:#000;
+  color: #000;
   font-size: 0.9em;
 }
 
