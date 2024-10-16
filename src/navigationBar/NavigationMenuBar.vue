@@ -16,6 +16,23 @@
             <span>피드백</span>
           </button>
         </div>
+        <!-- 관리자만 볼 수 있는 버튼 -->
+        <div class="admin-menu-container" v-if="isAdmin" ref="adminMenuContainer">
+          <button @click="toggleAdminMenu" class="admin-button">
+            관리자 메뉴
+          </button>
+
+          <!-- 관리자 드롭다운 메뉴 -->
+          <div v-if="isAdminMenuOpen" class="admin-dropdown-menu">
+            <ul>
+              <li @click="goToSurveyDashboard">피드백 답변목록</li>
+              <li @click="goToSurveyVisualization">피드백 답변 시각화</li>
+              <li @click="goToUserAnalysisDashboard">성향분석 답변목록</li>
+              <li @click="goToUserAnalysisVisualization">성향분석 답변 시각화</li>
+              
+            </ul>
+          </div>
+        </div>
         <div class="auth-buttons">
           <button v-if="!isAuthenticated" @click="goToLoginPage" class="login" :style="{ color: currentColor }">
             LOGIN
@@ -38,7 +55,7 @@ const authenticationModule = "authenticationModule";
 
 export default {
   computed: {
-    ...mapState(authenticationModule, ["isAuthenticated"]),
+    ...mapState(authenticationModule, ["isAuthenticated", "isAdmin"]),
     isHomePage() {
       return this.$route.path === '/';
     }
@@ -53,7 +70,9 @@ export default {
         { threshold: 0, color: 'rgb(255, 255, 255)' },
         { threshold: 1500, color: 'rgb(0, 0, 0)' },
         { threshold: 2260, color: 'rgb(255, 255, 255)' },
-      ]
+      ],
+      isAdmin: true,
+      isAdminMenuOpen: false,
     };
   },
   methods: {
@@ -61,6 +80,9 @@ export default {
       "requestLogoutToDjango",
       "checkAndSetAuthStatus"
     ]),
+    toggleAdminMenu() {
+      this.isAdminMenuOpen = !this.isAdminMenuOpen;
+    },
     goToHomePage() {
       router.push("/");
     },
@@ -72,6 +94,22 @@ export default {
     },
     goToUserAnalysisPage() {
       router.push("/user-analysis");
+    },
+    goToSurveyDashboard() {
+      this.isAdminMenuOpen = false;
+      router.push("/survey/dashboard");
+    },
+    goToUserAnalysisDashboard() {
+      this.isAdminMenuOpen = false;
+      router.push("/user-analysis/dashboard");
+    },
+    goToSurveyVisualization() {
+      this.isAdminMenuOpen = false;
+      router.push("/survey/Visualization");
+    },
+    goToUserAnalysisVisualization() {
+      this.isAdminMenuOpen = false;
+      router.push("/user-analysis/Visualization");
     },
     async logOut() {
       await this.requestLogoutToDjango();
@@ -316,5 +354,62 @@ export default {
 .auth-buttons {
   display: flex;
   align-items: center;
+}
+
+/* 관리자 메뉴 컨테이너 */
+.admin-menu-container {
+  position: relative; /* 부모 요소에 대해 절대 위치 지정 */
+  margin-right: 40px;        /* 오른쪽에서 20px 떨어짐 */
+  margin-left: 20px;
+  margin-bottom: 5px;
+  display: inline-block;
+  z-index: 1001;   
+}
+
+/* 관리자 버튼 스타일 */
+.admin-button {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: bold;
+  transition: color 0.3s ease;
+}
+
+.admin-button:hover {
+  color: rgba(255, 255, 255, 1);
+}
+
+/* 드롭다운 메뉴 스타일 */
+.admin-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: -75%;
+  background-color: rgba(0, 0, 0, 0.9);
+  border-radius: 5px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  width: max-content;
+  padding: 10px 0;
+}
+
+.admin-dropdown-menu ul {
+  list-style-type: none;
+  padding: 10px 0;
+  margin: 0;
+}
+
+.admin-dropdown-menu li {
+  padding: 10px 20px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.admin-dropdown-menu li:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 1);
 }
 </style>
