@@ -9,7 +9,7 @@ export type AccountActions = {
 const actions: AccountActions = {
     async requestEmailDuplicationCheckToDjango(context: ActionContext<any, any>, email: string): Promise<boolean> {
         const response = await axiosInst.djangoAxiosInst.post(
-            '/account/email-duplication-check', { email })
+            '/user_profile/email-duplication-check', { email })
         return response.data.isDuplicate
     },
     async requestCreateNewAccountToDjango(context: ActionContext<any, any>, accountInfo: { email: string, nickname: string }): Promise<void> {
