@@ -7,7 +7,7 @@
     <div class="survey-container">
       <div v-for="(question, index) in questions" :key="index" :ref="`question-${index}`" class="question-box">
         <h2>{{ question.question_text }}
-          <span v-if="question.isEssential" class="essential">*필수</span>
+          <span v-if="question.isEssential" class="essential">*</span>
         </h2>
 
         <!-- 선택형 질문 -->
@@ -77,11 +77,15 @@
             rows="3"
           ></textarea>
         </div>
-      </div>
-    </div>
+    
 
+    <div class="error-message" v-if="errors[index]" v-html="errors[index]"></div>
+  </div>
+</div>
+  
+    
     <div class="submit-button-container">
-      <button @click="submitSurvey" :disabled="!allQuestionsAnswered" class="submit-button">제출하기</button>
+      <button @click="submitSurvey" class="submit-button">제출하기</button>
     </div>
   </div>
 </template>
@@ -96,33 +100,37 @@
       return {
         surveyId: 1, // 실제 설문 id로 바꿔줘야 함
         questions: [], // 설문 질문 목록
-        selections: []
+        selections: [],
+        errors: []
       };
     },
     computed: {
       ...mapState('surveyModule', ['questions', 'selections']),
       
-      allQuestionsAnswered() {
-        return this.questions.every(q => {
-          // 필수 질문에 대한 답변 여부 확인
-          if (q.answered) {
-            return q.answer !== null && q.answer !== undefined && q.answer.trim() !== ''
-          }
-          return true // 필수 질문이 아닐 경우 true 반환
-        })
-      }
+      // allQuestionsAnswered() {
+      //   return this.questions.every(q => {
+      //     // 필수 질문에 대한 답변 여부 확인
+      //     if (q.isEssential) {
+      //       return q.answer !== null && q.answer !== undefined && q.answer.trim() !== ''
+      //     }
+      //     return true // 필수 질문이 아닐 경우 true 반환
+      //   })
+      // }
     },
     methods: {
       ...mapActions('surveyModule', ['requestListSurveyQuestionToDjango', 'requestListSurveySelectionToDjango', 'requestSubmitSurveyAnswerToDjango']),
       
       async loadSurvey() {
         try {
+
           // 질문 목록 요청
           const questions = await this.requestListSurveyQuestionToDjango(this.surveyId);
           this.questions = questions.map(question => ({
             ...question,
-            isEssential: question.is_essential
+            isEssential: question.is_essential,
+            answer: null
           }))
+          this.errors = new Array(this.questions.length).fill(null)
           console.log(questions);
 
           let allSelections = []
@@ -142,7 +150,6 @@
             if (!Array.isArray(options)) {
               options = [];
             }
-            console.log('질문당 선택지:', options);
             
             // 선택지가 있는 경우 각 질문에 대한 선택지들을 하나의 리스트로 합침
             allSelections = [...allSelections, ...options]
@@ -157,11 +164,40 @@
         }
       },
       answerQuestion(index) {
-        const question = this.questions[index];
-        // 답변 처리(질문이 서술형인지 확인)
-        question.answered = question.survey_type === 1 ? question.answer.trim() !== '' : question.answer !== null;
+        // 답변 시 에러 메세지 제거
+        this.errors[index] = null
+
+        // const question = this.questions[index];
+        // // 답변 처리(질문이 서술형인지 확인)
+        // question.answered = question.survey_type === 1 ? question.answer.trim() !== '' : question.answer !== null;
       },
       async submitSurvey() {
+        let hasError = false
+        let firstErrorIndex = -1
+
+        this.questions.forEach((question, index) => {
+          if(question.isEssential && (!question.answer || question.answer.trim === '')) {
+            this.errors[index] = '<span class="mdi mdi-alert-circle error-icon"></span> 필수 질문입니다.'
+            hasError = true
+            if (firstErrorIndex === -1) {
+              firstErrorIndex = index
+            }
+          } else {
+            this.errors[index] = null
+          }  
+        })
+
+        if (hasError) {
+          // 첫 번째 에러로 스크롤
+          if (firstErrorIndex !== -1 && this.$refs[`question-${firstErrorIndex}`]) {
+            this.$refs[`question-${firstErrorIndex}`][0].scrollIntoView({ behavior: 'smooth' });
+          }
+          return
+        }
+        console.log("설문 제출 시 에러 확인 로직 실행")
+
+       
+
         console.log("Survey submitted:", JSON.stringify(this.questions));
         const surveyAnswers = this.questions.map(question => ({
           question_id: question.id,
@@ -253,9 +289,8 @@
 
 .essential {
   color: red;
-  font-size: 0.5em;
+  font-size: 0.75em;
   position: relative;
-  top: -0.5em;
 }
 
 .question-box h2 {
@@ -289,6 +324,12 @@
   border: 1px solid #ddd;
   border-radius: 4px;
   resize: vertical;
+}
+
+.error-message {
+  color: red;
+  margin-top: 5px;
+  font-size: 14px;
 }
 
 .submit-button-container {
