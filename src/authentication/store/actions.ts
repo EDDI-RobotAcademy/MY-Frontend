@@ -1,7 +1,7 @@
 import { ActionContext } from "vuex"
 import { AuthenticationState } from "./states"
 import axiosInst from "@/utility/axiosInstance"
-import { REQUEST_IS_AUTHENTICATED_TO_DJANGO } from "./mutation-types"
+import { REQUEST_IS_ADMIN_TO_DJANGO, REQUEST_IS_AUTHENTICATED_TO_DJANGO } from "./mutation-types"
 
 export type AuthenticationActions = {
     requestAddRedisAccessTokenToDjango(
@@ -53,12 +53,26 @@ const actions: AuthenticationActions = {
             throw error
         }
     },
-    checkAndSetAuthStatus({ commit }: ActionContext<AuthenticationState, any>): void {
+    async checkAndSetAuthStatus({ commit }: ActionContext<AuthenticationState, any>
+    ): Promise<void>{
         const userToken = localStorage.getItem("userToken")
+        
         if (userToken) {
             console.log("User token found in localStorage")
             console.log("userToken: ", userToken)
             commit(REQUEST_IS_AUTHENTICATED_TO_DJANGO, true)
+            const res = await axiosInst.djangoAxiosInst.post('/account/roletype-check', {
+                userToken
+            })
+            if (res.data === "ADMIN"){
+                console.log("관리자 계정입니다.")
+                commit(REQUEST_IS_ADMIN_TO_DJANGO, true)
+            }
+            else {
+                console.log("관리자 계정이 아닙니다.")
+                commit(REQUEST_IS_ADMIN_TO_DJANGO, false)
+            }
+            
         } else {
             commit(REQUEST_IS_AUTHENTICATED_TO_DJANGO, false)
         }
