@@ -4,7 +4,8 @@ export default defineNuxtConfig({
   compatibilityDate: '2024-04-03',
   devtools: { enabled: true },
   extends: [
-    './home/nuxt.config.ts'
+    './home/nuxt.config.ts',
+    './account/nuxt.config.ts'
   ],
 
   css: [
@@ -25,7 +26,8 @@ export default defineNuxtConfig({
   modules: [
     'vuetify-nuxt-module',
     '@pinia/nuxt',
-    '~/home/index.ts'
+    '~/home/index.ts',
+    '~/account/index.ts'
   ],
 
   imports: {
