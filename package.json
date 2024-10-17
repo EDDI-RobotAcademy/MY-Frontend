@@ -10,8 +10,14 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@pinia/nuxt": "^0.5.5",
     "nuxt": "^3.13.0",
-    "vue": "latest",
-    "vue-router": "latest"
+    "pinia": "^2.2.4",
+    "vue": "^3.5.12",
+    "vue-router": "latest",
+    "vuetify-nuxt-module": "^0.18.3"
+  },
+  "devDependencies": {
+    "@mdi/font": "^7.4.47"
   }
 }
