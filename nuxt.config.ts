@@ -6,7 +6,8 @@ export default defineNuxtConfig({
   extends: [
     './home/nuxt.config.ts',
     './account/nuxt.config.ts',
-    './survey/nuxt.config.ts'
+    './survey/nuxt.config.ts',
+    './userAnalysis/nuxt.config.ts',
   ],
 
   css: [
@@ -29,7 +30,8 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     '~/home/index.ts',
     '~/account/index.ts',
-    '~/survey/index.ts'
+    '~/survey/index.ts',
+    '~/userAnalysis/index.ts',
   ],
 
   imports: {
