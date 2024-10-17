@@ -6,7 +6,6 @@
         <div class="social-login">
           <span>소셜 계정으로 로그인</span>
           <div class="social-icons">
-            <GoogleLogin/>
             <KakaoLogin/>
           </div>
         </div>
@@ -15,12 +14,10 @@
 </template>
 
 <script>
-import GoogleLogin from '../login/ui/GoogleLogin.vue';
 import KakaoLogin  from '../login/ui/KakaoLogin.vue';
 export default {
     name: 'LoginPage',
     components: {
-        GoogleLogin,
         KakaoLogin,
     }
 }
