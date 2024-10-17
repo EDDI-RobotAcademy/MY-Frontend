@@ -5,7 +5,8 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   extends: [
     './home/nuxt.config.ts',
-    './account/nuxt.config.ts'
+    './account/nuxt.config.ts',
+    './survey/nuxt.config.ts'
   ],
 
   css: [
@@ -27,7 +28,8 @@ export default defineNuxtConfig({
     'vuetify-nuxt-module',
     '@pinia/nuxt',
     '~/home/index.ts',
-    '~/account/index.ts'
+    '~/account/index.ts',
+    '~/survey/index.ts'
   ],
 
   imports: {
