@@ -16,7 +16,7 @@ const kakaoLoginClick = async () => {
 <style scoped>
 .kakao-login-btn {
     margin: 10px 0;
-    background-image: url("@/assets/images/fixed/login/kakao_login_round.png");
+    background-image: url("@/assets/fixed/login/kakao_login_round.png");
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
