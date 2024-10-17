@@ -71,7 +71,7 @@ export default {
         { threshold: 1500, color: 'rgb(0, 0, 0)' },
         { threshold: 2260, color: 'rgb(255, 255, 255)' },
       ],
-      isAdmin: true,
+      // isAdmin: true,
       isAdminMenuOpen: false,
     };
   },
