@@ -21,6 +21,16 @@ export default defineNuxtModule({
                 path: '/survey/register',
                 file: resolve(themeDir, 'survey/pages/SurveyRegisterPage.vue'),
             })
+            pages.push({
+                name: 'survey-dashboard',
+                path:'/survey/dashboard',
+                file: resolve(themeDir, 'survey/pages/SurveyDashboardPage.vue'),
+            })
+            pages.push({
+                name: 'survey-visualizateion',
+                path:'/survey/visualization',
+                file: resolve(themeDir, 'survey/pages/SurveyVisualizationPage.vue'),
+            })
         })
 
         nuxt.hook('imports:dirs', (dirs) => {

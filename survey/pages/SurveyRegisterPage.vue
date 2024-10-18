@@ -1,196 +1,191 @@
 <template>
-    <div class="survey-form">
-      <h2>설문조사 등록</h2>
-      <form @submit.prevent="createSurvey">
-        <div>
-          <label for="title">제목:</label>
-          <input id="title" v-model="survey.title" required />
-        </div>
-        <div>
-          <label for="description">설명:</label>
-          <textarea id="description" v-model="survey.description" required></textarea>
-        </div>
-        <v-btn type="submit">설문조사 생성</v-btn>
-      </form>
-    </div>
-  
-    <div v-if="surveyId" class="survey-form">
-      <form @submit.prevent="addQuestion">
-        <div>
-          <label for="question">질문:</label>
-          <input id="question" v-model="question.questionText" type="text" required />
-        </div>
-        <div>
-          <label for="surveyType">질문 타입:</label>
-          <select v-model="question.surveyType" id="surveyType" @change="handleSurveyTypeChange">
-            <option :value="1">일반</option>
-            <option :value="2">5점</option>
-            <option :value="3">불리언</option>
-            <option :value="4">사용자 지정</option>
-          </select>
-        </div>
-        <v-btn type="submit">질문 추가</v-btn>
-        <!-- 선택지 입력 부분 -->
-        <div v-if="questionId && question.surveyType === 4">
-          <h3>선택지 추가</h3>
-          <div v-for="(custom, index) in customSelections" :key="index">
-            <input v-model="customSelections[index]" type="text" placeholder="선택지 입력" />
-            <v-btn @click="removeSelection(index)">삭제</v-btn>
-          </div>
-          <v-btn @click="addSelection">선택지 추가</v-btn>
-          <v-btn @click="submitSelections">선택지 등록</v-btn>
-        </div> 
-      </form>
-
-      <h3>미리보기</h3>
-      <div class="preview">
-        <h4>{{ survey.title }}</h4>
-        <p>{{ survey.description }}</p>
-        <h5>질문 목록:</h5>
-        <ul>
-          <li v-for="(question, index) in questions" :key="index">{{ question.questionText }} (유형: {{ getSurveyTypeLabel(question.surveyType) }})</li>
-        </ul>
+  <div class="survey-form">
+    <h2>피드백 설문조사 등록</h2>
+    <form @submit.prevent="createSurvey">
+      <div>
+        <label for="title">제목:</label>
+        <input id="title" v-model="survey.title" required />
       </div>
+      <div>
+        <label for="description">설명:</label>
+        <textarea id="description" v-model="survey.description" required></textarea>
+      </div>
+      <v-btn type="submit">설문조사 생성</v-btn>
+    </form>
+  </div>
+
+  <div v-if="surveyId" class="survey-form">
+    <form @submit.prevent="addQuestion">
+      <div>
+        <label for="question">질문:</label>
+        <input id="question" v-model="question.questionText" type="text" required />
+        <input type="checkbox" v-model="question.isEssential">필수 질문
+      </div>
+      <div>
+        <label for="surveyType">질문 타입:</label>
+        <select v-model="question.surveyType" id="surveyType" @change="handleSurveyTypeChange">
+          <option :value="1">서술형</option>
+          <option :value="2">5점(Five-score)</option>
+          <option :value="3">Boolean</option>
+          <option :value="4">선택형(Custom)</option>
+        </select>
+      </div>
+      <v-btn type="submit">질문 추가</v-btn>
+      <!-- 선택지 입력 부분 -->
+      <div v-if="questionId && question.surveyType === 4">
+        <h3>선택지 추가</h3>
+        <div v-for="(custom, index) in customSelections" :key="index">
+          <input v-model="customSelections[index]" type="text" placeholder="선택지 입력" />
+          <v-btn @click="removeSelection(index)">삭제</v-btn>
+        </div>
+        <v-btn @click="addSelection">선택지 추가</v-btn>
+        <v-btn @click="submitSelections">선택지 등록</v-btn>
+      </div> 
+    </form>
+
+    <h3>미리보기</h3>
+    <div class="preview">
+      <h4>{{ survey.title }}</h4>
+      <p>{{ survey.description }}</p>
+      <h5>질문 목록:</h5>
+      <ul>
+        <li v-for="(question, index) in questions" :key="index">{{ question.questionText }} (유형: {{ getSurveyTypeLabel(question.surveyType) }})</li>
+      </ul>
     </div>
-  </template>
-  
-  <script>
-  const surveyModule = 'surveyModule';
-  
-  export default {
-    data() {
-      return {
-        survey: {
-          title: '',
-          description: ''
-        },
-        surveyId: null,
-        question: {
-          questionText: '',
-          surveyType: 1 // 기본값을 일반으로 설정
-        },
-        questions: [],
-        customSelections: [''], // 선택 항목 배열
-        questionId: null,
-      };
-    },
-    methods: {
-      
-      async createSurvey() {
-        try {
-          const response = await this.requestCreateSurveyToDjango(this.survey);
-          this.surveyId = response.title; // 응답에서 받은 id를 surveyId에 저장
-          console.log('설문 조사 생성 성공!', this.surveyId);
-        } catch (error) {
-          console.error('설문 조사 생성 중 에러 발생: ', error);
-        }
-      },
-  
-      async addQuestion() {
-        if (!this.surveyId) {
-          console.error('설문조사가 먼저 생성되어야 합니다.');
-          return;
-        }
-        try {
-          const payload = {
-            survey: this.surveyId,
-            question: this.question.questionText,
-            survey_type: this.question.surveyType // survey_type은 문자열로 전송
-          };
-          const response = await this.requestCreateSurveyQuestionToDjango(payload);
-          this.questionId = response.questionId; // 질문 ID 저장
-  
-          
-  
-          // 질문 목록에 추가
-          this.questions.push({
-            question: this.question.questionText,
-            surveyType: this.question.surveyType,
-            // options: []
-          });
-  
-          // 사용자 지정 유형이 아닐 경우 폼 초기화
-          if (this.question.surveyType !== 4) {
-            this.resetQuestionForm();
-          }
-        } catch (error) {
-          console.error('질문 또는 선택지 등록 중 에러 발생: ', error);
-        }
-      },
-  
-        async addSelection() {
-            this.customSelections.push(''); // 선택 항목 추가
-        },
-  
-      removeSelection(index) {
-        this.customSelections.splice(index, 1); // 선택 항목 삭제
-      },
-  
-      handleSurveyTypeChange() {
-        if (this.question.surveyType !== 4) {
-          this.customSelections = ['']; // 질문 유형이 일반일 경우 선택 항목 초기화
-        }
-      },
-  
-      getSurveyTypeLabel(type) {
-        const types = {
-          1: '서술형',
-          2: '5점',
-          3: '예/아니요',
-          4: '선택형'
-        };
-        return types[type] || '알 수 없음';
-      },
-  
-      resetQuestionForm() {
-        this.question.questionText = ''; // 질문 텍스트 초기화
-        this.question.surveyType = 1; // 질문 유형 초기화
-        this.customSelections = ['']; // 선택 항목 초기화
-        this.questionId = null;
-      },
-  
-      async submitSelections() {
-        if (this.customSelections.length > 0) {
-          for (const selectionText of this.customSelections) {
-            if (selectionText.trim() !== '') {
-              const payload = {
-                question_id: this.questionId,
-                custom_text: selectionText
-              };
-              try {
-                await this.requestCreateSurveySelectionToDjango(payload);
-                console.log('선택지 등록 성공:', selectionText);
-              } catch (error) {
-                console.error('선택지 등록 중 에러 발생: ', error);
-              }
-            }
-          }
-          // 선택지 등록 후 현재 질문의 options 업데이트
-          const currentQuestion = this.questions.find(q => q.id === this.questionId);
-          if (currentQuestion) {
-            currentQuestion.options = [...this.customSelections];
-          }
-          this.resetQuestionForm();
-        }
-      },
+  </div>
+</template>
+
+<script setup>
+import { ref, reactive  } from 'vue'
+import { useRouter } from 'vue-router'
+import { useSurveyStore } from '../../survey/stores/surveyStore'
+
+const surveyStore = useSurveyStore()
+
+const survey = reactive({
+  title: '',
+  description: ''
+})
+
+const surveyId = ref(null)
+const question = reactive({
+  questionText: '',
+  surveyType: 1,
+  isEssential: true
+})
+const questions = ref([])
+const customSelections = ref([''])
+const questionId = ref(null)
+
+const createSurvey = async () => {
+  try {
+    const response = await surveyStore.requestCreateSurveyToDjango(survey)
+    surveyId.value = response.title
+    console.log('설문 조사 생성 성공!', surveyId.value)
+  } catch (error) {
+    console.error('설문 조사 생성 중 에러 발생: ', error)
+  }
+}
+
+const addQuestion = async () => {
+  if (!surveyId.value) {
+    console.error('설문조사가 먼저 생성되어야 합니다.')
+    return
+  }
+  try {
+    const payload = {
+      survey: surveyId.value,
+      question: question.questionText,
+      survey_type: question.surveyType,
+      is_essential: question.isEssential
     }
-  };
-  </script>
-  
-  <style>
-  .survey-form {
-    max-width: 600px;
-    margin: 100px 200px;
+    const response = await surveyStore.requestCreateSurveyQuestionToDjango(payload)
+    questionId.value = response.questionId
+
+    questions.value.push({
+      question: question.questionText,
+      surveyType: question.surveyType,
+      isEssential: question.isEssential
+    })
+
+    if (question.surveyType !== 4) {
+      resetQuestionForm()
+    }
+  } catch (error) {
+    console.error('질문 또는 선택지 등록 중 에러 발생: ', error)
   }
-  form {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+}
+
+const addSelection = () => {
+  customSelections.value.push('')
+}
+
+const removeSelection = (index) => {
+  customSelections.value.splice(index, 1)
+}
+
+const handleSurveyTypeChange = () => {
+  if (question.surveyType !== 4) {
+    customSelections.value = ['']
   }
-  .preview {
-    margin-top: 20px;
-    border: 1px solid #ccc;
-    padding: 10px;
-    border-radius: 5px;
+}
+
+const getSurveyTypeLabel = (type) => {
+  const types = {
+    1: '서술형',
+    2: '5점',
+    3: '예/아니요',
+    4: '선택형'
   }
-  </style>
+  return types[type] || '알 수 없음'
+}
+
+const resetQuestionForm = () => {
+  question.questionText = ''
+  question.surveyType = 1
+  customSelections.value = ['']
+  questionId.value = null
+}
+
+const submitSelections = async () => {
+  if (customSelections.value.length > 0) {
+    for (const selectionText of customSelections.value) {
+      if (selectionText.trim() !== '') {
+        const payload = {
+          question_id: questionId.value,
+          custom_text: selectionText
+        }
+        try {
+          await surveyStore.requestCreateSurveySelectionToDjango(payload)
+          console.log('선택지 등록 성공:', selectionText)
+        } catch (error) {
+          console.error('선택지 등록 중 에러 발생: ', error)
+        }
+      }
+    }
+    const currentQuestion = questions.value.find(q => q.id === questionId.value)
+    if (currentQuestion) {
+      currentQuestion.options = [...customSelections.value]
+    }
+    resetQuestionForm()
+  }
+}
+</script>
+
+<style>
+.survey-form {
+  max-width: 600px;
+  margin: 100px 200px;
+}
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.preview {
+  margin-top: 20px;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 5px;
+}
+</style>
