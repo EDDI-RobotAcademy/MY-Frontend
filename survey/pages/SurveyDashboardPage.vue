@@ -106,7 +106,6 @@
   
   onMounted(() => {
     // 페이지 로딩 시 전체 답변 로드
-    loadFilteredAnswers()
   })
 </script>
   
