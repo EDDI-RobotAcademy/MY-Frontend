@@ -22,13 +22,13 @@ export default defineNuxtModule ({
                 file: resolve(themeDir, 'userAnalysis/pages/UserAnalysisResultPage.vue'),
             })
             pages.push({
-                name: 'userAnalysis-dashboard',
-                path:'/userAnalysis/dashboard',
+                name: 'userAnalysisDashboard-page',
+                path:'/user-analysis/dashboard',
                 file: resolve(themeDir, 'userAnalysis/pages/UserAnalysisDashboardPage.vue'),
             })
             pages.push({
-                name: 'userAnalysis-visualizateion',
-                path:'/userAnalysis/visualization',
+                name: 'userAnalysisVisualizateion-page',
+                path:'/user-analysis/visualization',
                 file: resolve(themeDir, 'userAnalysis/pages/UserAnalysisVisualizationPage.vue'),
             })
         })
