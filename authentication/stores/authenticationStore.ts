@@ -5,7 +5,8 @@ import { createAxiosInstances } from '../../utility/axiosInstance'
 
 export const useAuthenticationStore = defineStore('authentication', {
   state: () => ({
-    isAuthenticated: false
+    isAuthenticated: false,
+    isAdmin: false
   }),
 
   actions: {
@@ -20,6 +21,8 @@ export const useAuthenticationStore = defineStore('authentication', {
 
         localStorage.setItem("userToken", response.data.userToken)
         this.isAuthenticated = true
+
+        await this.checkAndSetAuthStatus()
         return response.data
       } catch (error) {
         console.error('Error adding redis access token:', error)
@@ -40,6 +43,8 @@ export const useAuthenticationStore = defineStore('authentication', {
         if (res.data.isSuccess === true) {
           this.isAuthenticated = false
           localStorage.removeItem("userToken")
+
+          await this.checkAndSetAuthStatus()
         }
       } catch (error) {
         console.error('requestLogoutToDjango() 중 에러 발생:', error)
@@ -47,13 +52,33 @@ export const useAuthenticationStore = defineStore('authentication', {
       }
     },
 
-    checkAndSetAuthStatus(): void {
+    async checkAndSetAuthStatus(): Promise<void> {
+      const { djangoAxiosInst } = createAxiosInstances()
       const userToken = localStorage.getItem("userToken")
       if (userToken) {
         console.log("User token found in localStorage")
+        console.log("userToken: ", userToken)
         this.isAuthenticated = true
+        
+        try{
+          const res = await djangoAxiosInst.post('/account/roletype-check',{
+            userToken
+          })
+          if (res.data === "ADMIN"){
+            console.log("관리자 계정입니다.")
+            this.isAdmin = true
+          }
+          else {
+            console.log("관리자 계정이 아닙니다.")
+            this.isAdmin = false
+          }
+        } catch (error){
+          console.error("관리자 확인 중 오류 발생: ", error);
+          this.isAdmin = false
+        }
       } else {
         this.isAuthenticated = false
+        this.isAdmin = false
       }
     }
   },
