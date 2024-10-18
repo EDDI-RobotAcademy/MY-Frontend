@@ -88,9 +88,9 @@ const goToLoginPage = () => router.push("/login")
 const goToSurveyPage = () => router.push("/survey")
 const goToUserAnalysisPage = () => router.push("/user-analysis")
 const goToSurveyDashboardPage = () => router.push("/survey/dashboard")
-const goToAnalysisDashboardPage = () => router.push("/user-analysis/dashboard")
+const goToUserAnalysisDashboardPage = () => router.push("/user-analysis/dashboard")
 const goToSurveyVisualizationPage = () => router.push("/survey/visualization")
-const goToAnalysisVisualizationPage = () => router.push("/user-analysis/visualization")
+const goToUserAnalysisVisualizationPage = () => router.push("/user-analysis/visualization")
 
 const logOut = async () => {
     await authenticationStore.requestLogoutToDjango()
