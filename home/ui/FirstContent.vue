@@ -28,7 +28,10 @@
   </template>
   
   <script>
-  import { ref, onMounted } from 'vue';
+  import { ref, onMounted } from 'vue'
+  import { useRouter } from 'vue-router'
+  import { useAuthenticationStore } from '@/authentication/stores/authenticationStore'
+  
   const authenticationModule = "authenticationModule";
   
   export default {
@@ -56,6 +59,10 @@
       }
     },
     setup(props) {
+      const router = useRouter();
+      const authenticationStore = useAuthenticationStore();
+      const isAuthenticated = computed(() => authenticationStore.isAuthenticated);
+
       const isOverlayVisible = ref(false);
       const showTitle = ref(false);
       const showDescription = ref(false);
@@ -105,6 +112,14 @@
       onMounted(() => {
         showOverlay();
       });
+
+      const getStarted = () => {
+      if (!isAuthenticated.value) {
+        router.push("/user-analysis"); 
+      } else {
+        router.push("/user-analysis");
+      }
+    };
   
       return {
         isOverlayVisible,
@@ -113,18 +128,9 @@
         showButton,
         showArrow,
         smoothScroll,
+        getStarted,
       };
     },
-    methods: {
-      getStarted() {
-        if (!this.isAuthenticated) {
-          router.push("/user-analysis")
-        }
-        else {
-          router.push("/user-analysis")
-        }
-      }
-    }
   }
   </script>
   
