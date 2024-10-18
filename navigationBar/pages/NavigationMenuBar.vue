@@ -34,6 +34,7 @@
 import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAccountStore } from '../../account/stores/accountStore.ts'
+import { useAuthenticationStore } from '@/authentication/stores/authenticationStore'
 import anime from 'animejs';
 
 const router = useRouter()
@@ -44,7 +45,8 @@ const navbarBackground = ref(null)
 const centerMenuContainer = ref(null)
 const feedbackContainer = ref(null)
 
-const isAuthenticated = computed(() => accountStore.isAuthenticated)
+const authenticationStore = useAuthenticationStore();
+const isAuthenticated = computed(() => authenticationStore.isAuthenticated);
 
 const lastScrollTop = ref(0)
 const isNavbarVisible = ref(true)
@@ -64,7 +66,7 @@ const goToSurveyPage = () => router.push("/survey")
 const goToUserAnalysisPage = () => router.push("/user-analysis")
 
 const logOut = async () => {
-    await accountStore.requestLogoutToDjango()
+    await authenticationStore.requestLogoutToDjango()
     router.push("/")
 }
 
