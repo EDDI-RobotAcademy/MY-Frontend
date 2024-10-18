@@ -78,6 +78,80 @@ export const useUserAnalysisStore = defineStore('userAnalysisStore', {
         console.log('requestSubmitAnswerToDjango() 중 에러 발생')
         throw error
       }
+    },
+
+    async requestCreateUserAnalysisToDjango( payload: {
+      title: string,
+      description: string  
+    }): Promise<any> {
+      const { djangoAxiosInst } = createAxiosInstances()
+      const { title, description } = payload
+      try {
+          const res = await djangoAxiosInst.post('/user_analysis/create', payload)
+          return res.data
+      } catch (error) {
+          console.log('requestCreateUserAnalysisToDjango() 중 에러 발생')
+          throw error
+      } 
+  },
+  async requestCreateUserAnalysisQuestionToDjango( payload: { 
+    user_analysis: number, 
+    question: string, 
+    user_analysis_type: number 
+  }): Promise<any> {
+    const { djangoAxiosInst } = createAxiosInstances()
+    const { user_analysis, question, user_analysis_type } = payload
+    try {
+        const res = await djangoAxiosInst.post('user_analysis/create-question', {
+            user_analysis,
+            question,
+            user_analysis_type
+        })
+        console.log(res.data)
+        return res.data
+    } catch (error) {
+        console.log('requestCreateSurveyQuestionToDjango() 중 에러 발생')
+        throw error
     }
+  },
+  async requestListUserAnalysisAnswerToDjango(payload: {
+    filter: string,
+    user_analysis_Id: number | null,
+    question_Id: number | null,
+    account_Id: number | null
+  }): Promise<void> {
+    const { filter, user_analysis_Id, question_Id, account_Id  } = payload
+    const { djangoAxiosInst } = createAxiosInstances()
+    try {
+      const res = await djangoAxiosInst.post('user_analysis/list-answer', {
+        filter, user_analysis_Id, question_Id, account_Id
+      });
+      
+      const data = res.data;
+      return data
+    } catch (error) {
+        console.error('requestListUserAnalysisAnswerToDjango() 중 에러 발생')
+        throw error
+    }
+  },
+  async requestCreateUserAnalysisSelectionToDjango(payload: { 
+    question_id: number, 
+    custom_text: string 
+  }): Promise<any> {
+    const { question_id, custom_text } = payload
+    const { djangoAxiosInst } = createAxiosInstances()
+    try {
+        console.log(payload)
+        const res = await djangoAxiosInst.post('user_analysis/create-user-analysis-selection', {
+            question_id,
+            custom_text
+        })
+        console.log(res.data)
+        return res.data
+    } catch (error) {
+        console.log('requestCreateUserAnalysisSelectionToDjango() 중 에러 발생')
+        throw error
+    }
+  },
   }
 })
