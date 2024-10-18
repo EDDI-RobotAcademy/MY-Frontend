@@ -21,6 +21,16 @@ export default defineNuxtModule ({
                 path: '/user-analysis/result',
                 file: resolve(themeDir, 'userAnalysis/pages/UserAnalysisResultPage.vue'),
             })
+            pages.push({
+                name: 'userAnalysisDashboard-page',
+                path:'/user-analysis/dashboard',
+                file: resolve(themeDir, 'userAnalysis/pages/UserAnalysisDashboardPage.vue'),
+            })
+            pages.push({
+                name: 'userAnalysisVisualizateion-page',
+                path:'/user-analysis/visualization',
+                file: resolve(themeDir, 'userAnalysis/pages/UserAnalysisVisualizationPage.vue'),
+            })
         })
 
         nuxt.hook('imports:dirs', (dirs) => {
