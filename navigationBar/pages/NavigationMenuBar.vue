@@ -34,6 +34,7 @@
 import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAccountStore } from '../../account/stores/accountStore.ts'
+import anime from 'animejs';
 
 const router = useRouter()
 const route = useRoute()
