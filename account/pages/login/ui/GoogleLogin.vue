@@ -2,27 +2,21 @@
     <button class="google-login-btn" @click="googleLoginClick"></button>
 </template>
 
-<script>
-const googleAuthenticationModule = 'googleAuthenticationModule'
+<script setup>
+import { useGoogleAuthenticationStore } from '../../../../googleAuthentication/stores/googleAuthenticationStore.ts'
 
-export default {
-    setup() {
-        const store = useStore()
-        const googleLoginClick = async () => {
-            console.log("googlelogin클릭")
-            await store.dispatch("googleAuthenticationModule/requestGoogleOauthRedirectionToDjango")
-        }
-        return {
-            googleLoginClick
-        }
-    },
+const GoogleAuthenticationStore = useGoogleAuthenticationStore()
+
+const googleLoginClick = async () => {
+    console.log("googleLoginClick")
+    await GoogleAuthenticationStore.requestGoogleOauthRedirectionToDjango()
 }
-</script>
+</script> 
 
 <style scoped>
 .google-login-btn {
     margin: 10px 0;
-    background-image: url("@/assets/images/fixed/login/google_login_round.png");
+    background-image: url("@/assets/fixed/login/google_login_round.png");
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
