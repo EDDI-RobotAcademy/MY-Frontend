@@ -14,7 +14,7 @@
     "animejs": "^3.2.2",
     "axios": "^1.7.7",
     "chart.js": "^4.4.5",
-    "nuxt": "^3.13.0",
+    "nuxt": "^3.13.2",
     "pinia": "^2.2.4",
     "vue": "^3.5.12",
     "vue-router": "latest",
