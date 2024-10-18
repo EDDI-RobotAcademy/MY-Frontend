@@ -8,6 +8,7 @@ export default defineNuxtConfig({
     './account/nuxt.config.ts',
     './survey/nuxt.config.ts',
     './userAnalysis/nuxt.config.ts',
+    './kakaoAuthentication/nuxt.config.ts',
   ],
 
   css: [
@@ -32,6 +33,7 @@ export default defineNuxtConfig({
     '~/account/index.ts',
     '~/survey/index.ts',
     '~/userAnalysis/index.ts',
+    '~/kakaoAuthentication/index.ts',
   ],
 
   imports: {
