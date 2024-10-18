@@ -13,7 +13,7 @@ export const useAccountStore = defineStore('accountStore', {
       const { djangoAxiosInst } = createAxiosInstances()
 
       try {
-        const response = await djangoAxiosInst.post('/account/email-duplication-check', { email })
+        const response = await djangoAxiosInst.post('/user_profile/email-duplication-check', { email })
         return response.data.isDuplicate
       } catch (error) {
         console.error('이메일 중복 체크 중 에러가 발생했습니다:', error)
