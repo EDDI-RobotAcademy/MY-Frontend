@@ -5,7 +5,7 @@
       <h4>쿠잉 서비스 사용 경험에 대해 피드백을 남겨주시면<br>더 좋은 서비스를 만드는데에 사용하겠습니다.</h4>
     </div>
     <div class="survey-container">
-      <div v-for="(question, index) in questions" :key="index" :ref="`question-${index}`" class="question-box">
+      <div v-for="(question, index) in questions" :key="index" :ref="el => questionRefs[index] = el" class="question-box">
         <v-card>
           <v-card-title>
             <h2>{{ question.question_text }}
@@ -105,6 +105,7 @@ const surveyId = ref('1')
 const questions = ref([])
 const selections = ref([])
 const errors = ref([])
+const questionRefs = ref([])
 
 const loadSurvey = async () => {
   try {
@@ -170,11 +171,15 @@ const submitSurvey = async () => {
   })
 
   if (hasError) {
-    // 첫 번째 에러로 스크롤
-    if (firstErrorIndex !== -1) {
-      document.querySelector(`#question-${firstErrorIndex}`)?.scrollIntoView({ behavior: 'smooth' })
+  // 첫 번째 에러로 스크롤 (Vue의 $refs 사용)
+    if (firstErrorIndex !== -1 && questionRefs.value[firstErrorIndex]) {
+      const errorElement = questionRefs.value[firstErrorIndex]
+      console.log("errorElement", errorElement)
+      if (errorElement) {
+        errorElement.scrollIntoView({ behavior: 'smooth' })
+      }
     }
-    return
+  return  
   }
   console.log("설문 제출 시 에러 확인 로직 실행")
 
