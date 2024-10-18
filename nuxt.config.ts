@@ -1,6 +1,11 @@
 import { defineNuxtConfig } from 'nuxt/config';
 
 export default defineNuxtConfig({
+  app: {
+    head: {
+      title: '쿠잉 (COOING)'
+    }
+  },
   compatibilityDate: '2024-04-03',
   devtools: { enabled: true },
   extends: [
