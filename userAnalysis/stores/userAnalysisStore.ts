@@ -64,12 +64,15 @@ export const useUserAnalysisStore = defineStore('userAnalysisStore', {
 
     async requestSubmitAnswerToDjango(payload: {
       user_analysis_answer: UserAnalysisInputAnswer[],
-      account_id: string | null
+      userToken: string | null
     }): Promise<any> {
+      const { user_analysis_answer, userToken } = payload
       const { djangoAxiosInst } = createAxiosInstances()
 
       try {
-        const response = await djangoAxiosInst.post('user_analysis/submit-answer', payload)
+        const userToken = localStorage.getItem('userToken')
+        const response = await djangoAxiosInst.post('user_analysis/submit-answer',{ 
+          user_analysis_answer, userToken })
         return response.data
       } catch (error) {
         console.log('requestSubmitAnswerToDjango() 중 에러 발생')

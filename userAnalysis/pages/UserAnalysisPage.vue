@@ -178,10 +178,10 @@ const submitSurvey = async () => {
   }))
   console.log("Survey submitted:", JSON.stringify(questions.value))
 
-  const accountId = null
+  const userToken = null
 
   try {
-    const response = await userAnalysisStore.requestSubmitAnswerToDjango({ user_analysis_answer: UserAnalysisInputAnswers, account_id: accountId })
+    const response = await userAnalysisStore.requestSubmitAnswerToDjango({ user_analysis_answer: UserAnalysisInputAnswers, userToken: userToken })
     console.log('설문이 제출되었습니다:', response)
 
     const surveyData = {
