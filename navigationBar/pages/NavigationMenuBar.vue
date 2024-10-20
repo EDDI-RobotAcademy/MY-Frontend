@@ -8,6 +8,9 @@
                     <button class="menu-item button" data-text="성향 분석하기" @click="goToUserAnalysisPage">
                         <span>성향 분석하기</span>
                     </button>
+                    <button class="menu-item button" data-text="인플루언서 분석하기" @click="goToInfluencerAnalysisPage">
+                        <span>인플루언서 분석하기</span>
+                    </button>
                 </div>
             </div>
             <div class="right-menu">
@@ -87,6 +90,7 @@ const goToHomePage = () => router.push("/")
 const goToLoginPage = () => router.push("/login")
 const goToSurveyPage = () => router.push("/survey")
 const goToUserAnalysisPage = () => router.push("/user-analysis")
+const goToInfluencerAnalysisPage = () => router.push("/influencer-analysis")
 const goToSurveyDashboardPage = () => router.push("/survey/dashboard")
 const goToUserAnalysisDashboardPage = () => router.push("/user-analysis/dashboard")
 const goToSurveyVisualizationPage = () => router.push("/survey/visualization")
