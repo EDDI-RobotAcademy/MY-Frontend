@@ -1,22 +1,18 @@
 <template>
   <BoardAddCategoryButton>
   </BoardAddCategoryButton>
-  <BoardCategoryListPage>
+  <BoardCategoryListPage v-model="selectedCategoryId" ref="categoryList">
   </BoardCategoryListPage>
-  <BoardWriteButton>
+  <BoardWriteButton :selectedCategoryId="selectedCategoryId">
   </BoardWriteButton>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref } from 'vue'
 import BoardAddCategoryButton from '../../ui/BoardAddCategoryButton.vue'
 import BoardCategoryListPage from '../../ui/BoardCategoryListPage.vue'
 import BoardWriteButton from '../../ui/BoardWriteButton.vue'
 
-export default {
-  components: {
-    BoardAddCategoryButton,
-    BoardCategoryListPage,
-    BoardWriteButton
-  }
-}
+const selectedCategoryId = ref<number | null>(null)
+const categoryList = ref<InstanceType<typeof BoardCategoryListPage> | null>(null)
 </script>
