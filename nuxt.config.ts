@@ -14,7 +14,7 @@ export default defineNuxtConfig({
     './survey/nuxt.config.ts',
     './userAnalysis/nuxt.config.ts',
     './kakaoAuthentication/nuxt.config.ts',
-    './googleAuthentication/nuxt.config.ts',
+    './influencerAnalysis/nuxt.config.ts',
   ],
 
   css: [
@@ -40,7 +40,7 @@ export default defineNuxtConfig({
     '~/survey/index.ts',
     '~/userAnalysis/index.ts',
     '~/kakaoAuthentication/index.ts',
-    '~/googleAuthentication/index.ts'
+    '~/influencerAnalysis/index.ts',
   ],
 
   imports: {
@@ -52,7 +52,8 @@ export default defineNuxtConfig({
       MAIN_API_URL: process.env.MAIN_API_URL,
       AI_BASE_URL: process.env.AI_BASE_URL,
       AWS_REGION: process.env.VUE_APP_AWS_REGION,
-      AWS_S3_IDENTITY_POOL: process.env.VUE_APP_AWS_S3_IDENTITY_POOL_ID
+      AWS_S3_IDENTITY_POOL: process.env.VUE_APP_AWS_S3_IDENTITY_POOL_ID,
+      YOUTUBE_API_KEY: process.env.VUE_APP_YOUTUBE_API_KEY
     }
   }
 })
