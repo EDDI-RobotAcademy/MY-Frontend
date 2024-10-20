@@ -12,9 +12,14 @@ export default defineNuxtModule({
 
         nuxt.hook('pages:extend', (pages) => {
             pages.push({
-                name: 'BoardPage',
+                name: 'BoardListPage',
                 path: '/board/list',
-                file: resolve(themeDir, 'board/pages/BoardListPage.vue'),
+                file: resolve(themeDir, 'board/pages/list/BoardListPage.vue'),
+            })
+            pages.push({
+                name: 'BoardRegisterPage',
+                path: '/board/register',
+                file: resolve(themeDir, 'board/pages/register/BoardRegisterPage.vue'),
             })
         })
 
