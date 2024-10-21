@@ -14,6 +14,11 @@
                 </div>
             </div>
             <div class="right-menu">
+                <div class="board-container" ref="boardContainer">
+                    <button class="menu-item button" data-text="네트워킹" @click="goToBoardPage">
+                        <span>네트워킹</span>
+                    </button>
+                </div>
                 <div class="feedback-container" ref="feedbackContainer">
                     <button class="menu-item button" data-text="피드백" @click="goToSurveyPage">
                         <span>피드백</span>
@@ -89,6 +94,7 @@ const toggleAdminMenu = () => {
 const goToHomePage = () => router.push("/")
 const goToLoginPage = () => router.push("/login")
 const goToSurveyPage = () => router.push("/survey")
+const goToBoardPage = () => router.push("/board/list")
 const goToUserAnalysisPage = () => router.push("/user-analysis")
 const goToInfluencerAnalysisPage = () => router.push("/influencer-analysis")
 const goToSurveyDashboardPage = () => router.push("/survey/dashboard")
@@ -266,6 +272,12 @@ onBeforeUnmount(() => {
 .right-menu {
     display: flex;
     align-items: center;
+}
+
+.board-container {
+    margin-right: 20px;
+    transform-origin: top;
+    overflow: hidden;
 }
 
 .feedback-container {
