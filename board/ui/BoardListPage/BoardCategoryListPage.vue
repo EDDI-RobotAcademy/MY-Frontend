@@ -1,36 +1,28 @@
 <template>
-    <div class="board-category-list">
-        <h2>카테고리 목록</h2>
-        <p>총 카테고리 수: {{ categories.length }}</p>
-        <div class="category-buttons">
-            <button v-for="category in categories" :key="category.categoryId" class="category-button"
-                :class="{ 'selected': modelValue === category.categoryId }"
-                @click="selectCategory(category.categoryId)">
-                {{ category.name }}
-            </button>
-        </div>
-    </div>
+    <nav class="category-nav">
+        <ul class="category-buttons">
+            <li v-for="category in categories" :key="category.categoryId">
+                <button class="category-button" :class="{ 'selected': modelValue === category.categoryId }"
+                    @click="selectCategory(category.categoryId)">
+                    {{ category.name }}
+                </button>
+            </li>
+        </ul>
+    </nav>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useBoardStore } from '../../stores/boardStore'
-
-interface Category {
-    categoryId: number;
-    name: string;
-}
 
 const props = defineProps<{
     modelValue: number | null
 }>()
 
-const emit = defineEmits<{
-    (e: 'update:modelValue', value: number | null): void
-}>()
+const emit = defineEmits(['update:modelValue'])
 
 const boardStore = useBoardStore()
-const categories = ref<Category[]>([])
+const categories = ref<{ categoryId: number; name: string }[]>([])
 
 const fetchCategories = async () => {
     try {
@@ -48,53 +40,29 @@ onMounted(fetchCategories)
 </script>
 
 <style scoped>
-.category-button.selected {
-    background-color: #45a049;
-}
-
-.board-category-list {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 20px;
+.category-nav {
+    flex: 1;
+    overflow-x: auto;
 }
 
 .category-buttons {
     display: flex;
-    flex-wrap: wrap;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
     gap: 10px;
-    margin-top: 20px;
 }
 
-.category-button,
-.addCategory__button {
-    background-color: #4CAF50;
-    border: none;
+.category-button {
+    background-color: #3498db;
     color: white;
-    padding: 10px 20px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    cursor: pointer;
-    border-radius: 4px;
-    transition: background-color 0.3s;
+    padding: 8px 16px;
+    font-size: 14px;
+    border-radius: 20px;
 }
 
-.category-button:hover,
-.addCategory__button:hover {
-    background-color: #45a049;
-}
-
-.addCategory__form {
-    margin-top: 10px;
-}
-
-.addCategory__input {
-    padding: 10px;
-    font-size: 16px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    margin-right: 10px;
+.category-button.selected,
+.category-button:hover {
+    background-color: #2980b9;
 }
 </style>
