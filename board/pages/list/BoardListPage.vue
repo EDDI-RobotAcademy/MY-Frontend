@@ -14,7 +14,7 @@
       </div>
       <div class="bottom-bar">
         <BoardAddCategoryButton v-if="isAdmin" @categoryAdded="refreshCategories" />
-        <BoardWriteButton :selectedCategoryId="selectedCategoryId" />
+        <BoardWriteButton v-if="isAuthenticated" :selectedCategoryId="selectedCategoryId" />
       </div>
     </div>
   </div>
@@ -31,6 +31,7 @@ import BoardContent from '../../ui/BoardListPage/BoardContent.vue'
 import { useAuthenticationStore } from '@/authentication/stores/authenticationStore'
 
 const authenticationStore = useAuthenticationStore();
+const isAuthenticated = computed(() => authenticationStore.isAuthenticated);
 const isAdmin = computed(() => authenticationStore.isAdmin);
 
 const selectedCategoryId = ref<number | null>(null)
