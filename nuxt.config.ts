@@ -50,14 +50,20 @@ export default defineNuxtConfig({
   imports: {
     dirs: ['./stores']
   },
-
   runtimeConfig: {
     public: {
       MAIN_API_URL: process.env.MAIN_API_URL,
       AI_BASE_URL: process.env.AI_BASE_URL,
       AWS_REGION: process.env.VUE_APP_AWS_REGION,
       AWS_S3_IDENTITY_POOL: process.env.VUE_APP_AWS_S3_IDENTITY_POOL_ID,
-      YOUTUBE_API_KEY: process.env.VUE_APP_YOUTUBE_API_KEY
+      YOUTUBE_API_KEY: process.env.VUE_APP_YOUTUBE_API_KEY,
+      FIREBASE_API_KEY: process.env.VUE_APP_FIREBASE_API_KEY,
+      FIREBASE_AUTH_DOMAIN: process.env.VUE_APP_FIREBASE_AUTH_DOMAIN,
+      FIREBASE_DATABASE_URL: process.env.VUE_APP_FIREBASE_DATABASE_URL,
+      FIREBASE_PROJECT_ID: process.env.VUE_APP_FIREBASE_PROJECT_ID,
+      FIREBASE_STORAGE_BUCKET: process.env.VUE_APP_FIREBASE_STORAGE_BUCKET,
+      FIREBASE_MESSAGING_SENDER_ID: process.env.VUE_APP_FIREBASE_MESSAGING_SENDER_ID,
+      FIREBASE_APP_ID: process.env.VUE_APP_FIREBASE_APP_ID,
     }
   }
 })
