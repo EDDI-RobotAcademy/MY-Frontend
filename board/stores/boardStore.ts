@@ -1,11 +1,12 @@
 import axios from 'axios'
 import { defineStore } from 'pinia'
-
+import { createAxiosInstances } from '../../utility/axiosInstance'
 export const useBoardStore = defineStore('boardStore', {
     actions: {
         async addCategory(name: string): Promise<string> {
+            const { djangoAxiosInst } = createAxiosInstances()
             try {
-                const response = await axios.post('http://localhost:8000/board/create/category', { name })
+                const response = await djangoAxiosInst.post('board/create-category', { name })
                 return response.data.message
             } catch (error) {
                 if (axios.isAxiosError(error)) {
@@ -19,8 +20,9 @@ export const useBoardStore = defineStore('boardStore', {
             }
         },
         async getCategories() {
+            const { djangoAxiosInst } = createAxiosInstances()
             try {
-                const response = await axios.get('http://localhost:8000/board/get/categories')
+                const response = await djangoAxiosInst.get('board/get-categories')
                 return response.data
             } catch (error) {
                 console.error('카테고리를 가져오는 중 오류 발생:', error)
