@@ -9,8 +9,8 @@
         <BoardCategoryListPage v-model="selectedCategoryId" />
         <BoardSearchButton />
       </div>
-      <div class="board-content">
-        <!-- 게시글 목록 등 메인 컨텐츠 -->
+      <div class="content-wrapper">
+        <BoardContent />
       </div>
       <div class="bottom-bar">
         <BoardAddCategoryButton v-if="isAdmin" @categoryAdded="refreshCategories" />
@@ -21,12 +21,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import BoardCategoryListPage from '../../ui/BoardListPage/BoardCategoryListPage.vue'
 import BoardSearchButton from '../../ui/BoardListPage/BoardSearchButton.vue'
 import BoardAddCategoryButton from '../../ui/BoardListPage/BoardAddCategoryButton.vue'
 import BoardWriteButton from '../../ui/BoardListPage/BoardWriteButton.vue'
 import BoardChatForm from '../../ui/BoardListPage/BoardChatForm.vue'
+import BoardContent from '../../ui/BoardListPage/BoardContent.vue'
 import { useAuthenticationStore } from '@/authentication/stores/authenticationStore'
 
 const authenticationStore = useAuthenticationStore();
@@ -85,11 +86,10 @@ onMounted(() => {
   align-items: center;
 }
 
-.board-content {
+.content-wrapper {
   flex: 1;
   overflow-y: auto;
   padding: 20px;
-  background-color: white;
 }
 
 button {
