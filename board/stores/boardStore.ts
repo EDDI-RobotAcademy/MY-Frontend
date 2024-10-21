@@ -44,6 +44,16 @@ export const useBoardStore = defineStore('boardStore', {
                 console.error('글 등록 중 오류 발생:', error)
                 throw error
             }
-        }
+        },
+        async getBoardContent() {
+            const { djangoAxiosInst } = createAxiosInstances()
+            try {
+                const response = await djangoAxiosInst.get('board/get-allcontent')
+                return response.data
+            } catch (error) {
+                console.error('글 목록 가져오는 중 오류 발생:', error)
+                throw error
+            }
+        },
     }
 })

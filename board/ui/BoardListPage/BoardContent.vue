@@ -1,13 +1,14 @@
 <template>
     <div class="board-content">
-      <h2>게시글 목록</h2>
-      <ul v-if="posts.length > 0">
-        <li v-for="post in posts" :key="post.id" class="post-item">
-          <h3>{{ post.title }}</h3>
-          <p>{{ post.content.substring(0, 100) }}...</p>
-          <div class="post-meta">
-            <span>작성자: {{ post.author }}</span>
-            <span>작성일: {{ new Date(post.createdAt).toLocaleDateString() }}</span>
+      <ul v-if="boardContents.length > 0" class="board-list">
+        <li v-for="content in boardContents" :key="content.boardId" class="board-item">
+          <div class="board-header">
+            <h3>{{ content.title }}</h3>
+            <div class="board-meta">
+              <span>{{ content.profile_nickname }}</span>
+              <span>{{ formatDate(content.regDate) }}</span>
+              <span>{{ content.category_name }}</span>
+            </div>
           </div>
         </li>
       </ul>
@@ -17,51 +18,61 @@
   
   <script setup lang="ts">
   import { ref, onMounted } from 'vue';
+  import { useBoardStore } from '../../stores/boardStore'
   
-  // 임시로 게시글 데이터를 생성하는 함수
-  const generateDummyPosts = () => {
-    return Array.from({ length: 10 }, (_, i) => ({
-      id: i + 1,
-      title: `게시글 제목 ${i + 1}`,
-      content: `이것은 게시글 ${i + 1}의 내용입니다. 실제 게시글은 더 길고 자세한 내용을 포함할 것입니다.`,
-      author: `사용자${i + 1}`,
-      createdAt: new Date(Date.now() - Math.random() * 10000000000).toISOString()
-    }));
-  };
+  const boardStore = useBoardStore()
+  const boardContents = ref([]);
   
-  const posts = ref([]);
+  const fetchBoardContents = async () => {
+    try {
+      const response = await boardStore.getBoardContent()
+      console.log("response 출력", response)
+      boardContents.value = response.slice(0, 20);
+    } catch (error) {
+      console.error('게시글을 가져오는 중 오류 발생:', error)
+    }
+  }
   
-  onMounted(() => {
-    posts.value = generateDummyPosts();
-  });
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString();
+  }
+  
+  onMounted(fetchBoardContents)
   </script>
   
   <style scoped>
   .board-content {
     padding: 20px;
   }
-  
-  .post-item {
+  .board-list {
+    list-style-type: none;
+    padding: 0;
+  }
+  .board-item {
     border-bottom: 1px solid #eee;
     padding: 15px 0;
   }
-  
-  .post-item h3 {
-    margin: 0 0 10px 0;
-    color: #333;
+  .board-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
-  
-  .post-item p {
-    margin: 0 0 10px 0;
+  .board-header h3 {
+    margin: 0;
+    color: #333;
+    font-size: 1.1em;
+  }
+  .board-meta {
+    display: flex;
+    align-items: center;
+    font-size: 0.9em;
     color: #666;
   }
-  
-  .post-meta {
-    font-size: 0.8em;
-    color: #999;
+  .board-meta span {
+    margin-left: 15px;
   }
-  
-  .post-meta span {
-    margin-right: 15px;
+  .board-meta span:first-child {
+    margin-left: 0;
   }
   </style>
