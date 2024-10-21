@@ -1,54 +1,69 @@
 <template>
-    <button @click="register" :disabled="!isValid">글 등록</button>
-  </template>
-  
-  <script setup lang="ts">
-  import { computed } from 'vue';
-  
-  interface PostData {
+  <button @click="register" :disabled="!isValid">글 등록</button>
+</template>
+
+<script setup lang="ts">
+import { computed } from 'vue'
+import { useBoardStore } from '../../stores/boardStore'
+
+const boardStore = useBoardStore()
+
+const props = defineProps<{
+  postData: {
     writer: string;
     title: string;
     content: string;
     category_id: number | null;
   }
-  
-  const props = defineProps<{
-    postData: PostData;
-  }>();
-  
-  const emit = defineEmits<{
-    (e: 'register', data: PostData): void;
-  }>();
-  
-  const isValid = computed(() => {
-    return props.postData.writer && 
-           props.postData.title && 
-           props.postData.content && 
-           props.postData.category_id !== null;
-  });
-  
-  const register = () => {
-    if (isValid.value) {
-      emit('register', props.postData);
+}>()
+
+const emit = defineEmits<{
+  (e: 'registerSuccess', data: any): void;
+  (e: 'registerError', error: any): void;
+}>()
+
+const isValid = computed(() => {
+  const { writer, title, content, category_id } = props.postData
+  return writer && title && content && category_id !== null
+})
+
+const register = async () => {
+  if (isValid.value) {
+    const userToken = localStorage.getItem("userToken")
+    if (!userToken) {
+      emit('registerError', new Error('사용자 인증 정보가 없습니다.'))
+      return
     }
-  };
-  </script>
-  
-  <style scoped>
-  button {
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px 15px;
-    border: none;
-    cursor: pointer;
+
+    try {
+      const postDataWithToken = {
+        ...props.postData,
+        userToken
+      }
+      const result = await boardStore.registerPost(postDataWithToken)
+      emit('registerSuccess', result)
+    } catch (error) {
+      emit('registerError', error)
+    }
   }
-  
-  button:hover {
-    background-color: #45a049;
-  }
-  
-  button:disabled {
-    background-color: #cccccc;
-    cursor: not-allowed;
-  }
-  </style>
+}
+</script>
+
+<style scoped>
+button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+</style>

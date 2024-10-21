@@ -33,10 +33,12 @@ export const useBoardStore = defineStore('boardStore', {
             writer: string,
             title: string,
             content: string,
-            category_id: number
-        }) {
+            category_id: number,
+        }) 
+        {
             try {
-                const response = await axios.post('http://localhost:8000/board/register', postData)
+                const { djangoAxiosInst } = createAxiosInstances()
+                const response = await djangoAxiosInst.post('board/register', postData)
                 return response.data
             } catch (error) {
                 console.error('글 등록 중 오류 발생:', error)
