@@ -2,7 +2,7 @@
     <div class="chat-container">
         <div v-if="!nickname" class="login-form">
             <h2>채팅</h2>
-            <input v-model="inputNickname" placeholder="닉네임" class="inputNickname" @keyup.enter="setNickname" />
+            <input v-model="inputNickname" placeholder="닉네임을 입력하세요." class="inputNickname" @keyup.enter="setNickname" />
             <button @click="setNickname" class="button">입장</button>
         </div>
         <div v-else class="chat-box">
@@ -196,6 +196,8 @@ export default {
     border: 1px solid #ccc;
     border-radius: 20px;
     margin-bottom: 20px;
+    text-align: center;
+    font-size: small;
 }
 
 .button {

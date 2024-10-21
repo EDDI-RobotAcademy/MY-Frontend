@@ -50,24 +50,25 @@ onMounted(() => {
 <style scoped>
 .board-container {
   display: flex;
-  height: 100vh;
+  height: 100%;
   background-color: #f5f5f5;
 }
 
 .chat {
   width: 400px;
   min-width: 400px;
-  background-color: #2c3e50;
+  background-color: #34495e;
   color: white;
   padding: 20px;
+  padding-left: 30px;
   display: flex;
   flex-direction: column;
 }
 
 .channel-title {
   font-size: 20px;
-  margin-bottom: 20px;
-  color: #ecf0f1;
+  margin: 50px 0px 10px 10px;
+  color: #ffffff;
 }
 
 .main-content {
@@ -75,11 +76,19 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  background-color: #34495e;
 }
 
-.top-bar,
+.top-bar {
+  padding: 80px 35px 0px 15px;
+  background-color: #34495e;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .bottom-bar {
-  padding: 15px 20px;
+  padding: 0px 10px 20px 20px;
   background-color: #34495e;
   display: flex;
   justify-content: space-between;
@@ -87,9 +96,13 @@ onMounted(() => {
 }
 
 .content-wrapper {
-  flex: 1;
+  width: 95%;
+  height: 100%;
   overflow-y: auto;
   padding: 20px;
+  background-color: white;
+  border-radius: 8px;  /* 모서리를 둥글게 */
+  margin: 20px;  /* 외부 여백 추가 */
 }
 
 button {
