@@ -13,7 +13,7 @@
         <!-- 게시글 목록 등 메인 컨텐츠 -->
       </div>
       <div class="bottom-bar">
-        <BoardAddCategoryButton @categoryAdded="refreshCategories" />
+        <BoardAddCategoryButton v-if="isAdmin" @categoryAdded="refreshCategories" />
         <BoardWriteButton :selectedCategoryId="selectedCategoryId" />
       </div>
     </div>
@@ -27,12 +27,23 @@ import BoardSearchButton from '../../ui/BoardListPage/BoardSearchButton.vue'
 import BoardAddCategoryButton from '../../ui/BoardListPage/BoardAddCategoryButton.vue'
 import BoardWriteButton from '../../ui/BoardListPage/BoardWriteButton.vue'
 import BoardChatForm from '../../ui/BoardListPage/BoardChatForm.vue'
+import { useAuthenticationStore } from '@/authentication/stores/authenticationStore'
+
+const authenticationStore = useAuthenticationStore();
+const isAdmin = computed(() => authenticationStore.isAdmin);
 
 const selectedCategoryId = ref<number | null>(null)
+const checkAndSetAuthStatus = () => {
+  authenticationStore.checkAndSetAuthStatus()
+}
 
 const refreshCategories = () => {
   // 카테고리 새로고침 로직 구현
 }
+
+onMounted(() => {
+    checkAndSetAuthStatus()
+})
 </script>
 
 <style scoped>
@@ -43,8 +54,8 @@ const refreshCategories = () => {
 }
 
 .chat {
-  width: 400px; /* 고정 너비 설정 */
-  min-width: 400px; /* 최소 너비 설정 */
+  width: 400px;
+  min-width: 400px;
   background-color: #2c3e50;
   color: white;
   padding: 20px;
@@ -65,7 +76,8 @@ const refreshCategories = () => {
   overflow: hidden;
 }
 
-.top-bar, .bottom-bar {
+.top-bar,
+.bottom-bar {
   padding: 15px 20px;
   background-color: #34495e;
   display: flex;
