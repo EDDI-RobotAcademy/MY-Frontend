@@ -19,7 +19,7 @@ const props = defineProps<{
     modelValue: number | null
 }>()
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'categoryContentLoaded'])
 
 const boardStore = useBoardStore()
 const categories = ref<{ categoryId: number; name: string }[]>([])
@@ -32,8 +32,32 @@ const fetchCategories = async () => {
     }
 }
 
-const selectCategory = (categoryId: number) => {
+const selectCategory = async (categoryId: number) => {
     emit('update:modelValue', categoryId)
+    try {
+        const response = await boardStore.getCategoriesContent(categoryId)
+
+        let dataToProcess = response;
+        if (response && response.data !== undefined) {
+            dataToProcess = response.data;
+        }
+
+        let filteredContent = [];
+        if (Array.isArray(dataToProcess)) {
+            filteredContent = dataToProcess.filter(
+                (item: any) => item.categoryBoardId === categoryId
+            );
+        } else if (typeof dataToProcess === 'object' && dataToProcess !== null) {
+            filteredContent = [dataToProcess].filter(
+                (item: any) => item.categoryBoardId === categoryId
+            );
+        }
+
+        emit('categoryContentLoaded', filteredContent)
+    } catch (error) {
+        console.error('카테고리 내용을 가져오는 중 오류 발생:', error)
+        emit('categoryContentLoaded', [])
+    }
 }
 
 onMounted(fetchCategories)
