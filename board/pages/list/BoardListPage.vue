@@ -1,6 +1,6 @@
 <template>
   <div class="board-container">
-    <div class="sidebar">
+    <div class="chat">
       <h2 class="channel-title">채팅 영역</h2>
       <BoardChatForm></BoardChatForm>
     </div>
@@ -42,9 +42,9 @@ const refreshCategories = () => {
   background-color: #f5f5f5;
 }
 
-.sidebar {
-  width: 300px; /* 고정 너비 설정 */
-  min-width: 300px; /* 최소 너비 설정 */
+.chat {
+  width: 400px; /* 고정 너비 설정 */
+  min-width: 400px; /* 최소 너비 설정 */
   background-color: #2c3e50;
   color: white;
   padding: 20px;
