@@ -34,8 +34,7 @@ export const useBoardStore = defineStore('boardStore', {
             title: string,
             content: string,
             category_id: number,
-        }) 
-        {
+        }) {
             try {
                 const { djangoAxiosInst } = createAxiosInstances()
                 const response = await djangoAxiosInst.post('board/register', postData)
@@ -52,6 +51,18 @@ export const useBoardStore = defineStore('boardStore', {
                 return response.data
             } catch (error) {
                 console.error('글 목록 가져오는 중 오류 발생:', error)
+                throw error
+            }
+        },
+        async getCategoriesContent(categoryId: number) {
+            const { djangoAxiosInst } = createAxiosInstances()
+            try {
+                const response = await djangoAxiosInst.post('board/list-by-category', {
+                    categoryId: categoryId
+                })
+                return response.data
+            } catch (error) {
+                console.error('카테고리별 글 목록 가져오는 중 오류 발생:', error)
                 throw error
             }
         },

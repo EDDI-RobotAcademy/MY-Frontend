@@ -10,7 +10,7 @@
         <BoardSearchButton />
       </div>
       <div class="content-wrapper">
-        <BoardContent />
+        <BoardContent :selectedCategoryId="selectedCategoryId" />
       </div>
       <div class="bottom-bar">
         <BoardAddCategoryButton v-if="isAdmin" @categoryAdded="refreshCategories" />
