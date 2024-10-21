@@ -1,19 +1,19 @@
 <template>
-  <div class="board-content">
-      <ul v-if="boardContents.length > 0" class="board-list">
-          <li v-for="content in boardContents" :key="content.boardId" class="board-item">
-              <div class="board-header">
-                  <h3>{{ content.title }}</h3>
-                  <div class="board-meta">
-                      <span>{{ content.profile_nickname }}</span>
-                      <span>{{ formatDate(content.regDate) }}</span>
-                      <span>{{ content.category_name }}</span>
-                  </div>
-              </div>
-          </li>
-      </ul>
-      <p v-else>{{ errorMessage || '게시글이 없습니다.' }}</p>
-  </div>
+    <div class="board-content">
+        <ul v-if="boardContents.length > 0" class="board-list">
+            <li v-for="content in boardContents" :key="content.boardId" class="board-item">
+                <div class="board-header">
+                    <h3>{{ content.title }}</h3>
+                    <div class="board-meta">
+                        <span>{{ content.profile_nickname }}</span>
+                        <span>{{ formatDate(content.regDate) }}</span>
+                        <span>{{ content.category_name }}</span>
+                    </div>
+                </div>
+            </li>
+        </ul>
+        <p v-else>{{ errorMessage || '게시글이 없습니다.' }}</p>
+    </div>
 </template>
 
 <script setup lang="ts">
@@ -21,7 +21,7 @@ import { ref, onMounted, watch } from 'vue';
 import { useBoardStore } from '../../stores/boardStore'
 
 const props = defineProps<{
-  selectedCategoryId: number | null
+    selectedCategoryId: number | null
 }>()
 
 const boardStore = useBoardStore()
@@ -71,49 +71,43 @@ onMounted(() => {
 
 <style scoped>
 .board-content {
-  padding: 20px;
-  background-color: white;
-  border-radius: 4px;
+    padding: 20px;
 }
 
 .board-list {
-  list-style-type: none;
-  padding: 0;
+    list-style-type: none;
+    padding: 0;
 }
 
 .board-item {
-  border-bottom: 1px solid #eee;
-  padding: 15px 0;
-}
-
-.board-item:last-child {
-  border-bottom: none;
+    border-bottom: 1px solid #eee;
+    padding: 15px 0;
 }
 
 .board-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .board-header h3 {
-  margin: 0;
-  color: #333;
-  font-size: 1.1em;
+    margin: 0;
+    color: #333;
+    font-size: 1.1em;
 }
 
 .board-meta {
-  display: flex;
-  align-items: center;
-  font-size: 0.9em;
-  color: #666;
+    display: flex;
+    align-items: center;
+    font-size: 0.9em;
+    color: #666;
 }
 
 .board-meta span {
-  margin-left: 15px;
+    margin-left: 15px;
 }
 
 .board-meta span:first-child {
-  margin-left: 0;
+    margin-left: 0;
 }
 </style>
