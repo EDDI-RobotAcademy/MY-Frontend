@@ -65,18 +65,20 @@ const actions: UserAnalysisInputActions = {
         }): Promise<any> {
         try {
             console.log('sendUserAnalysisToFastAPI()');
-            
+            const command = 7
             // Payload 구조에 맞게 데이터를 준비
             const response = await axiosInst.fastapiAxiosInst.post(
-                '/growth-strategy', {
-                    gender: payload.gender,
-                    age_group: payload.age_group,
-                    mbti: payload.mbti,
-                    topic: payload.topic,
-                    strength: payload.strength,
-                    reveal: payload.reveal,
-                    platform: payload.platform,
-                    interested_influencer: payload.interested_influencer
+                '/request-ai-command', { "command" : command,
+                    "data" : [
+                        payload.gender,
+                        payload.age_group,
+                        payload.mbti,
+                        payload.topic,
+                        payload.strength,
+                        payload.reveal,
+                        payload.platform,
+                        payload.interested_influencer
+                    ]
                 }
             );
             
