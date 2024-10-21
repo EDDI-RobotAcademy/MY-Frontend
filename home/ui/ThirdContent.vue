@@ -117,7 +117,7 @@
   <style scoped>
   .third-content {
     background-color: #f5f5f5;
-    min-height: 100vh;
+    min-height: 80vh;
     display: flex;
     align-items: center;
     padding: 80px 0;

@@ -69,6 +69,7 @@ const navbarContainer = ref(null)
 const navbarBackground = ref(null)
 const centerMenuContainer = ref(null)
 const feedbackContainer = ref(null)
+const boardContainer = ref(null)
 
 const authenticationStore = useAuthenticationStore();
 const isAuthenticated = computed(() => authenticationStore.isAuthenticated);
@@ -80,8 +81,8 @@ const currentColor = ref('rgb(255, 255, 255)')
 const isScrollingUp = ref(false)
 const colorRegions = [
     { threshold: 0, color: 'rgb(255, 255, 255)' },
-    { threshold: 1500, color: 'rgb(0, 0, 0)' },
-    { threshold: 2260, color: 'rgb(255, 255, 255)' },
+    { threshold: 1300, color: 'rgb(0, 0, 0)' },
+    { threshold: 2050, color: 'rgb(255, 255, 255)' },
 ]
 const isAdminMenuOpen= ref(false)
 
@@ -152,7 +153,7 @@ const animateNavbar = (show) => {
 
     if (show) {
         anime({
-            targets: [navbarBackground.value, feedbackContainer.value],
+            targets: [navbarBackground.value, , boardContainer.value, feedbackContainer.value],
             scaleY: [0, 1],
             duration: duration,
             easing: easing
@@ -166,7 +167,7 @@ const animateNavbar = (show) => {
         })
     } else {
         anime({
-            targets: [navbarBackground.value, feedbackContainer.value],
+            targets: [navbarBackground.value, boardContainer.value, feedbackContainer.value],
             scaleY: [1, 0],
             duration: duration,
             easing: easing
@@ -194,6 +195,9 @@ watch(() => route.path, (to) => {
         }
         if (feedbackContainer.value) {
             feedbackContainer.value.style.transform = 'scaleY(1)'
+        }
+        if (boardContainer.value) {
+            boardContainer.value.style.transform = 'scaleY(1)'
         }
     }
 })
@@ -373,7 +377,6 @@ onBeforeUnmount(() => {
   color: rgba(255, 255, 255, 0.7);
   cursor: pointer;
   font-size: 12px;
-  font-weight: bold;
   transition: color 0.3s ease;
 }
 

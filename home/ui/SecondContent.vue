@@ -101,7 +101,7 @@
   <style scoped>
   .second-content {
     background-color: #000000;
-    min-height: 100vh;
+    min-height: 80vh;
     display: flex;
     align-items: center;
   }
