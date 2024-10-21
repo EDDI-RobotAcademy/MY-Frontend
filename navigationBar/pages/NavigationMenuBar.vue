@@ -264,6 +264,7 @@ onBeforeUnmount(() => {
     height: 100%;
     display: flex;
     align-items: center;
+    margin-left: 10%;
     transform-origin: top;
     overflow: hidden;
 }
