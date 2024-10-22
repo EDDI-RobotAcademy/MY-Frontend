@@ -21,13 +21,13 @@
             </div>
         </div>
 
-        <div v-else-if="error" class="error-message">
-            {{ error }}
+        <div class="author-actions">
+            <!-- <router-link :to="{ name: 'BoardModifyPage', params: { boardId } }">
+                <button class="btn btn-modify">수정</button>
+            </router-link> -->
+            <button class="btn btn-delete" @click="boardDelete">삭제</button>
         </div>
 
-        <div v-else class="loading">
-            로딩 중...
-        </div>
     </div>
 </template>
 
@@ -37,6 +37,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { useBoardStore } from '../../stores/boardStore';
 
 const route = useRoute();
+const router = useRouter()
 const boardStore = useBoardStore();
 
 const boardId = parseInt(route.params.boardId as string);
@@ -65,6 +66,18 @@ const formatDate = (dateString: string) => {
         hour: '2-digit',
         minute: '2-digit'
     });
+};
+
+const boardDelete = async () => {
+    if (confirm('정말 삭제하시겠습니까?')) {
+        try {
+            await boardStore.deleteBoardContent(boardId);
+            router.push("/board/list");
+        } catch (err) {
+            error.value = '게시글 삭제에 실패했습니다.';
+            console.error('Error deleting board:', err);
+        }
+    }
 };
 
 onMounted(() => {
