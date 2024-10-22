@@ -9,7 +9,7 @@
 
     <Transition name="slide">
       <div v-if="isOpen" class="chat-panel">
-        <ChatComponent />
+        <ChatComponent :nickname="nickname"/>
       </div>
     </Transition>
   </div>
@@ -18,6 +18,13 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import ChatComponent from '../BoardListPage/BoardChatForm.vue'
+
+const props = defineProps({
+  nickname: {
+    type: String,
+    required: true
+  }
+})
 
 const isOpen = ref(false)
 

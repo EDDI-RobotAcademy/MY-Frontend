@@ -23,89 +23,91 @@
     </div>
 </template>
 
-<script>
+<script setup lang="ts">
 import { ref, onMounted, onUnmounted, nextTick } from 'vue';
 import { initializeApp } from 'firebase/app';
 import { getDatabase, ref as dbRef, push, onChildAdded } from 'firebase/database';
 
+const props = defineProps({
+    nickname: {
+        type: String,
+        default: ''
+    }
+});
 
-export default {
-    setup() {
-        const config = useRuntimeConfig();
-        const API_KEY = config.public.FIREBASE_API_KEY;
-        const AUTH_DOMAIN = config.public.FIREBASE_AUTH_DOMAIN;
-        const DATABASE_URL = config.public.FIREBASE_DATABASE_URL;
-        const PROJECT_ID = config.public.FIREBASE_PROJECT_ID;
-        const STORAGE_BUCKET = config.public.FIREBASE_STORAGE_BUCKET;
-        const MESSAGING_SENDER_ID = config.public.FIREBASE_MESSAGING_SENDER_ID;
-        const APP_ID = config.public.FIREBASE_APP_ID;
+const config = useRuntimeConfig();
+const API_KEY = config.public.FIREBASE_API_KEY;
+const AUTH_DOMAIN = config.public.FIREBASE_AUTH_DOMAIN;
+const DATABASE_URL = config.public.FIREBASE_DATABASE_URL;
+const PROJECT_ID = config.public.FIREBASE_PROJECT_ID;
+const STORAGE_BUCKET = config.public.FIREBASE_STORAGE_BUCKET;
+const MESSAGING_SENDER_ID = config.public.FIREBASE_MESSAGING_SENDER_ID;
+const APP_ID = config.public.FIREBASE_APP_ID;
 
-        const firebaseConfig = {
-            apiKey: API_KEY,
-            authDomain: AUTH_DOMAIN,
-            databaseURL: DATABASE_URL,
-            projectId: PROJECT_ID,
-            storageBucket: STORAGE_BUCKET,
-            messagingSenderId: MESSAGING_SENDER_ID,
-            appId: APP_ID
-        };
-        const nickname = ref('');
-        const inputNickname = ref('');
-        const messages = ref([]);
-        const newMessage = ref('');
-        const messageContainer = ref(null);
+const firebaseConfig = {
+    apiKey: API_KEY,
+    authDomain: AUTH_DOMAIN,
+    databaseURL: DATABASE_URL,
+    projectId: PROJECT_ID,
+    storageBucket: STORAGE_BUCKET,
+    messagingSenderId: MESSAGING_SENDER_ID,
+    appId: APP_ID
+};
+const inputNickname = ref('');
+const messages = ref([]);
+const newMessage = ref('');
+const messageContainer = ref(null);
 
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-        const messagesRef = dbRef(db, 'messages');
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const messagesRef = dbRef(db, 'messages');
 
-        const setNickname = () => {
-            if (inputNickname.value.trim()) {
-                nickname.value = inputNickname.value.trim();
-            }
-        };
-
-        const sendMessage = () => {
-            if (newMessage.value.trim() && nickname.value) {
-                push(messagesRef, {
-                    nickname: nickname.value,
-                    text: newMessage.value.trim(),
-                    timestamp: Date.now()
-                });
-                newMessage.value = '';
-            }
-        };
-
-        const scrollToBottom = () => {
-            nextTick(() => {
-                if (messageContainer.value) {
-                    messageContainer.value.scrollTop = messageContainer.value.scrollHeight;
-                }
-            });
-        };
-
-        onMounted(() => {
-            const unsubscribe = onChildAdded(messagesRef, (snapshot) => {
-                const message = snapshot.val();
-                message.id = snapshot.key;
-                messages.value.push(message);
-                scrollToBottom();
-            });
-
-            onUnmounted(unsubscribe);
-        });
-
-        return {
-            nickname,
-            inputNickname,
-            setNickname,
-            messages,
-            newMessage,
-            sendMessage,
-            messageContainer
-        };
+const setNickname = () => {
+    if (inputNickname.value.trim()) {
+        props.nickname = inputNickname.value.trim();
     }
 };
+
+const sendMessage = () => {
+    if (newMessage.value.trim() && props.nickname) {
+        push(messagesRef, {
+            nickname: props.nickname,
+            text: newMessage.value.trim(),
+            timestamp: Date.now()
+        });
+        newMessage.value = '';
+    }
+};
+
+const scrollToBottom = () => {
+    nextTick(() => {
+        if (messageContainer.value) {
+            messageContainer.value.scrollTop = messageContainer.value.scrollHeight;
+        }
+    });
+};
+
+onMounted(() => {
+    const unsubscribe = onChildAdded(messagesRef, (snapshot) => {
+        const message = snapshot.val();
+        message.id = snapshot.key;
+        messages.value.push(message);
+        scrollToBottom();
+    });
+
+    onUnmounted(unsubscribe);
+});
+
+// return {
+//     nickname,
+//     inputNickname,
+//     setNickname,
+//     messages,
+//     newMessage,
+//     sendMessage,
+//     messageContainer
+// };
+
 </script>
 
 <style scoped>
