@@ -95,6 +95,20 @@ export const useBoardStore = defineStore('boardStore', {
                 console.error('updateBoardContent 중 에러:', error)
                 throw error
             }
+        },
+        async checkAuthority(boardId: number, userToken: string) {
+            const { djangoAxiosInst } = createAxiosInstances()
+            try {
+                const userToken = localStorage.getItem('userToken')
+                console.log("userToken : ", userToken)
+                const response = await djangoAxiosInst.post(`board/check-authority/${boardId}`, {
+                    userToken: userToken
+                })
+                return response.data
+            } catch (error) {
+                console.error('checkAuthority 중 에러:', error)
+                throw error
+            }
         }
     }
 })
