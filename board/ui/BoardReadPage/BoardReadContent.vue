@@ -21,7 +21,7 @@
             </div>
         </div>
 
-        <div class="author-actions">
+        <div v-if="checkMyBoard" class="author-actions">
             <router-link :to="{ name: 'BoardModifyPage', params: { boardId } }">
                 <button class="btn btn-modify">수정</button>
             </router-link>
@@ -43,6 +43,7 @@ const boardStore = useBoardStore();
 const boardId = parseInt(route.params.boardId as string);
 const boardContent = ref<any>(null);
 const error = ref<string>('');
+const checkMyBoard = ref(false)
 
 const fetchBoardContent = async () => {
     try {
@@ -56,6 +57,18 @@ const fetchBoardContent = async () => {
     }
 };
 
+const fetchCheckAuthority = async () => {
+    try {
+        console.log("fetchCheckAuthority 접근")
+        const response = await boardStore.checkAuthority(boardId);
+        console.log("readBoardCofetchCheckAuthorityntent 데이터", response.is_authorized);
+        checkMyBoard.value = response.is_authorized
+        console.log("checkMyBoard 확인", checkMyBoard.value)
+    } catch (err) {
+        error.value = 'fetchCheckAuthority 에러';
+        console.error('Error fetching board content:', err);
+    }
+};
 
 const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -82,6 +95,7 @@ const boardDelete = async () => {
 
 onMounted(() => {
     fetchBoardContent();
+    fetchCheckAuthority();
 });
 </script>
 
