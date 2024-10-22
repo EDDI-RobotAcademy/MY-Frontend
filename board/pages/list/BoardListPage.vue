@@ -54,6 +54,7 @@ onMounted(() => {
   * {
     font-family: 'Noto Sans KR', sans-serif;
   }
+  
 .board-container {
   display: flex;
   height: 100%;
