@@ -40,10 +40,8 @@ const fetchBoardContents = async (categoryId: number | null) => {
         let response;
         if (categoryId === null) {
             response = await boardStore.getBoardContent();
-            console.log("BoardContent", response)
         } else {
             response = await boardStore.getCategoriesContent(categoryId);
-            console.log("CateGoriesContent", response)
         }
 
         if (Array.isArray(response)) {
