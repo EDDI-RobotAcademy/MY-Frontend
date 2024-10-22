@@ -66,5 +66,15 @@ export const useBoardStore = defineStore('boardStore', {
                 throw error
             }
         },
+        async readBoardContent(boardId: number) {
+            const { djangoAxiosInst } = createAxiosInstances()
+            try {
+                const response = await djangoAxiosInst.get(`board/read/${boardId}`)
+                return response.data
+            } catch (error) {
+                console.error('readBoardContent 중 에러:', error)
+                throw error
+            }
+        }
     }
 })

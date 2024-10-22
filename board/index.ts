@@ -21,8 +21,12 @@ export default defineNuxtModule({
                 path: '/board/register',
                 file: resolve(themeDir, 'board/pages/register/BoardRegisterPage.vue'),
             })
+            pages.push({
+                name: 'BoardReadPage',
+                path: '/board/read/:boardId',
+                file: resolve(themeDir, 'board/pages/read/BoardReadPage.vue'),
+            })
         })
-
         nuxt.hook('imports:dirs', (dirs) => {
             dirs.push(resolve(__dirname, 'store'))
         })
