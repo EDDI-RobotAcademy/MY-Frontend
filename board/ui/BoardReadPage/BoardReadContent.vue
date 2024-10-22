@@ -22,9 +22,9 @@
         </div>
 
         <div class="author-actions">
-            <!-- <router-link :to="{ name: 'BoardModifyPage', params: { boardId } }">
+            <router-link :to="{ name: 'BoardModifyPage', params: { boardId } }">
                 <button class="btn btn-modify">수정</button>
-            </router-link> -->
+            </router-link>
             <button class="btn btn-delete" @click="boardDelete">삭제</button>
         </div>
 

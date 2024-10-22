@@ -22,6 +22,11 @@ export default defineNuxtModule({
                 file: resolve(themeDir, 'board/pages/register/BoardRegisterPage.vue'),
             })
             pages.push({
+                name: 'BoardModifyPage',
+                path: '/board/modify/:boardId',
+                file: resolve(themeDir, 'board/pages/modify/BoardModifyPage.vue'),
+            })
+            pages.push({
                 name: 'BoardReadPage',
                 path: '/board/read/:boardId',
                 file: resolve(themeDir, 'board/pages/read/BoardReadPage.vue'),

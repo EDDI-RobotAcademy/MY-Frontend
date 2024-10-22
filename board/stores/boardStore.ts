@@ -85,6 +85,16 @@ export const useBoardStore = defineStore('boardStore', {
                 console.error('deleteBoardContent 중 에러:', error)
                 throw error
             }
+        },
+        async updateBoardContent(boardId: number, updateData: any) {
+            const { djangoAxiosInst } = createAxiosInstances()
+            try {
+                const response = await djangoAxiosInst.put(`board/modify/${boardId}`, updateData)
+                return response.data
+            } catch (error) {
+                console.error('updateBoardContent 중 에러:', error)
+                throw error
+            }
         }
     }
 })
