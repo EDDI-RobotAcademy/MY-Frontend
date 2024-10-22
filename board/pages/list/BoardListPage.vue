@@ -1,14 +1,11 @@
 <template>
   <div class="board-container">
-    <div class="chat">
-      <h2 class="channel-title">채팅 영역</h2>
-      <BoardChatForm></BoardChatForm>
-    </div>
     <div class="main-content">
       <div class="top-bar">
         <BoardCategoryListPage v-model="selectedCategoryId" />
         <BoardSearchButton />
       </div>
+      <ChatFloatingButton></ChatFloatingButton>
       <div class="content-wrapper">
         <BoardContent :selectedCategoryId="selectedCategoryId" />
       </div>
@@ -26,8 +23,8 @@ import BoardCategoryListPage from '../../ui/BoardListPage/BoardCategoryListPage.
 import BoardSearchButton from '../../ui/BoardListPage/BoardSearchButton.vue'
 import BoardAddCategoryButton from '../../ui/BoardListPage/BoardAddCategoryButton.vue'
 import BoardWriteButton from '../../ui/BoardListPage/BoardWriteButton.vue'
-import BoardChatForm from '../../ui/BoardListPage/BoardChatForm.vue'
 import BoardContent from '../../ui/BoardListPage/BoardContent.vue'
+import ChatFloatingButton from '../../ui/BoardListPage/BoardChatFloatingButton.vue'
 import { useAuthenticationStore } from '@/authentication/stores/authenticationStore'
 
 const authenticationStore = useAuthenticationStore();
@@ -40,21 +37,21 @@ const checkAndSetAuthStatus = () => {
 }
 
 const refreshCategories = () => {
-  // 카테고리 새로고침 로직 구현
+  location.reload();
 }
 
 onMounted(() => {
-    checkAndSetAuthStatus()
+  checkAndSetAuthStatus()
 })
 </script>
 
 <style scoped>
-  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap');
-  
-  * {
-    font-family: 'Noto Sans KR', sans-serif;
-  }
-  
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap');
+
+* {
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
 .board-container {
   display: flex;
   height: 100%;
@@ -80,6 +77,7 @@ onMounted(() => {
 }
 
 .main-content {
+  padding: 0% 10%;
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -97,7 +95,7 @@ onMounted(() => {
 }
 
 .bottom-bar {
-  padding: 0px 10px 20px 20px;
+  padding: 0px 45px 20px 20px;
   background-color: #34495e;
   display: flex;
   justify-content: space-between;
@@ -112,17 +110,5 @@ onMounted(() => {
   background-color: white;
   border-radius: 8px;
   margin: 20px;
-}
-
-button {
-  padding: 8px 16px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s, transform 0.2s;
-}
-
-button:hover {
-  transform: translateY(-2px);
 }
 </style>
