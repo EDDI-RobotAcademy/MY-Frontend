@@ -49,6 +49,11 @@ onMounted(() => {
 </script>
 
 <style scoped>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap');
+  
+  * {
+    font-family: 'Noto Sans KR', sans-serif;
+  }
 .board-container {
   display: flex;
   height: 100%;
@@ -64,6 +69,7 @@ onMounted(() => {
   padding-left: 30px;
   display: flex;
   flex-direction: column;
+  max-height: 100vh;
 }
 
 .channel-title {
@@ -78,6 +84,7 @@ onMounted(() => {
   flex-direction: column;
   overflow: hidden;
   background-color: #34495e;
+  max-height: 100vh;
 }
 
 .top-bar {
@@ -102,8 +109,8 @@ onMounted(() => {
   overflow-y: auto;
   padding: 20px;
   background-color: white;
-  border-radius: 8px;  /* 모서리를 둥글게 */
-  margin: 20px;  /* 외부 여백 추가 */
+  border-radius: 8px;
+  margin: 20px;
 }
 
 button {
