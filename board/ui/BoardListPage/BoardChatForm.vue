@@ -114,7 +114,6 @@ export default {
     flex-direction: column;
     height: 600px;
     max-height: 90vh;
-    margin: 20px auto;
     width: 100%;
 }
 
@@ -162,6 +161,7 @@ export default {
     margin-top: 14px;
     display: inline-block;
     font-size: 13px;
+    color: white;
 }
 
 .own-message {
