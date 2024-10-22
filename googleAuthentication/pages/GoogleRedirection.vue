@@ -40,11 +40,11 @@
     }
   }
   
-  const registerNewAccount = async (email: string, nickname: string) => {
+  const registerNewAccount = async (email: string, name: string) => {
     const accountInfo = {
       loginType: 'GOOGLE',
       email,
-      nickname,
+      name,
     }
     await accountStore.requestCreateNewAccountToDjango(accountInfo)
     await registerUserToken(email, accessToken.value)

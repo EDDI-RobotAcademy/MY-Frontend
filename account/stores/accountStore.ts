@@ -3,7 +3,7 @@ import { createAxiosInstances } from '../../utility/axiosInstance'
 
 interface AccountInfo {
   email: string
-  nickname: string
+  name: string
 }
 
 export const useAccountStore = defineStore('accountStore', {
