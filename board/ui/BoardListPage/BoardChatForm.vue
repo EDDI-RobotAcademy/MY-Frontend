@@ -112,7 +112,10 @@ export default {
 .chat-container {
     display: flex;
     flex-direction: column;
-    height: 90%;
+    height: 600px;
+    max-height: 90vh;
+    margin: 20px auto;
+    width: 100%;
 }
 
 .login-form,
@@ -124,11 +127,13 @@ export default {
     display: flex;
     flex-direction: column;
     height: 100%;
+    width: 100%;
 }
 
 .login-form {
     justify-content: center;
     align-items: center;
+    max-height: 91vh;
 }
 
 .login-form h2 {
@@ -138,6 +143,8 @@ export default {
 
 .chat-box {
     flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 .messages {
@@ -148,16 +155,13 @@ export default {
     flex-direction: column;
 }
 
-.message {
-    margin-bottom: 10px;
-    max-width: 70%;
-}
-
 .message-content {
     background-color: #000;
     border-radius: 18px;
-    padding: 10px 15px;
+    padding: 10px 12px;
+    margin-top: 14px;
     display: inline-block;
+    font-size: 13px;
 }
 
 .own-message {
@@ -208,7 +212,7 @@ export default {
     padding: 10px 20px;
     margin-left: 10px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 12px;
 }
 
 .button:hover {
