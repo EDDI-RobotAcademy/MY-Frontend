@@ -63,8 +63,16 @@ export const useSubscriptionStore = defineStore('subscriptionStore', {
                 throw new Error('구독권 수정 중 오류가 발생했습니다.')
             }
         },
-        
 
-
+        async deleteSubscription(subscriptionId: number){
+            const { djangoAxiosInst } = createAxiosInstances()
+            try {
+                const response = await djangoAxiosInst.delete(`subscription/delete/${subscriptionId}`)
+                return response
+            } catch (error) {
+                console.error('deleteFreeCommunityContent 중 에러:', error)
+                throw error
+            }
+        }, 
     }
 })
