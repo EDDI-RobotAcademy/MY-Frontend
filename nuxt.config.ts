@@ -21,6 +21,7 @@ export default defineNuxtConfig({
     './googleAuthentication/nuxt.config.ts',
     './influencerAnalysis/nuxt.config.ts',
     './free_community/nuxt.config.ts',
+    './subscription/nuxt.config.ts',
   ],
 
   css: [
@@ -49,6 +50,7 @@ export default defineNuxtConfig({
     '~/googleAuthentication/index.ts',
     '~/influencerAnalysis/index.ts',
     '~/free_community/index.ts',
+    '~/subscription/index.ts',
   ],
 
   imports: {
