@@ -2,21 +2,23 @@ import axios from 'axios'
 import { defineStore } from 'pinia'
 import { createAxiosInstances } from '~/utility/axiosInstance'
 
-interface SubscriptionInfo{
-    id : number
-    name : string
-    type : string
-    description : string
-    price : number
+interface SubscriptionInfo {
+    "id" : number
+    "name" : string
+    "type" : string
+    "brief_description" : string
+    "description" : string
+    "price" : number
 }
 
 export const useSubscriptionStore = defineStore('subscriptionStore', {
     state: () => ({}),
     actions: {
-        async registerSubscription(postData: SubscriptionInfo): Promise<string> {
+        async registerSubscription(postData: Omit<SubscriptionInfo, 'id'>): Promise<string> {
             const {djangoAxiosInst} = createAxiosInstances()
             try {
-                const response = await djangoAxiosInst.post('subscription/create', {postData})
+                console.log("postData: ", postData)
+                const response = await djangoAxiosInst.post('subscription/create', postData)
                 return response.data
             } catch (error) {
                 if (axios.isAxiosError(error)){
@@ -63,8 +65,16 @@ export const useSubscriptionStore = defineStore('subscriptionStore', {
                 throw new Error('구독권 수정 중 오류가 발생했습니다.')
             }
         },
-        
 
-
+        async deleteSubscription(subscriptionId: number){
+            const { djangoAxiosInst } = createAxiosInstances()
+            try {
+                const response = await djangoAxiosInst.delete(`subscription/delete/${subscriptionId}`)
+                return response
+            } catch (error) {
+                console.error('deleteFreeCommunityContent 중 에러:', error)
+                throw error
+            }
+        }, 
     }
 })
