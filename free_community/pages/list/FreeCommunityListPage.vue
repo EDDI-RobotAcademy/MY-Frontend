@@ -28,6 +28,15 @@ import ChatFloatingButton from '../../ui/FreeCommunityListPage/FreeCommunityChat
 import { useAuthenticationStore } from '@/authentication/stores/authenticationStore'
 import { useAccountStore } from '@/account/stores/accountStore'
 
+useSeoMeta({
+  description: '운동, 뷰티, 먹방, 음악, 여행 등 다양한 분야의 인플루언서들이 자유롭게 글을 쓰고 실시간 채팅으로 소통하는 커뮤니티입니다. 게시판에서 AI 맞춤형 콘텐츠 제작 노하우를 공유하고, 실시간 채팅으로 다른 크리에이터들과 즉시 소통하세요.',
+  ogTitle: '게시판과 실시간 채팅으로 소통하는 인플루언서 커뮤니티 | 쿠잉',
+  ogDescription: '운동, 뷰티, 먹방, 음악, 여행 등 다양한 분야의 인플루언서들이 자유롭게 글을 쓰고 실시간 채팅으로 소통하는 커뮤니티입니다. 게시판에서 AI 맞춤형 콘텐츠 제작 노하우를 공유하고, 실시간 채팅으로 다른 크리에이터들과 즉시 소통하세요.',
+  ogType: 'website',
+  twitterTitle: '게시판과 실시간 채팅으로 소통하는 인플루언서 커뮤니티 | 쿠잉',
+  twitterDescription: '운동, 뷰티, 먹방, 음악, 여행 등 다양한 분야의 인플루언서들과 게시판 글쓰기, 실시간 채팅으로 다양하게 소통하는 커뮤니티입니다.'
+})
+
 const accountStore = useAccountStore();
 const authenticationStore = useAuthenticationStore();
 const isAuthenticated = computed(() => authenticationStore.isAuthenticated);
@@ -90,13 +99,13 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background-color: #34495e;
+  background-color: #F1F1F1;
   max-height: 100vh;
 }
 
 .top-bar {
   padding: 80px 35px 0px 15px;
-  background-color: #34495e;
+  background-color: #F1F1F1;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -104,10 +113,11 @@ onMounted(() => {
 
 .bottom-bar {
   padding: 0px 45px 20px 20px;
-  background-color: #34495e;
+  background-color: #F1F1F1;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
+  gap: 10px;
 }
 
 .content-wrapper {

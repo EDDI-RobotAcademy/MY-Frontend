@@ -48,7 +48,7 @@ const toggleChat = () => {
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background-color: #0084ff;
+  background-color: #ff9033;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -60,11 +60,10 @@ const toggleChat = () => {
 
 .chat-button:hover {
   transform: scale(1.05);
-  background-color: #0073e6;
 }
 
 .chat-button.active {
-  background-color: #0073e6;
+  background-color: #ffb04c;
 }
 
 .chat-panel {

@@ -27,7 +27,7 @@ const updatePostData = (newData) => {
 
 const handleRegisterSuccess = (result) => {
   console.log('글 등록 성공:', result)
-  // 성공 후 처리 (예: 목록 페이지로 이동)
+  router.push("/free_community/list")
 }
 
 const handleRegisterError = (error) => {
@@ -39,7 +39,7 @@ const handleRegisterError = (error) => {
 <style scoped>
 .free_community-register {
   max-width: 600px;
-  margin: 0 auto;
+  margin: 200px auto;
   padding: 20px;
 }
 </style>
