@@ -14,5 +14,15 @@ export const useViewCountStore = defineStore('ViewCountStore', {
                 throw error
             }
         },
+        async requestGetViewCount() {
+            const { djangoAxiosInst } = createAxiosInstances()
+            try {
+                const response = await djangoAxiosInst.get('viewCount/response-view-count')
+                return response.data
+            } catch (error) {
+                console.error('requestGetViewCount 중 오류 발생:', error)
+                throw error
+            }
+        },
     }
 })

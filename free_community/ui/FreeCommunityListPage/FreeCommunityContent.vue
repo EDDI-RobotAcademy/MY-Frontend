@@ -11,15 +11,13 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(content, index) in free_communityContents" 
-                    :key="content.free_communityId" 
-                    @click="goToFreeCommunityDetail(content.free_communityId)"
-                    class="free_community-row">
+                <tr v-for="(content, index) in free_communityContents" :key="content.free_communityId"
+                    @click="goToFreeCommunityDetail(content.free_communityId)" class="free_community-row">
                     <td>{{ free_communityContents.length - index }}</td>
                     <td class="title-cell">{{ content.title }}</td>
                     <td>{{ content.profile_nickname }}</td>
                     <td>{{ formatDate(content.regDate) }}</td>
-                    <td>0</td>
+                    <td>{{ getViewCount(content.free_communityId) }}</td>
                 </tr>
             </tbody>
         </table>
@@ -31,7 +29,9 @@
 import { ref, onMounted, watch } from 'vue';
 import { useFreeCommunityStore } from '../../stores/free_communityStore';
 import { useRouter } from 'vue-router';
+import { useViewCountStore } from '~/viewCount/stores/viewCountStore';
 
+const viewCountStore = useViewCountStore();
 const router = useRouter();
 const props = defineProps<{
     selectedCategoryId: number | null
@@ -40,9 +40,14 @@ const props = defineProps<{
 const free_communityStore = useFreeCommunityStore();
 const free_communityContents = ref([]);
 const errorMessage = ref('');
+const viewCounts = ref<{ [key: number]: number }>({});
 
 const goToFreeCommunityDetail = (free_communityId: number) => {
     router.push(`/free_community/read/${free_communityId}`);
+};
+
+const getViewCount = (communityId: number) => {
+    return viewCounts.value[communityId] || 0;
 };
 
 const fetchFreeCommunityContents = async (categoryId: number | null) => {
@@ -70,6 +75,24 @@ const fetchFreeCommunityContents = async (categoryId: number | null) => {
     }
 };
 
+const fetchGetViewCount = async () => {
+    try {
+        const response = await viewCountStore.requestGetViewCount();
+        if (response && Array.isArray(response)) {
+            // viewCounts 객체 초기화
+            const counts: { [key: number]: number } = {};
+            response.forEach(item => {
+                if (item.community_id && item.count !== undefined) {
+                    counts[item.community_id] = item.count;
+                }
+            });
+            viewCounts.value = counts;
+        }
+    } catch (err) {
+        console.error('Error fetchGetViewCount:', err);
+    }
+};
+
 const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toISOString().split('T')[0];
@@ -79,10 +102,11 @@ watch(() => props.selectedCategoryId, (newCategoryId) => {
     fetchFreeCommunityContents(newCategoryId);
 }, { immediate: true });
 
-onMounted(() => {
+onMounted(async () => {
     if (props.selectedCategoryId === null) {
-        fetchFreeCommunityContents(null);
+        await fetchFreeCommunityContents(null);
     }
+    await fetchGetViewCount();
 });
 </script>
 
