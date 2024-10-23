@@ -22,7 +22,6 @@ import ThirdContent from '../ui/ThirdContent.vue';
 import FourthContent from '../ui/FourthContent.vue';
 
 useSeoMeta({
-  title: '인공지능으로 시작하는 인플루언서의 길 | 쿠잉',
   description: '인공지능 기술로 쉽고 경제적으로 시작하는 인플루언서 되는 법을 알려드립니다. 유튜버부터 소셜미디어 인플루언서까지, AI가 도와주는 맞춤형 인플루언서 육성 프로그램을 만나보세요.',
   ogTitle: '인공지능으로 시작하는 인플루언서의 길 | 쿠잉',
   ogDescription: '인공지능 기술로 쉽고 경제적으로 시작하는 인플루언서 되는 법을 알려드립니다. 유튜버부터 소셜미디어 인플루언서까지, AI가 도와주는 맞춤형 인플루언서 육성 프로그램을 만나보세요.',

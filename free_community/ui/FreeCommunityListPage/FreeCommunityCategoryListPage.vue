@@ -78,7 +78,7 @@ onMounted(fetchCategories)
 }
 
 .category-button {
-    background-color: #3498db;
+    background-color: #ff9033;
     color: white;
     padding: 8px 16px;
     font-size: 14px;
@@ -87,6 +87,6 @@ onMounted(fetchCategories)
 
 .category-button.selected,
 .category-button:hover {
-    background-color: #2980b9;
+    background-color: #ffb04c;
 }
 </style>
