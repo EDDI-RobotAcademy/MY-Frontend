@@ -49,5 +49,22 @@ export const useSubscriptionStore = defineStore('subscriptionStore', {
                 throw error
             }
         },
+
+        async modifySubscription(subscriptionId: number, updateData: Partial<SubscriptionInfo>): Promise<any>{
+            const { djangoAxiosInst } = createAxiosInstances()
+            try {
+                const response = await djangoAxiosInst.put(`subscription/modify/${subscriptionId}`, updateData)
+                return response.data
+            } catch (error) {
+                console.error('구독권 수정 중 오류 발생:', error)
+                if (axios.isAxiosError(error) && error.response?.status === 400) {
+                throw new Error('입력한 데이터가 유효하지 않습니다.')
+                }
+                throw new Error('구독권 수정 중 오류가 발생했습니다.')
+            }
+        },
+        
+
+
     }
 })

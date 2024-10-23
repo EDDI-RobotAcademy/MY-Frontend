@@ -50,7 +50,7 @@ export default defineNuxtConfig({
     '~/googleAuthentication/index.ts',
     '~/influencerAnalysis/index.ts',
     '~/free_community/index.ts',
-    '~/subscription/index.ts',
+    '~/subscription/index.ts'
   ],
 
   imports: {

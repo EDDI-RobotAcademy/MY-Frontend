@@ -19,11 +19,6 @@
               <p v-if="subscription.brief_description">{{ subscription.brief_description }}</p>
               <p v-else>설명 없음</p>
               <!-- 혜택 리스트 추가 -->
-              <v-list dense>
-                <v-list-item v-for="(benefit, i) in subscription.benefits" :key="i">
-                  <v-list-item-content>{{ benefit }}</v-list-item-content>
-                </v-list-item>
-              </v-list>
             </v-card-text>
             <v-card-actions>
               <v-btn 

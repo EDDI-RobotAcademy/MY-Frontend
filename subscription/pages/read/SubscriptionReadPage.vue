@@ -31,10 +31,8 @@
             </div>
   
             <!-- 관리자만 수정/삭제 버튼 표시 -->
-            <div v-if="isAdmin" class="admin-actions">
-              <router-link :to="{ name: 'SubscriptionModifyPage', params: { subscriptionId } }">
-                <button class="btn btn-modify">수정</button>
-              </router-link>
+            <div class="admin-menu-container" v-if="isAdmin">
+              <button class="btn btn-modify" @click="goToModifyPage">수정</button>
               <button class="btn btn-delete" @click="subscriptionDelete">삭제</button>
             </div>
           </div>
@@ -44,27 +42,27 @@
   </template>
   
   <script setup lang="ts">
-  import { ref, onMounted } from 'vue';
+  import { ref, onMounted, computed } from 'vue';
   import { useRoute, useRouter } from 'vue-router';
   import { useSubscriptionStore } from '~/stores/subscriptionStore';
-  import { useAuthenticationStore } from '~/authentication/stores/authenticationStore'; // authenticationStore import
+  import { useAuthenticationStore } from '~/authentication/stores/authenticationStore';
   
   const route = useRoute();
   const router = useRouter();
   const subscriptionStore = useSubscriptionStore();
-  const authenticationStore = useAuthenticationStore(); // authenticationStore 사용
-  
+  const authenticationStore = useAuthenticationStore();
+
   const subscriptionId = parseInt(route.params.subscriptionId as string);
   const subscriptionContent = ref<any>(null);
   const error = ref<string>('');
   
   // 관리자 권한 가져오기
-  const isAdmin = ref(false);
+  const isAdmin = computed(() => authenticationStore.isAdmin);
   
-  // 구독권 상세 정보 가져오기
+  // 구독권 정보 불러오기
   const fetchSubscriptionContent = async () => {
     try {
-      const response = await subscriptionStore.readSubscriptionById(subscriptionId);
+      const response = await subscriptionStore.readSubscriptionById(subscriptionId); // 구독권 정보 불러오기
       subscriptionContent.value = response;
     } catch (err) {
       error.value = '구독권 정보를 불러오는데 실패했습니다.';
@@ -72,26 +70,11 @@
     }
   };
   
-  // 목록으로 돌아가는 함수
-  const goBackToList = () => {
-    router.push({ name: 'SubscriptionListPage' });
-  };
-  
-  // 컴포넌트가 마운트될 때 관리자 권한 및 구독권 정보 가져오기
-  onMounted(async () => {
-    // 관리자 여부 확인
-    isAdmin.value = authenticationStore.isAdmin;
-    console.log("isAdmin: ", isAdmin.value)
-  
-    // 구독권 정보 가져오기
-    await fetchSubscriptionContent();
-  });
-  
   // 구독권 삭제 함수
   const subscriptionDelete = async () => {
     if (confirm('정말 삭제하시겠습니까?')) {
       try {
-        await subscriptionStore.deleteSubscription(subscriptionId);
+        await subscriptionStore.deleteSubscription(subscriptionContent.value.id);
         router.push("/subscription/list");
       } catch (err) {
         error.value = '구독권 삭제에 실패했습니다.';
@@ -100,10 +83,25 @@
     }
   };
   
+  // 수정 페이지로 이동
+  const goToModifyPage = () => {
+    router.push({ name: 'SubscriptionModifyPage', params: { subscriptionId } });
+  };
+  
+  // 목록으로 돌아가는 함수
+  const goBackToList = () => {
+    router.push({ name: 'SubscriptionListPage' });
+  };
+  
   // 가격 포맷 함수
   const formatPrice = (price: number) => {
     return parseFloat(price.toString()).toLocaleString();
   };
+  
+  // 컴포넌트 마운트 시 구독권 정보 불러오기
+  onMounted(async () => {
+    await fetchSubscriptionContent();
+  });
   </script>
   
   <style scoped>
@@ -112,7 +110,7 @@
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
     padding: 20px;
-    margin-top: 70px
+    margin-top: 70px;
   }
   
   .article-header {
@@ -144,7 +142,7 @@
     border-radius: 8px;
     padding: 20px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
-    margin-top: 70px
+    margin-top: 70px;
   }
   
   .price-box {
@@ -192,7 +190,7 @@
     margin-top: 20px;
   }
   
-  .admin-actions {
+  .admin-menu-container {
     margin-top: 20px;
   }
   </style>
