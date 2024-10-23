@@ -22,10 +22,24 @@ export const useUserAnalysisStore = defineStore('userAnalysisStore', {
   actions: {
     async sendUserAnalysisToFastAPI(payload: UserAnalysisPayload): Promise<any> {
       const { fastapiAxiosInst } = createAxiosInstances()
+      const command = 7
 
       try {
         console.log('sendUserAnalysisToFastAPI()')
-        const response = await fastapiAxiosInst.post('/growth-strategy', payload)
+        const response = await fastapiAxiosInst.post('/request-ai-command', 
+          { "command" : command,
+            "data" : [
+              payload.gender,
+              payload.age_group,
+              payload.mbti,
+              payload.topic,
+              payload.strength,
+              payload.reveal,
+              payload.platform,
+              payload.interested_influencer
+            ]
+          }
+        )
         return response.data
       } catch (error) {
         console.log('sendUserAnalysisToFastAPI() 중 문제 발생:', error)
