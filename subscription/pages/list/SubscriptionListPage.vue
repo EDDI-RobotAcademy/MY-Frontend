@@ -16,17 +16,18 @@
               월 {{ formatPrice(subscription.price) }}원
             </v-card-subtitle>
             <v-card-text>
-              <p v-if="subscription.description">{{ subscription.description }}</p>
+              <p v-if="subscription.brief_description">{{ subscription.brief_description }}</p>
               <p v-else>설명 없음</p>
               <!-- 혜택 리스트 추가 -->
-              <v-list dense>
-                <v-list-item v-for="(benefit, i) in subscription.benefits" :key="i">
-                  <v-list-item-content>{{ benefit }}</v-list-item-content>
-                </v-list-item>
-              </v-list>
             </v-card-text>
             <v-card-actions>
-              <v-btn class="apply-btn" color="white" block>신청하기</v-btn>
+              <v-btn 
+                class="apply-btn" 
+                color="white" 
+                block 
+                @click="goToDetails(subscription.id)"> <!-- 클릭 이벤트 추가 -->
+                Show Details
+              </v-btn>
             </v-card-actions>
           </v-card>
         </v-col>
@@ -36,12 +37,16 @@
   
   <script setup>
   import { ref, onMounted } from 'vue'
+  import { useRouter } from 'vue-router'
   import { useSubscriptionStore } from '~/stores/subscriptionStore'
   
   const subscriptions = ref([])
   
+  // Vue Router 사용 설정
+  const router = useRouter()
   const subscriptionStore = useSubscriptionStore()
   
+  // 구독권 목록 불러오기
   const loadSubscriptions = async () => {
     try {
       const data = await subscriptionStore.getSubscription()
@@ -49,6 +54,11 @@
     } catch (error) {
       console.error('구독권 목록을 불러오는 중 오류 발생:', error)
     }
+  }
+  
+  // 구독권 상세 페이지로 이동하는 함수
+  const goToDetails = (subscriptionId) => {
+    router.push({ name: 'SubscriptionReadPage', params: { subscriptionId } })
   }
   
   // 가격 포맷 함수
