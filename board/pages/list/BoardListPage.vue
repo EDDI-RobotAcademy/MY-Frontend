@@ -5,7 +5,7 @@
         <BoardCategoryListPage v-model="selectedCategoryId" />
         <BoardSearchButton />
       </div>
-      <ChatFloatingButton></ChatFloatingButton>
+      <ChatFloatingButton :nickname="nickname"></ChatFloatingButton>
       <div class="content-wrapper">
         <BoardContent :selectedCategoryId="selectedCategoryId" />
       </div>
@@ -26,14 +26,21 @@ import BoardWriteButton from '../../ui/BoardListPage/BoardWriteButton.vue'
 import BoardContent from '../../ui/BoardListPage/BoardContent.vue'
 import ChatFloatingButton from '../../ui/BoardListPage/BoardChatFloatingButton.vue'
 import { useAuthenticationStore } from '@/authentication/stores/authenticationStore'
+import { useAccountStore } from '@/account/stores/accountStore'
 
+const accountStore = useAccountStore();
 const authenticationStore = useAuthenticationStore();
 const isAuthenticated = computed(() => authenticationStore.isAuthenticated);
 const isAdmin = computed(() => authenticationStore.isAdmin);
 
+const nickname = ref('')
 const selectedCategoryId = ref<number | null>(null)
 const checkAndSetAuthStatus = () => {
   authenticationStore.checkAndSetAuthStatus()
+}
+
+const getNickname = async () => {
+  nickname.value = await accountStore.getNickname()
 }
 
 const refreshCategories = () => {
@@ -42,6 +49,7 @@ const refreshCategories = () => {
 
 onMounted(() => {
   checkAndSetAuthStatus()
+  getNickname()
 })
 </script>
 
