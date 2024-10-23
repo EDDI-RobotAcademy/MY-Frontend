@@ -1,0 +1,25 @@
+services:
+  nuxt:
+    image: ghcr.io/${GITHUB_ACTOR}/my-nuxt-server:latest
+    container_name: frontend-deploy-nuxt
+    ports:
+      - "3000:3000"
+    environment:
+      - VUE_APP_BASE_URL=${VUE_APP_BASE_URL}
+      - VUE_APP_AI_BASE_URL=${VUE_APP_AI_BASE_URL}
+    restart: always
+    networks:
+      - app
+  nginx:
+    image: ghcr.io/${GITHUB_ACTOR}/my-nginx:latest
+    container_name: frontend-deploy-nginx
+    restart: always
+    ports:
+      - "80:80"
+    networks:
+      - app
+
+networks:
+  app:
+    driver: bridge
+
