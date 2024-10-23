@@ -1,6 +1,6 @@
 <template>
     <div class="search-bar">
-      <input type="text" placeholder="검색어를 입력해주세요." v-model="searchQuery">
+      <input type="text" placeholder="검색어를 입력해주세요." v-model="searchQuery" class="text-input">
       <button class="search-button" @click="performSearch">검색</button>
     </div>
   </template>
@@ -26,14 +26,14 @@
     padding: 8px 12px;
     border: none;
     border-radius: 4px 0 0 4px;
-    background-color: #ecf0f1;
-    color: #34495e;
+    background-color: white;
+    color: black;
     font-size: 14px;
   }
   
   .search-button {
     padding: 8px 16px;
-    background-color: #2ecc71;
+    background-color: #ff9033;
     color: white;
     border: none;
     border-radius: 0 4px 4px 0;
@@ -42,6 +42,6 @@
   }
   
   .search-button:hover {
-    background-color: #27ae60;
+    background-color: #ffb04c;
   }
   </style>
