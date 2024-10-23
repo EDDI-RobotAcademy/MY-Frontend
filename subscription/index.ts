@@ -16,6 +16,12 @@ export default defineNuxtModule({
                 path: '/subscription/list',
                 file: resolve(themeDir, 'subscription/pages/list/SubscriptionListPage.vue'),
             })
+
+            pages.push({
+                name: 'SubscriptionReadPage',
+                path: '/subscription/read/:subscriptionId',
+                file: resolve(themeDir, 'subscription/pages/read/SubscriptionReadPage.vue'),
+            })
             // pages.push({
             //     name: 'SubscriptionRegisterPage',
             //     path: '/subscription/register',

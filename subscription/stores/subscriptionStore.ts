@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 import { createAxiosInstances } from '~/utility/axiosInstance'
 
 interface SubscriptionInfo{
+    id : number
     name : string
     type : string
     description : string
@@ -38,5 +39,15 @@ export const useSubscriptionStore = defineStore('subscriptionStore', {
             }
         },
 
+        async readSubscriptionById(subscriptionId: number) {
+            const {djangoAxiosInst} = createAxiosInstances()
+            try {
+                const response = await djangoAxiosInst.get(`subscription/read/${subscriptionId}`)
+                return response.data
+            } catch(error) {
+                console.error ('구독권 정보를 받아오는 중 오류 발생', error)
+                throw error
+            }
+        },
     }
 })
