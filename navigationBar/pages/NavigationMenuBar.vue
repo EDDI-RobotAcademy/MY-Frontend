@@ -15,7 +15,7 @@
             </div>
             <div class="right-menu">
                 <div class="board-container" ref="boardContainer">
-                    <button class="menu-item button" data-text="네트워킹" @click="goToBoardPage">
+                    <button class="menu-item button" data-text="네트워킹" @click="goToFreeCommunityPage">
                         <span>네트워킹</span>
                     </button>
                 </div>
@@ -95,7 +95,7 @@ const toggleAdminMenu = () => {
 const goToHomePage = () => router.push("/")
 const goToLoginPage = () => router.push("/login")
 const goToSurveyPage = () => router.push("/survey")
-const goToBoardPage = () => router.push("/board/list")
+const goToFreeCommunityPage = () => router.push("/free_community/list")
 const goToUserAnalysisPage = () => router.push("/user-analysis")
 const goToInfluencerAnalysisPage = () => router.push("/influencer-analysis")
 const goToSurveyDashboardPage = () => router.push("/survey/dashboard")
