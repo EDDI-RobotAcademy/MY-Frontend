@@ -35,9 +35,11 @@
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useFreeCommunityStore } from '../../stores/free_communityStore';
+import { useViewCountStore } from '~/viewCount/stores/viewCountStore';
 
 const route = useRoute();
 const router = useRouter()
+const viewCountStore = useViewCountStore();
 const free_communityStore = useFreeCommunityStore();
 
 const free_communityId = parseInt(route.params.free_communityId as string);
@@ -70,6 +72,15 @@ const fetchCheckAuthority = async () => {
     }
 };
 
+const fetchIncrementCount = async () => {
+    try {
+        await viewCountStore.requestIncrementViewCount(free_communityId);
+    } catch (err) {
+        error.value = 'fetchIncrementCount 에러';
+        console.error('Error fetching free_community content:', err);
+    }
+};
+
 const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('ko-KR', {
@@ -96,6 +107,7 @@ const free_communityDelete = async () => {
 onMounted(() => {
     fetchFreeCommunityContent();
     fetchCheckAuthority();
+    fetchIncrementCount();
 });
 </script>
 
