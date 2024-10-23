@@ -1,17 +1,17 @@
 <template>
-  <div class="board-container">
+  <div class="free_community-container">
     <div class="main-content">
       <div class="top-bar">
-        <BoardCategoryListPage v-model="selectedCategoryId" />
-        <BoardSearchButton />
+        <FreeCommunityCategoryListPage v-model="selectedCategoryId" />
+        <FreeCommunitySearchButton />
       </div>
       <ChatFloatingButton :nickname="nickname"></ChatFloatingButton>
       <div class="content-wrapper">
-        <BoardContent :selectedCategoryId="selectedCategoryId" />
+        <FreeCommunityContent :selectedCategoryId="selectedCategoryId" />
       </div>
       <div class="bottom-bar">
-        <BoardAddCategoryButton v-if="isAdmin" @categoryAdded="refreshCategories" />
-        <BoardWriteButton v-if="isAuthenticated" :selectedCategoryId="selectedCategoryId" />
+        <FreeCommunityAddCategoryButton v-if="isAdmin" @categoryAdded="refreshCategories" />
+        <FreeCommunityWriteButton v-if="isAuthenticated" :selectedCategoryId="selectedCategoryId" />
       </div>
     </div>
   </div>
@@ -19,12 +19,12 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import BoardCategoryListPage from '../../ui/BoardListPage/BoardCategoryListPage.vue'
-import BoardSearchButton from '../../ui/BoardListPage/BoardSearchButton.vue'
-import BoardAddCategoryButton from '../../ui/BoardListPage/BoardAddCategoryButton.vue'
-import BoardWriteButton from '../../ui/BoardListPage/BoardWriteButton.vue'
-import BoardContent from '../../ui/BoardListPage/BoardContent.vue'
-import ChatFloatingButton from '../../ui/BoardListPage/BoardChatFloatingButton.vue'
+import FreeCommunityCategoryListPage from '../../ui/FreeCommunityListPage/FreeCommunityCategoryListPage.vue'
+import FreeCommunitySearchButton from '../../ui/FreeCommunityListPage/FreeCommunitySearchButton.vue'
+import FreeCommunityAddCategoryButton from '../../ui/FreeCommunityListPage/FreeCommunityAddCategoryButton.vue'
+import FreeCommunityWriteButton from '../../ui/FreeCommunityListPage/FreeCommunityWriteButton.vue'
+import FreeCommunityContent from '../../ui/FreeCommunityListPage/FreeCommunityContent.vue'
+import ChatFloatingButton from '../../ui/FreeCommunityListPage/FreeCommunityChatFloatingButton.vue'
 import { useAuthenticationStore } from '@/authentication/stores/authenticationStore'
 import { useAccountStore } from '@/account/stores/accountStore'
 
@@ -60,7 +60,7 @@ onMounted(() => {
   font-family: 'Noto Sans KR', sans-serif;
 }
 
-.board-container {
+.free_community-container {
   display: flex;
   height: 100%;
   background-color: #f5f5f5;

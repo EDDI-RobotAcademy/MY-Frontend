@@ -13,7 +13,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { useBoardStore } from '../../stores/boardStore'
+import { useFreeCommunityStore } from '../../stores/free_communityStore'
 
 const props = defineProps<{
     modelValue: number | null
@@ -21,12 +21,12 @@ const props = defineProps<{
 
 const emit = defineEmits(['update:modelValue', 'categoryContentLoaded'])
 
-const boardStore = useBoardStore()
+const free_communityStore = useFreeCommunityStore()
 const categories = ref<{ categoryId: number; name: string }[]>([])
 
 const fetchCategories = async () => {
     try {
-        categories.value = await boardStore.getCategories()
+        categories.value = await free_communityStore.getCategories()
     } catch (error) {
         console.error('카테고리를 가져오는 중 오류 발생:', error)
     }
@@ -35,7 +35,7 @@ const fetchCategories = async () => {
 const selectCategory = async (categoryId: number) => {
     emit('update:modelValue', categoryId)
     try {
-        const response = await boardStore.getCategoriesContent(categoryId)
+        const response = await free_communityStore.getCategoriesContent(categoryId)
 
         let dataToProcess = response;
         if (response && response.data !== undefined) {
@@ -45,11 +45,11 @@ const selectCategory = async (categoryId: number) => {
         let filteredContent = [];
         if (Array.isArray(dataToProcess)) {
             filteredContent = dataToProcess.filter(
-                (item: any) => item.categoryBoardId === categoryId
+                (item: any) => item.categoryFreeCommunityId === categoryId
             );
         } else if (typeof dataToProcess === 'object' && dataToProcess !== null) {
             filteredContent = [dataToProcess].filter(
-                (item: any) => item.categoryBoardId === categoryId
+                (item: any) => item.categoryFreeCommunityId === categoryId
             );
         }
 

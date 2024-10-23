@@ -1,12 +1,12 @@
 import axios from 'axios'
 import { defineStore } from 'pinia'
 import { createAxiosInstances } from '../../utility/axiosInstance'
-export const useBoardStore = defineStore('boardStore', {
+export const useFreeCommunityStore = defineStore('free_communityStore', {
     actions: {
         async addCategory(name: string): Promise<string> {
             const { djangoAxiosInst } = createAxiosInstances()
             try {
-                const response = await djangoAxiosInst.post('board/create-category', { name })
+                const response = await djangoAxiosInst.post('free_community/create-category', { name })
                 return response.data.message
             } catch (error) {
                 if (axios.isAxiosError(error)) {
@@ -22,7 +22,7 @@ export const useBoardStore = defineStore('boardStore', {
         async getCategories() {
             const { djangoAxiosInst } = createAxiosInstances()
             try {
-                const response = await djangoAxiosInst.get('board/get-categories')
+                const response = await djangoAxiosInst.get('free_community/get-categories')
                 return response.data
             } catch (error) {
                 console.error('카테고리를 가져오는 중 오류 발생:', error)
@@ -37,17 +37,17 @@ export const useBoardStore = defineStore('boardStore', {
         }) {
             try {
                 const { djangoAxiosInst } = createAxiosInstances()
-                const response = await djangoAxiosInst.post('board/register', postData)
+                const response = await djangoAxiosInst.post('free_community/register', postData)
                 return response.data
             } catch (error) {
                 console.error('글 등록 중 오류 발생:', error)
                 throw error
             }
         },
-        async getBoardContent() {
+        async getFreeCommunityContent() {
             const { djangoAxiosInst } = createAxiosInstances()
             try {
-                const response = await djangoAxiosInst.get('board/get-allcontent')
+                const response = await djangoAxiosInst.get('free_community/get-allcontent')
                 return response.data
             } catch (error) {
                 console.error('글 목록 가져오는 중 오류 발생:', error)
@@ -57,7 +57,7 @@ export const useBoardStore = defineStore('boardStore', {
         async getCategoriesContent(categoryId: number) {
             const { djangoAxiosInst } = createAxiosInstances()
             try {
-                const response = await djangoAxiosInst.post('board/list-by-category', {
+                const response = await djangoAxiosInst.post('free_community/list-by-category', {
                     categoryId: categoryId
                 })
                 return response.data
@@ -66,42 +66,42 @@ export const useBoardStore = defineStore('boardStore', {
                 throw error
             }
         },
-        async readBoardContent(boardId: number) {
+        async readFreeCommunityContent(free_communityId: number) {
             const { djangoAxiosInst } = createAxiosInstances()
             try {
-                const response = await djangoAxiosInst.get(`board/read/${boardId}`)
+                const response = await djangoAxiosInst.get(`free_community/read/${free_communityId}`)
                 return response.data
             } catch (error) {
-                console.error('readBoardContent 중 에러:', error)
+                console.error('readFreeCommunityContent 중 에러:', error)
                 throw error
             }
         },
-        async deleteBoardContent(boardId: number) {
+        async deleteFreeCommunityContent(free_communityId: number) {
             const { djangoAxiosInst } = createAxiosInstances()
             try {
-                const response = await djangoAxiosInst.delete(`board/delete/${boardId}`)
+                const response = await djangoAxiosInst.delete(`free_community/delete/${free_communityId}`)
                 return response
             } catch (error) {
-                console.error('deleteBoardContent 중 에러:', error)
+                console.error('deleteFreeCommunityContent 중 에러:', error)
                 throw error
             }
         },
-        async updateBoardContent(boardId: number, updateData: any) {
+        async updateFreeCommunityContent(free_communityId: number, updateData: any) {
             const { djangoAxiosInst } = createAxiosInstances()
             try {
-                const response = await djangoAxiosInst.put(`board/modify/${boardId}`, updateData)
+                const response = await djangoAxiosInst.put(`free_community/modify/${free_communityId}`, updateData)
                 return response.data
             } catch (error) {
-                console.error('updateBoardContent 중 에러:', error)
+                console.error('updateFreeCommunityContent 중 에러:', error)
                 throw error
             }
         },
-        async checkAuthority(boardId: number, userToken: string) {
+        async checkAuthority(free_communityId: number, userToken: string) {
             const { djangoAxiosInst } = createAxiosInstances()
             try {
                 const userToken = localStorage.getItem('userToken')
                 console.log("userToken : ", userToken)
-                const response = await djangoAxiosInst.post(`board/check-authority/${boardId}`, {
+                const response = await djangoAxiosInst.post(`free_community/check-authority/${free_communityId}`, {
                     userToken: userToken
                 })
                 return response.data
