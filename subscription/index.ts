@@ -28,11 +28,12 @@ export default defineNuxtModule({
                 path: '/subscription/modify/:subscriptionId',
                 file: resolve(themeDir, 'subscription/pages/modify/SubscriptionModifyPage.vue'),
             })
-            // pages.push({
-            //     name: 'SubscriptionRegisterPage',
-            //     path: '/subscription/register',
-            //     file: resolve(themeDir, 'subscription/pages/register/SubscriptionRegisterPage.vue'),
-            // })
+
+            pages.push({
+                name: 'SubscriptionRegisterPage',
+                path: '/subscription/register',
+                file: resolve(themeDir, 'subscription/pages/register/SubscriptionRegisterPage.vue'),
+            })
 
         })
         nuxt.hook('imports:dirs', (dirs) => {

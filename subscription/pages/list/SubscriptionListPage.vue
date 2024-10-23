@@ -18,7 +18,6 @@
             <v-card-text>
               <p v-if="subscription.brief_description">{{ subscription.brief_description }}</p>
               <p v-else>설명 없음</p>
-              <!-- 혜택 리스트 추가 -->
             </v-card-text>
             <v-card-actions>
               <v-btn 
@@ -31,6 +30,11 @@
             </v-card-actions>
           </v-card>
         </v-col>
+      </v-row>
+      <v-row justify="end">
+        <v-btn @click="goToRegisterPage()" color="primary" class="mt-4">
+          구독권 등록
+        </v-btn>
       </v-row>
     </v-container>
   </template>
@@ -54,6 +58,10 @@
     } catch (error) {
       console.error('구독권 목록을 불러오는 중 오류 발생:', error)
     }
+  }
+  // 구독권 등록 페이지로 이동하는 함수
+  const goToRegisterPage = () => {
+    router.push({ name: 'SubscriptionRegisterPage' })
   }
   
   // 구독권 상세 페이지로 이동하는 함수
