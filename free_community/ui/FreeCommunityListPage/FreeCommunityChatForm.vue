@@ -1,9 +1,7 @@
 <template>
     <div class="chat-container">
         <div v-if="!nickname" class="login-form">
-            <h2>채팅</h2>
-            <input v-model="inputNickname" placeholder="닉네임을 입력하세요." class="inputNickname" @keyup.enter="setNickname" />
-            <button @click="setNickname" class="button">입장</button>
+            <button @click="goToLoginPage" class="login-button">로그인</button>
         </div>
         <div v-else class="chat-box">
             <div class="messages" ref="messageContainer">
@@ -27,6 +25,8 @@
 import { ref, onMounted, onUnmounted, nextTick } from 'vue';
 import { initializeApp } from 'firebase/app';
 import { getDatabase, ref as dbRef, push, onChildAdded } from 'firebase/database';
+
+const router = useRouter()
 
 const props = defineProps({
     nickname: {
@@ -62,11 +62,7 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const messagesRef = dbRef(db, 'messages');
 
-const setNickname = () => {
-    if (inputNickname.value.trim()) {
-        props.nickname = inputNickname.value.trim();
-    }
-};
+const goToLoginPage = () => router.push("/login")
 
 const sendMessage = () => {
     if (newMessage.value.trim() && props.nickname) {
@@ -97,17 +93,6 @@ onMounted(() => {
 
     onUnmounted(unsubscribe);
 });
-
-// return {
-//     nickname,
-//     inputNickname,
-//     setNickname,
-//     messages,
-//     newMessage,
-//     sendMessage,
-//     messageContainer
-// };
-
 </script>
 
 <style scoped>
@@ -137,9 +122,20 @@ onMounted(() => {
     max-height: 91vh;
 }
 
-.login-form h2 {
-    margin-bottom: 20px;
-    color: #333;
+.login-button {
+    background-color: #ff9033;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 15px 40px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.login-button:hover {
+    background-color: #e67f2c;
 }
 
 .chat-box {
@@ -157,13 +153,13 @@ onMounted(() => {
 }
 
 .message-content {
-    background-color: #000;
+    background-color: #F1F1F1;
     border-radius: 18px;
     padding: 10px 12px;
     margin-top: 14px;
     display: inline-block;
     font-size: 13px;
-    color: white;
+    color: black;
 }
 
 .own-message {
@@ -171,7 +167,7 @@ onMounted(() => {
 }
 
 .own-message .message-content {
-    background-color: #0084ff;
+    background-color: #ff9033;
     color: white;
 }
 
@@ -207,7 +203,7 @@ onMounted(() => {
 }
 
 .button {
-    background-color: #0084ff;
+    background-color: #ff9033;
     color: white;
     border: none;
     border-radius: 20px;
@@ -218,6 +214,6 @@ onMounted(() => {
 }
 
 .button:hover {
-    background-color: #0073e6;
+    background-color: #ffb04c;
 }
 </style>
