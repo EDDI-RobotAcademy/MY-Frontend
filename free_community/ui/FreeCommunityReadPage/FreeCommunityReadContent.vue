@@ -1,31 +1,31 @@
 <template>
-    <div class="board-article-wrapper">
-        <div v-if="boardContent" class="board-article">
+    <div class="free_community-article-wrapper">
+        <div v-if="free_communityContent" class="free_community-article">
             <div class="article-header">
-                <h2 class="article-title">{{ boardContent.title }}</h2>
+                <h2 class="article-title">{{ free_communityContent.title }}</h2>
                 <div class="article-meta">
-                    <span class="author">{{ boardContent.profile_nickname }}</span>
-                    <span class="date">{{ formatDate(boardContent.regDate) }}</span>
-                    <span class="category">{{ boardContent.category_name }}</span>
+                    <span class="author">{{ free_communityContent.profile_nickname }}</span>
+                    <span class="date">{{ formatDate(free_communityContent.regDate) }}</span>
+                    <span class="category">{{ free_communityContent.category_name }}</span>
                 </div>
             </div>
 
             <div class="article-content">
-                {{ boardContent.content }}
+                {{ free_communityContent.content }}
             </div>
 
             <div class="article-actions">
-                <router-link :to="{ name: 'BoardListPage' }">
+                <router-link :to="{ name: 'FreeCommunityListPage' }">
                     <button class="btn btn-back">목록으로</button>
                 </router-link>
             </div>
         </div>
 
-        <div v-if="checkMyBoard" class="author-actions">
-            <router-link :to="{ name: 'BoardModifyPage', params: { boardId } }">
+        <div v-if="checkMyFreeCommunity" class="author-actions">
+            <router-link :to="{ name: 'FreeCommunityModifyPage', params: { free_communityId } }">
                 <button class="btn btn-modify">수정</button>
             </router-link>
-            <button class="btn btn-delete" @click="boardDelete">삭제</button>
+            <button class="btn btn-delete" @click="free_communityDelete">삭제</button>
         </div>
 
     </div>
@@ -34,39 +34,39 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { useBoardStore } from '../../stores/boardStore';
+import { useFreeCommunityStore } from '../../stores/free_communityStore';
 
 const route = useRoute();
 const router = useRouter()
-const boardStore = useBoardStore();
+const free_communityStore = useFreeCommunityStore();
 
-const boardId = parseInt(route.params.boardId as string);
-const boardContent = ref<any>(null);
+const free_communityId = parseInt(route.params.free_communityId as string);
+const free_communityContent = ref<any>(null);
 const error = ref<string>('');
-const checkMyBoard = ref(false)
+const checkMyFreeCommunity = ref(false)
 
-const fetchBoardContent = async () => {
+const fetchFreeCommunityContent = async () => {
     try {
-        const response = await boardStore.readBoardContent(boardId);
-        console.log("readBoardContent 데이터", response);
-        boardContent.value = response;
+        const response = await free_communityStore.readFreeCommunityContent(free_communityId);
+        console.log("readFreeCommunityContent 데이터", response);
+        free_communityContent.value = response;
 
     } catch (err) {
         error.value = '게시글을 불러오는데 실패했습니다.';
-        console.error('Error fetching board content:', err);
+        console.error('Error fetching free_community content:', err);
     }
 };
 
 const fetchCheckAuthority = async () => {
     try {
         console.log("fetchCheckAuthority 접근")
-        const response = await boardStore.checkAuthority(boardId);
-        console.log("readBoardCofetchCheckAuthorityntent 데이터", response.is_authorized);
-        checkMyBoard.value = response.is_authorized
-        console.log("checkMyBoard 확인", checkMyBoard.value)
+        const response = await free_communityStore.checkAuthority(free_communityId);
+        console.log("readFreeCommunityCofetchCheckAuthorityntent 데이터", response.is_authorized);
+        checkMyFreeCommunity.value = response.is_authorized
+        console.log("checkMyFreeCommunity 확인", checkMyFreeCommunity.value)
     } catch (err) {
         error.value = 'fetchCheckAuthority 에러';
-        console.error('Error fetching board content:', err);
+        console.error('Error fetching free_community content:', err);
     }
 };
 
@@ -81,26 +81,26 @@ const formatDate = (dateString: string) => {
     });
 };
 
-const boardDelete = async () => {
+const free_communityDelete = async () => {
     if (confirm('정말 삭제하시겠습니까?')) {
         try {
-            await boardStore.deleteBoardContent(boardId);
-            router.push("/board/list");
+            await free_communityStore.deleteFreeCommunityContent(free_communityId);
+            router.push("/free_community/list");
         } catch (err) {
             error.value = '게시글 삭제에 실패했습니다.';
-            console.error('Error deleting board:', err);
+            console.error('Error deleting free_community:', err);
         }
     }
 };
 
 onMounted(() => {
-    fetchBoardContent();
+    fetchFreeCommunityContent();
     fetchCheckAuthority();
 });
 </script>
 
 <style scoped>
-.board-article {
+.free_community-article {
     background-color: white;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);

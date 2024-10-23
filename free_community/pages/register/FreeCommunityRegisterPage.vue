@@ -1,6 +1,6 @@
 <template>
-  <div class="board-register">
-    <BoardForm :formData="postData" @update:formData="updatePostData" />
+  <div class="free_community-register">
+    <FreeCommunityForm :formData="postData" @update:formData="updatePostData" />
     <RegisterButton :postData="postData" @registerSuccess="handleRegisterSuccess"
       @registerError="handleRegisterError" />
   </div>
@@ -9,8 +9,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import RegisterButton from '../../ui/BoardRegisterPage/BoardWriteButton.vue'
-import BoardForm from '../../ui/BoardRegisterPage/BoardRegisterForm.vue'
+import RegisterButton from '../../ui/FreeCommunityRegisterPage/FreeCommunityWriteButton.vue'
+import FreeCommunityForm from '../../ui/FreeCommunityRegisterPage/FreeCommunityRegisterForm.vue'
 
 const router = useRouter()
 
@@ -37,7 +37,7 @@ const handleRegisterError = (error) => {
 </script>
 
 <style scoped>
-.board-register {
+.free_community-register {
   max-width: 600px;
   margin: 0 auto;
   padding: 20px;

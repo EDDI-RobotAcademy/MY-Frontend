@@ -1,6 +1,6 @@
 <template>
-    <div class="board-content">
-        <table v-if="boardContents.length > 0" class="board-table">
+    <div class="free_community-content">
+        <table v-if="free_communityContents.length > 0" class="free_community-table">
             <thead>
                 <tr>
                     <th class="no-column">No</th>
@@ -11,11 +11,11 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(content, index) in boardContents" 
-                    :key="content.boardId" 
-                    @click="goToBoardDetail(content.boardId)"
-                    class="board-row">
-                    <td>{{ boardContents.length - index }}</td>
+                <tr v-for="(content, index) in free_communityContents" 
+                    :key="content.free_communityId" 
+                    @click="goToFreeCommunityDetail(content.free_communityId)"
+                    class="free_community-row">
+                    <td>{{ free_communityContents.length - index }}</td>
                     <td class="title-cell">{{ content.title }}</td>
                     <td>{{ content.profile_nickname }}</td>
                     <td>{{ formatDate(content.regDate) }}</td>
@@ -29,7 +29,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue';
-import { useBoardStore } from '../../stores/boardStore';
+import { useFreeCommunityStore } from '../../stores/free_communityStore';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
@@ -37,27 +37,27 @@ const props = defineProps<{
     selectedCategoryId: number | null
 }>();
 
-const boardStore = useBoardStore();
-const boardContents = ref([]);
+const free_communityStore = useFreeCommunityStore();
+const free_communityContents = ref([]);
 const errorMessage = ref('');
 
-const goToBoardDetail = (boardId: number) => {
-    router.push(`/board/read/${boardId}`);
+const goToFreeCommunityDetail = (free_communityId: number) => {
+    router.push(`/free_community/read/${free_communityId}`);
 };
 
-const fetchBoardContents = async (categoryId: number | null) => {
+const fetchFreeCommunityContents = async (categoryId: number | null) => {
     try {
         let response;
         if (categoryId === null) {
-            response = await boardStore.getBoardContent();
+            response = await free_communityStore.getFreeCommunityContent();
         } else {
-            response = await boardStore.getCategoriesContent(categoryId);
+            response = await free_communityStore.getCategoriesContent(categoryId);
         }
 
         if (Array.isArray(response)) {
-            boardContents.value = response.slice(0, 20);
+            free_communityContents.value = response.slice(0, 20);
         } else if (response && Array.isArray(response.data)) {
-            boardContents.value = response.data.slice(0, 20);
+            free_communityContents.value = response.data.slice(0, 20);
         } else {
             throw new Error('Unexpected response format');
         }
@@ -65,7 +65,7 @@ const fetchBoardContents = async (categoryId: number | null) => {
         errorMessage.value = '';
     } catch (error) {
         console.error('게시글을 가져오는 중 오류 발생:', error);
-        boardContents.value = [];
+        free_communityContents.value = [];
         errorMessage.value = '게시글을 불러오는 데 실패했습니다. 다시 시도해 주세요.';
     }
 };
@@ -76,36 +76,36 @@ const formatDate = (dateString: string) => {
 };
 
 watch(() => props.selectedCategoryId, (newCategoryId) => {
-    fetchBoardContents(newCategoryId);
+    fetchFreeCommunityContents(newCategoryId);
 }, { immediate: true });
 
 onMounted(() => {
     if (props.selectedCategoryId === null) {
-        fetchBoardContents(null);
+        fetchFreeCommunityContents(null);
     }
 });
 </script>
 
 <style scoped>
-.board-content {
+.free_community-content {
     padding: 20px;
     width: 100%;
 }
 
-.board-table {
+.free_community-table {
     width: 100%;
     border-collapse: collapse;
     table-layout: fixed;
 }
 
-.board-table th,
-.board-table td {
+.free_community-table th,
+.free_community-table td {
     padding: 12px 8px;
     text-align: center;
     border-bottom: 1px solid #e0e0e0;
 }
 
-.board-table th {
+.free_community-table th {
     background-color: white;
     font-weight: normal;
     color: #333;
@@ -137,11 +137,11 @@ onMounted(() => {
     width: 12%;
 }
 
-.board-row {
+.free_community-row {
     cursor: pointer;
 }
 
-.board-row:hover {
+.free_community-row:hover {
     background-color: #f5f5f5;
 }
 

@@ -17,7 +17,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import ChatComponent from '../BoardListPage/BoardChatForm.vue'
+import ChatComponent from './FreeCommunityChatForm.vue'
 
 const props = defineProps({
   nickname: {

@@ -18,7 +18,7 @@ const router = useRouter()
 const goToWritePage = () => {
   if (props.selectedCategoryId) {
     router.push({
-      path: '/board/register',
+      path: '/free_community/register',
       query: { categoryId: props.selectedCategoryId.toString() }
     });
   }

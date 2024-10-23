@@ -1,17 +1,17 @@
 <template>
-    <div class="read-page-container">
+    <div class="modify-page-container">
         <div class="content-container">
-            <BoardReadContent />
+            <FreeCommunityModifyContent />
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import BoardReadContent from '../../ui/BoardReadPage/BoardReadContent.vue';
+import FreeCommunityModifyContent from '../../ui/FreeCommunityModifyPage/FreeCommunityModifyContent.vue';
 </script>
 
 <style scoped>
-.read-page-container {
+.modify-page-container {
     display: flex;
     justify-content: center;
     align-items: center;
