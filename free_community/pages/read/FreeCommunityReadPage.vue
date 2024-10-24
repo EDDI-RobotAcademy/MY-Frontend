@@ -19,6 +19,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import FreeCommunityReadContent from '../../ui/FreeCommunityReadPage/FreeCommunityReadContent.vue';
 import FreeCommunityComment from '@/freeCommunityComment/pages/FreeCommunityComment.vue';
