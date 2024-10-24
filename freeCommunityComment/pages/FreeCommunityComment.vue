@@ -38,7 +38,8 @@
                 @toggle="() => toggleReplies(comment.commentId)"
                 />
                 <CommentActions
-                :is-owner="isCommentOwner(comment)"
+                :is-owner="comment.isOwner"
+                v-if="comment.isOwner"
                 @edit="startEdit(comment)"
                 @delete="deleteComment(comment.commentId)"
                 />
@@ -72,7 +73,8 @@
                 </div>
                 <div class="reply-footer">
                     <CommentActions
-                    :is-owner="isCommentOwner(reply)"
+                    :is-owner="reply.isOwner"
+                    v-if="reply.isOwner"
                     @edit="startEdit(reply)"
                     @delete="deleteComment(reply.commentId)"
                     />
@@ -117,6 +119,17 @@
             for (const comment of parentData) {
                 const repliesData = await freeCommunityCommentStore.getFreeCommunityReplies(comment.commentId)
                 comment.repliesCount = repliesData.length
+                comment.replies = repliesData
+
+                // 권한 체크
+                const isOwner = await isCommentOwner(comment)
+                comment.isOwner = isOwner
+                
+                // 답글에 대한 권한 체크
+                for (const reply of repliesData) {
+                    reply.isOwner = await isCommentOwner(reply)
+                }
+            
                 comment.replies = repliesData
             }
             comments.value = parentData
@@ -204,6 +217,12 @@
     }
     
     const updateComment = async (commentId: number, content: string) => {
+        const userToken = localStorage.getItem('userToken')
+        if (!userToken) {
+            alert('로그인이 필요한 서비스입니다.')
+            return
+        }
+
         try {
             await freeCommunityCommentStore.updateFreeCommunityComment(commentId, {
             content
@@ -221,6 +240,11 @@
     }
     
     const deleteComment = async (commentId: number) => {
+        const userToken = localStorage.getItem('userToken')
+        if (!userToken) {
+            alert('로그인이 필요한 서비스입니다.')
+            return
+        }
         if (!confirm('정말 삭제하시겠습니까?')) return
     
         try {
@@ -245,9 +269,19 @@
         return new Date(date).toLocaleString()
     }
     
-    const isCommentOwner = (comment: any) => {
-        return true // 실제 구현에서는 현재 로그인한 사용자와 댓글 작성자를 비교
+    const isCommentOwner = async (comment: any) => {
+    const userToken = localStorage.getItem('userToken')
+    if (!userToken) return false
+    
+        try {
+            const authorityResponse = await freeCommunityCommentStore.checkAuthority(comment.commentId, userToken)
+            return authorityResponse.is_authorized
+        } catch (error) {
+            console.error('권한 확인 중 에러:', error)
+            return false
+        }
     }
+    
     
     onMounted(async () => {
         await loadComments()
