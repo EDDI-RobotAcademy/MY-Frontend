@@ -6,10 +6,6 @@ export default defineNuxtConfig({
       title: '쿠잉 (COOING)'
     }
   },
-  server: {
-    host: '192.168.0.64', // 또는 '0.0.0.0'을 사용하여 모든 네트워크 인터페이스에서 수신
-    port: 3000
-  },
   compatibilityDate: '2024-04-03',
   devtools: { enabled: true },
   extends: [
@@ -50,7 +46,7 @@ export default defineNuxtConfig({
     '~/googleAuthentication/index.ts',
     '~/influencerAnalysis/index.ts',
     '~/free_community/index.ts',
-    '~/subscription/index.ts'
+    '~/subscription/index.ts',
   ],
 
   imports: {
