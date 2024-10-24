@@ -31,7 +31,9 @@
           </v-card>
         </v-col>
       </v-row>
-      <v-row justify="end">
+
+      <!-- 관리자만 구독권 등록 버튼 표시 -->
+      <v-row justify="end" v-if="isAdmin">
         <v-btn @click="goToRegisterPage()" color="primary" class="mt-4">
           구독권 등록
         </v-btn>
@@ -40,15 +42,20 @@
   </template>
   
   <script setup>
-  import { ref, onMounted } from 'vue'
+  import { ref, onMounted, computed } from 'vue'
   import { useRouter } from 'vue-router'
   import { useSubscriptionStore } from '~/stores/subscriptionStore'
-  
+  import { useAuthenticationStore } from '~/authentication/stores/authenticationStore'
+
   const subscriptions = ref([])
-  
+
   // Vue Router 사용 설정
   const router = useRouter()
   const subscriptionStore = useSubscriptionStore()
+  const authenticationStore = useAuthenticationStore()
+
+  // 관리자 권한 가져오기
+  const isAdmin = computed(() => authenticationStore.isAdmin)
   
   // 구독권 목록 불러오기
   const loadSubscriptions = async () => {
@@ -59,21 +66,22 @@
       console.error('구독권 목록을 불러오는 중 오류 발생:', error)
     }
   }
+
   // 구독권 등록 페이지로 이동하는 함수
   const goToRegisterPage = () => {
     router.push({ name: 'SubscriptionRegisterPage' })
   }
-  
+
   // 구독권 상세 페이지로 이동하는 함수
   const goToDetails = (subscriptionId) => {
     router.push({ name: 'SubscriptionReadPage', params: { subscriptionId } })
   }
-  
+
   // 가격 포맷 함수
   const formatPrice = (price) => {
     return parseFloat(price).toLocaleString()
   }
-  
+
   onMounted(() => {
     loadSubscriptions()
   })
@@ -117,4 +125,3 @@
     padding: 4px 0;
   }
   </style>
-  
