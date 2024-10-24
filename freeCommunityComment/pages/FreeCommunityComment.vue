@@ -96,7 +96,6 @@
     
     const props = defineProps<{
         freeCommunityId: number,
-        nickname: string
     }>()
     
     const freeCommunityCommentStore = useFreeCommunityCommentStore()
@@ -116,16 +115,10 @@
             totalComments.value = commentsData.length
 
             for (const comment of parentData) {
-                comment.nickname = props.nickname
                 const repliesData = await freeCommunityCommentStore.getFreeCommunityReplies(comment.commentId)
                 comment.repliesCount = repliesData.length
-
-                for (const reply of repliesData) {
-                    reply.nickname = props.nickname
-                }
                 comment.replies = repliesData
             }
-            
             comments.value = parentData
         } catch (error) {
             console.error('댓글 로딩 중 에러:', error)
@@ -145,7 +138,6 @@
                     parent_id: null,
                     content,
                     userToken,
-                    nickname: props.nickname
                 }
                 console.log('댓글 데이터:', commentData)
                 await freeCommunityCommentStore.addFreeCommunityComment(commentData)
@@ -183,7 +175,6 @@
                     parent_id: parentId,
                     content,
                     userToken,
-                    nickname: props.nickname
                 }
         
                 await freeCommunityCommentStore.addFreeCommunityComment(replyData)
