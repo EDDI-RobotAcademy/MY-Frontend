@@ -14,7 +14,7 @@
         <div v-for="comment in comments" :key="comment.commentId" class="comment-item">
             <div class="comment-main">
             <div class="comment-header">
-                <span class="username">{{ comment.profile_nickname || '익명' }}</span>
+                <span class="username">{{ comment.nickname || '익명' }}</span>
                 <span class="date">{{ formatDate(comment.regDate) }}</span>
             </div>
             
@@ -52,9 +52,9 @@
             />
             
             <div class="replies-list">
-                <div v-for="reply in replies" :key="reply.commentId" class="reply-item">
+                <div v-for="reply in comment.replies" :key="reply.commentId" class="reply-item">
                 <div class="comment-header">
-                    <span class="username">{{ reply.profile_nickname || '익명' }}</span>
+                    <span class="username">{{ reply.nickname || '익명' }}</span>
                     <span class="date">{{ formatDate(reply.regDate) }}</span>
                 </div>
                 <div class="reply-content">
@@ -88,17 +88,20 @@
     <script setup lang="ts">
     import { ref, onMounted } from 'vue'
     import { useFreeCommunityCommentStore } from '@/freeCommunityComment/stores/freeCommunityCommentStore'
+    import { useAccountStore } from '@/account/stores/accountStore'
     import CommentForm from '../ui/CommentForm.vue'
     import CommentActions from '../ui/CommentActions.vue'
     import ReplyForm from '../ui/ReplyForm.vue'
     import ReplyToggle from '../ui/ReplyToggle.vue'
     
     const props = defineProps<{
-    freeCommunityId: number,
-    nickname: string
+        freeCommunityId: number,
+        nickname: string
     }>()
     
     const freeCommunityCommentStore = useFreeCommunityCommentStore()
+    const accountStore = useAccountStore()
+
     const comments = ref<any[]>([])
     const totalComments = ref(0)
     const replies = ref<any[]>([])
@@ -107,42 +110,49 @@
     
     // 댓글 목록 로드
     const loadComments = async () => {
-    try {
-        const commentsData = await freeCommunityCommentStore.getFreeCommunityComments(props.freeCommunityId)
-        const parentData = commentsData.filter((comment: any) => !comment.parent)
-        totalComments.value = commentsData.length
-    
-        for (const comment of parentData) {
-            const repliesData = await freeCommunityCommentStore.getFreeCommunityReplies(comment.commentId)
-            comment.repliesCount = repliesData.length
-        }
-        
-        comments.value = parentData
-    } catch (error) {
-        console.error('댓글 로딩 중 에러:', error)
-    }
-    }
-    
-    const submitComment = async (content: string) => {
-    const userToken = localStorage.getItem("userToken")
-        if (!userToken) {
-                alert('로그인이 필요한 서비스입니다.')
-            return
-        }
-    
         try {
-            const commentData = {
-                free_community_id: props.freeCommunityId,
-                parent_id: null,
-                content,
-                userToken
+            const commentsData = await freeCommunityCommentStore.getFreeCommunityComments(props.freeCommunityId)
+            const parentData = commentsData.filter((comment: any) => !comment.parent)
+            totalComments.value = commentsData.length
+
+            for (const comment of parentData) {
+                comment.nickname = props.nickname
+                const repliesData = await freeCommunityCommentStore.getFreeCommunityReplies(comment.commentId)
+                comment.repliesCount = repliesData.length
+
+                for (const reply of repliesData) {
+                    reply.nickname = props.nickname
+                }
+                comment.replies = repliesData
             }
-    
-            await freeCommunityCommentStore.addFreeCommunityComment(commentData)
-            await loadComments()
+            
+            comments.value = parentData
         } catch (error) {
-            console.error('댓글 작성 중 에러:', error)
+            console.error('댓글 로딩 중 에러:', error)
         }
+    }
+
+    const submitComment = async (content: string) => {
+        const userToken = localStorage.getItem("userToken")
+            if (!userToken) {
+                    alert('로그인이 필요한 서비스입니다.')
+                return
+            }
+        
+            try {
+                const commentData = {
+                    free_community_id: props.freeCommunityId,
+                    parent_id: null,
+                    content,
+                    userToken,
+                    nickname: props.nickname
+                }
+                console.log('댓글 데이터:', commentData)
+                await freeCommunityCommentStore.addFreeCommunityComment(commentData)
+                await loadComments()
+            } catch (error) {
+                console.error('댓글 작성 중 에러:', error)
+            }
     }
     
     const toggleReplies = async (commentId: number) => {
@@ -161,32 +171,33 @@
     }
     
     const submitReply = async (parentId: number, content: string) => {
-    const userToken = localStorage.getItem("userToken")
-        if (!userToken) {
-            alert('로그인이 필요한 서비스입니다.')
-            return
-        }
-    
-        try {
-            const replyData = {
-                free_community_id: props.freeCommunityId,
-                parent_id: parentId,
-                content,
-                userToken
+        const userToken = localStorage.getItem("userToken")
+            if (!userToken) {
+                alert('로그인이 필요한 서비스입니다.')
+                return
             }
-    
-            await freeCommunityCommentStore.addFreeCommunityComment(replyData)
-            
-            const repliesData = await freeCommunityCommentStore.getFreeCommunityReplies(parentId)
-            replies.value = repliesData
-            
-            const parentComment = comments.value.find(c => c.commentId === parentId)
-                if (parentComment) {
-                parentComment.repliesCount = repliesData.length
+        
+            try {
+                const replyData = {
+                    free_community_id: props.freeCommunityId,
+                    parent_id: parentId,
+                    content,
+                    userToken,
+                    nickname: props.nickname
                 }
-        } catch (error) {
-            console.error('답글 작성 중 에러:', error)
-        }
+        
+                await freeCommunityCommentStore.addFreeCommunityComment(replyData)
+                const repliesData = await freeCommunityCommentStore.getFreeCommunityReplies(parentId)
+                replies.value = repliesData
+                
+                const parentComment = comments.value.find(c => c.commentId === parentId)
+                    if (parentComment) {
+                    parentComment.repliesCount = repliesData.length
+                    }
+                await loadComments()
+            } catch (error) {
+                console.error('답글 작성 중 에러:', error)
+            }
     }
     
     const cancelReply = () => {
