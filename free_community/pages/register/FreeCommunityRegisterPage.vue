@@ -15,7 +15,6 @@ import FreeCommunityForm from '../../ui/FreeCommunityRegisterPage/FreeCommunityR
 const router = useRouter()
 
 const postData = ref({
-  writer: '',
   title: '',
   content: '',
   category_id: null as number | null

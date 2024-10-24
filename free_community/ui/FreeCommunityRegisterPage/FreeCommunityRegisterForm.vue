@@ -1,10 +1,6 @@
 <template>
   <form @submit.prevent>
     <div>
-      <label for="writer">작성자:</label>
-      <input id="writer" v-model="formData.writer" required>
-    </div>
-    <div>
       <label for="title">제목:</label>
       <input id="title" v-model="formData.title" required>
     </div>
@@ -25,7 +21,6 @@ import { useRoute } from 'vue-router'
 
 const props = defineProps<{
   formData: {
-    writer: string;
     title: string;
     content: string;
     category_id: number | null;
@@ -43,8 +38,9 @@ onMounted(() => {
   const categoryId = route.query.categoryId
   if (categoryId) {
     localFormData.value.category_id = parseInt(categoryId as string)
-    emit('update:formData', localFormData.value)
   }
+  
+  emit('update:formData', localFormData.value)
 })
 
 watch(localFormData, (newValue) => {

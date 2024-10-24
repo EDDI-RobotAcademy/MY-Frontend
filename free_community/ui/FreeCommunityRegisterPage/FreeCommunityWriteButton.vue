@@ -23,8 +23,8 @@ const emit = defineEmits<{
 }>()
 
 const isValid = computed(() => {
-  const { writer, title, content, category_id } = props.postData
-  return writer && title && content && category_id !== null
+  const { title, content, category_id } = props.postData
+  return title && content && category_id !== null
 })
 
 const register = async () => {
