@@ -1,6 +1,7 @@
 <template>
     <div class="comment-actions">
       <template v-if="isOwner">
+        <button @click="$emit('edit')" class="action-btn">수정</button>
         <button @click="$emit('delete')" class="action-btn delete">삭제</button>
       </template>
     </div>
@@ -12,6 +13,7 @@
   }>()
   
   defineEmits<{
+    (e: 'edit'): void
     (e: 'delete'): void
   }>()
   </script>

@@ -76,6 +76,15 @@ export const useFreeCommunityCommentStore = defineStore('freeCommunityCommentSto
                 throw error
             }
         },
-
+        async updateFreeCommunityComment(commentId: number, updateData: CommentUpdateData) {
+            const { djangoAxiosInst } = createAxiosInstances()
+            try {
+                const response = await djangoAxiosInst.put(`free_community_comment/update/${commentId}`, updateData)
+                return response.data
+            } catch (error) {
+                console.error('updateFreeCommunityComment 중 에러:', error)
+                throw error
+            }
+        },
     }
 })
