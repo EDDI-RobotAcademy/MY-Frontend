@@ -56,6 +56,26 @@ export const useFreeCommunityCommentStore = defineStore('freeCommunityCommentSto
                 throw error
             }
         },
+        async readFreeCommunityComment(commentId: number) {
+            const { djangoAxiosInst } = createAxiosInstances()
+            try {
+                const response = await djangoAxiosInst.get(`free_community_comment/read/${commentId}`)
+                return response.data
+            } catch (error) {
+                console.error('readFreeCommunityComment 중 에러:', error)
+                throw error
+            }
+        },
+        async deleteFreeCommunityComment(commentId: number) {
+            const { djangoAxiosInst } = createAxiosInstances()
+            try {
+                const response = await djangoAxiosInst.delete(`free_community_comment/delete/${commentId}`)
+                return true
+            } catch (error) {
+                console.error('deleteFreeCommunityComment 중 에러:', error)
+                throw error
+            }
+        },
 
     }
 })
