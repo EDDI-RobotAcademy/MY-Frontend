@@ -7,7 +7,7 @@ interface CommentData {
     parent_id: number | null,
     content: string,
     userToken: string,
-    writer_nickname: string
+    nickname: string
 }
 interface CommentUpdateData {
     content: string;
