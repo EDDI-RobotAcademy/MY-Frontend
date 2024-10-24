@@ -13,7 +13,7 @@
             <tbody>
                 <tr v-for="(content, index) in free_communityContents" :key="content.free_communityId"
                     @click="goToFreeCommunityDetail(content.free_communityId)" class="free_community-row">
-                    <td>{{ free_communityContents.length - index }}</td>
+                    <td>{{ index + 1 }}</td>
                     <td class="title-cell">{{ content.title }}</td>
                     <td>{{ content.profile_nickname }}</td>
                     <td>{{ formatDate(content.regDate) }}</td>
@@ -60,9 +60,9 @@ const fetchFreeCommunityContents = async (categoryId: number | null) => {
         }
 
         if (Array.isArray(response)) {
-            free_communityContents.value = response.slice(0, 20);
+            free_communityContents.value = response.slice(0, 20).reverse();
         } else if (response && Array.isArray(response.data)) {
-            free_communityContents.value = response.data.slice(0, 20);
+            free_communityContents.value = response.data.slice(0, 20).reverse();
         } else {
             throw new Error('Unexpected response format');
         }
