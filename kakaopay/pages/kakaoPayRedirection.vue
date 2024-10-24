@@ -18,7 +18,7 @@ const requestReadyKakaoPayRedirection = async (
       "/kakao_pay/readyKakaoPay",
       readyInfo
     )
-    console.log("결과 출력",response)
+    return response.data.next_redirect_pc_url
   } catch (error) {
     console.error("requestReadyKakaoPayRedirection() 오류 발생", error)
     throw error
@@ -30,9 +30,8 @@ onMounted(async () => {
     const response = await requestReadyKakaoPayRedirection({
       amount: amount.value,
     })
-    
-    if (response.data.next_redirect_pc_url) {
-      window.location.href = response.data.next_redirect_pc_url
+    if (response) {
+      window.location.href = response
     }
   } catch (error) {
     console.error('카카오페이 결제 요청 실패:', error)
