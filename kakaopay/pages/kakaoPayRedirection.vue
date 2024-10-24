@@ -18,6 +18,7 @@ const requestReadyKakaoPayRedirection = async (
       "/kakao_pay/readyKakaoPay",
       readyInfo
     )
+    localStorage.setItem('tid', response.data.tid)
     return response.data.next_redirect_pc_url
   } catch (error) {
     console.error("requestReadyKakaoPayRedirection() 오류 발생", error)
