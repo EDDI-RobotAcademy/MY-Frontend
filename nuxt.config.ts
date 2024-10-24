@@ -18,7 +18,6 @@ export default defineNuxtConfig({
     './influencerAnalysis/nuxt.config.ts',
     './free_community/nuxt.config.ts',
     './subscription/nuxt.config.ts',
-    './kakaopay/nuxt.config.ts'
   ],
 
   css: [
@@ -48,7 +47,6 @@ export default defineNuxtConfig({
     '~/influencerAnalysis/index.ts',
     '~/free_community/index.ts',
     '~/subscription/index.ts',
-    '~/kakaopay/index.ts'
   ],
 
   imports: {
