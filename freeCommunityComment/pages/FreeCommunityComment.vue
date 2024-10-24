@@ -1,128 +1,247 @@
 <template>
     <div class="comments-container">
-      <div class="comments-count">
+        <div class="comments-count">
         댓글 {{ totalComments }}개
-      </div>
-      
-      <CommentForm
+        </div>
+        
+        <CommentForm
         placeholder="댓글을 작성해주세요"
         submit-button-text="댓글 작성"
         @submit="submitComment"
-      />
-  
-      <div class="comments-list">
+        />
+    
+        <div class="comments-list">
         <div v-for="comment in comments" :key="comment.commentId" class="comment-item">
-          <div class="comment-main">
+            <div class="comment-main">
             <div class="comment-header">
-              <span class="username">{{ comment.profile_nickname || '익명' }}</span>
-              <span class="date">{{ formatDate(comment.regDate) }}</span>
+                <span class="username">{{ comment.profile_nickname || '익명' }}</span>
+                <span class="date">{{ formatDate(comment.regDate) }}</span>
             </div>
+            
             <div class="comment-content">
-              {{ comment.content }}
+                <template v-if="editingCommentId === comment.commentId">
+                </template>
+                <template v-else>
+                {{ comment.content }}
+                </template>
             </div>
-          </div>
+            
+            <div class="comment-footer">
+                <ReplyToggle
+                :replies-count="comment.repliesCount || 0"
+                @toggle="() => toggleReplies(comment.commentId)"
+                />
+            </div>
+            </div>
+    
+            <div v-if="showRepliesFor === comment.commentId" class="replies-section">
+            <ReplyForm
+                @submit="(content) => submitReply(comment.commentId, content)"
+                @cancel="cancelReply"
+            />
+            
+            <div class="replies-list">
+                <div v-for="reply in replies" :key="reply.commentId" class="reply-item">
+                <div class="comment-header">
+                    <span class="username">{{ reply.profile_nickname || '익명' }}</span>
+                    <span class="date">{{ formatDate(reply.regDate) }}</span>
+                </div>
+                <div class="reply-content">
+                    <template v-if="editingCommentId === reply.commentId">
+                    </template>
+                    <template v-else>
+                    {{ reply.content }}
+                    </template>
+                </div>
+                </div>
+            </div>
+            </div>
         </div>
-      </div>
+        </div>
     </div>
-  </template>
-  
-  <script setup lang="ts">
-  import { ref, onMounted } from 'vue'
-  import { useFreeCommunityCommentStore } from '@/freeCommunityComment/stores/freeCommunityCommentStore'
-  import CommentForm from '../ui/CommentForm.vue'
-  
-  const props = defineProps<{
+    </template>
+    
+    <script setup lang="ts">
+    import { ref, onMounted } from 'vue'
+    import { useFreeCommunityCommentStore } from '@/freeCommunityComment/stores/freeCommunityCommentStore'
+    import CommentForm from '../ui/CommentForm.vue'
+    import CommentActions from '../ui/CommentActions.vue'
+    import ReplyForm from '../ui/ReplyForm.vue'
+    import ReplyToggle from '../ui/ReplyToggle.vue'
+    
+    const props = defineProps<{
     freeCommunityId: number,
     nickname: string
-  }>()
-  
-  const freeCommunityCommentStore = useFreeCommunityCommentStore()
-  const comments = ref<any[]>([])
-  const totalComments = ref(0)
-  
-  // 댓글 목록 로드
-  const loadComments = async () => {
+    }>()
+    
+    const freeCommunityCommentStore = useFreeCommunityCommentStore()
+    const comments = ref<any[]>([])
+    const totalComments = ref(0)
+    const replies = ref<any[]>([])
+    const showRepliesFor = ref<number | null>(null)
+    const editingCommentId = ref<number | null>(null)
+    
+    // 댓글 목록 로드
+    const loadComments = async () => {
     try {
-      const commentsData = await freeCommunityCommentStore.getFreeCommunityComments(props.freeCommunityId)
-      totalComments.value = commentsData.length
-      comments.value = commentsData
+        const commentsData = await freeCommunityCommentStore.getFreeCommunityComments(props.freeCommunityId)
+        const parentData = commentsData.filter((comment: any) => !comment.parent)
+        totalComments.value = commentsData.length
+    
+        for (const comment of parentData) {
+            const repliesData = await freeCommunityCommentStore.getFreeCommunityReplies(comment.commentId)
+            comment.repliesCount = repliesData.length
+        }
+        
+        comments.value = parentData
     } catch (error) {
-      console.error('댓글 로딩 중 에러:', error)
+        console.error('댓글 로딩 중 에러:', error)
     }
-  }
-  
-  const submitComment = async (content: string) => {
+    }
+    
+    const submitComment = async (content: string) => {
     const userToken = localStorage.getItem("userToken")
-    if (!userToken) {
-      alert('로그인이 필요한 서비스입니다.')
-      return
+        if (!userToken) {
+                alert('로그인이 필요한 서비스입니다.')
+            return
+        }
+    
+        try {
+            const commentData = {
+                free_community_id: props.freeCommunityId,
+                parent_id: null,
+                content,
+                userToken
+            }
+    
+            await freeCommunityCommentStore.addFreeCommunityComment(commentData)
+            await loadComments()
+        } catch (error) {
+            console.error('댓글 작성 중 에러:', error)
+        }
     }
-  
-    try {
-      const commentData = {
-        free_community_id: props.freeCommunityId,
-        parent_id: null,
-        content,
-        userToken
-      }
-  
-      await freeCommunityCommentStore.addFreeCommunityComment(commentData)
-      await loadComments()
-    } catch (error) {
-      console.error('댓글 작성 중 에러:', error)
+    
+    const toggleReplies = async (commentId: number) => {
+        try {
+            if (showRepliesFor.value === commentId) {
+                showRepliesFor.value = null
+                replies.value = []
+            } else {
+                showRepliesFor.value = commentId
+                const repliesData = await freeCommunityCommentStore.getFreeCommunityReplies(commentId)
+                replies.value = repliesData
+            }
+        } catch (error) {
+            console.error('답글 로딩 중 에러:', error)
+        }
     }
-  }
-  
-  const formatDate = (date: string) => {
-    return new Date(date).toLocaleString()
-  }
-  
-  onMounted(async () => {
-    await loadComments()
-  })
-  </script>
-  
-  <style scoped>
-  .comments-container {
+    
+    const submitReply = async (parentId: number, content: string) => {
+    const userToken = localStorage.getItem("userToken")
+        if (!userToken) {
+            alert('로그인이 필요한 서비스입니다.')
+            return
+        }
+    
+        try {
+            const replyData = {
+                free_community_id: props.freeCommunityId,
+                parent_id: parentId,
+                content,
+                userToken
+            }
+    
+            await freeCommunityCommentStore.addFreeCommunityComment(replyData)
+            
+            const repliesData = await freeCommunityCommentStore.getFreeCommunityReplies(parentId)
+            replies.value = repliesData
+            
+            const parentComment = comments.value.find(c => c.commentId === parentId)
+                if (parentComment) {
+                parentComment.repliesCount = repliesData.length
+                }
+        } catch (error) {
+            console.error('답글 작성 중 에러:', error)
+        }
+    }
+    
+    const cancelReply = () => {
+        showRepliesFor.value = null
+    }
+    
+    const startEdit = (comment: any) => {
+        editingCommentId.value = comment.commentId
+    }
+    
+    const cancelEdit = () => {
+        editingCommentId.value = null
+    }
+    
+    const formatDate = (date: string) => {
+        return new Date(date).toLocaleString()
+    }
+    
+    onMounted(async () => {
+        await loadComments()
+    })
+    </script>
+    
+    <style scoped>
+    .comments-container {
     max-width: 800px;
     margin: 0 auto;
     padding: 20px;
-  }
-  
-  .comments-count {
+    }
+    
+    .comments-count {
     font-size: 1.1em;
     font-weight: bold;
     margin-bottom: 20px;
     padding-bottom: 10px;
     border-bottom: 1px solid #eee;
-  }
-  
-  .comments-list {
+    }
+    
+    .comments-list {
     margin-top: 20px;
-  }
-  
-  .comment-item {
+    }
+    
+    .comment-item {
     border-bottom: 1px solid #eee;
     padding: 15px 0;
-  }
-  
-  .comment-header {
+    }
+    
+    .comment-header {
     margin-bottom: 8px;
-  }
-  
-  .username {
+    }
+    
+    .username {
     font-weight: bold;
     margin-right: 10px;
-  }
-  
-  .date {
+    }
+    
+    .date {
     color: #666;
     font-size: 0.9em;
-  }
-  
-  .comment-content {
+    }
+    
+    .comment-content {
     margin-bottom: 10px;
     line-height: 1.5;
-  }
-  </style>
-  
+    }
+    
+    .comment-footer {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+    }
+    
+    .replies-section {
+    margin-left: 20px;
+    margin-top: 10px;
+    }
+    
+    .replies-list {
+    margin-left: 40px;
+    }
+    
+    </style>

@@ -45,6 +45,17 @@ export const useFreeCommunityCommentStore = defineStore('freeCommunityCommentSto
                 throw error
             }
         },
+        async getFreeCommunityReplies(parentId: number) {
+            const { djangoAxiosInst } = createAxiosInstances()
+            try {
+                const response = await djangoAxiosInst.post('free_community_comment/list-replies',
+                    { parent_id: parentId })
+                return response.data
+            } catch (error) {
+                console.error('getFreeCommunityReplies 중 에러 발생:', error)
+                throw error
+            }
+        },
 
     }
 })
