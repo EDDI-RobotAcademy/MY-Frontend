@@ -1,0 +1,128 @@
+<template>
+    <div class="comments-container">
+      <div class="comments-count">
+        댓글 {{ totalComments }}개
+      </div>
+      
+      <CommentForm
+        placeholder="댓글을 작성해주세요"
+        submit-button-text="댓글 작성"
+        @submit="submitComment"
+      />
+  
+      <div class="comments-list">
+        <div v-for="comment in comments" :key="comment.commentId" class="comment-item">
+          <div class="comment-main">
+            <div class="comment-header">
+              <span class="username">{{ comment.profile_nickname || '익명' }}</span>
+              <span class="date">{{ formatDate(comment.regDate) }}</span>
+            </div>
+            <div class="comment-content">
+              {{ comment.content }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </template>
+  
+  <script setup lang="ts">
+  import { ref, onMounted } from 'vue'
+  import { useFreeCommunityCommentStore } from '@/freeCommunityComment/stores/freeCommunityCommentStore'
+  import CommentForm from '../ui/CommentForm.vue'
+  
+  const props = defineProps<{
+    freeCommunityId: number,
+    nickname: string
+  }>()
+  
+  const freeCommunityCommentStore = useFreeCommunityCommentStore()
+  const comments = ref<any[]>([])
+  const totalComments = ref(0)
+  
+  // 댓글 목록 로드
+  const loadComments = async () => {
+    try {
+      const commentsData = await freeCommunityCommentStore.getFreeCommunityComments(props.freeCommunityId)
+      totalComments.value = commentsData.length
+      comments.value = commentsData
+    } catch (error) {
+      console.error('댓글 로딩 중 에러:', error)
+    }
+  }
+  
+  const submitComment = async (content: string) => {
+    const userToken = localStorage.getItem("userToken")
+    if (!userToken) {
+      alert('로그인이 필요한 서비스입니다.')
+      return
+    }
+  
+    try {
+      const commentData = {
+        free_community_id: props.freeCommunityId,
+        parent_id: null,
+        content,
+        userToken
+      }
+  
+      await freeCommunityCommentStore.addFreeCommunityComment(commentData)
+      await loadComments()
+    } catch (error) {
+      console.error('댓글 작성 중 에러:', error)
+    }
+  }
+  
+  const formatDate = (date: string) => {
+    return new Date(date).toLocaleString()
+  }
+  
+  onMounted(async () => {
+    await loadComments()
+  })
+  </script>
+  
+  <style scoped>
+  .comments-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .comments-count {
+    font-size: 1.1em;
+    font-weight: bold;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .comments-list {
+    margin-top: 20px;
+  }
+  
+  .comment-item {
+    border-bottom: 1px solid #eee;
+    padding: 15px 0;
+  }
+  
+  .comment-header {
+    margin-bottom: 8px;
+  }
+  
+  .username {
+    font-weight: bold;
+    margin-right: 10px;
+  }
+  
+  .date {
+    color: #666;
+    font-size: 0.9em;
+  }
+  
+  .comment-content {
+    margin-bottom: 10px;
+    line-height: 1.5;
+  }
+  </style>
+  
