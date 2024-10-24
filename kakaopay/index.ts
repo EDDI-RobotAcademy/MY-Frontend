@@ -3,8 +3,8 @@ import { resolve } from 'path';
 
 export default defineNuxtModule ({
     meta: {
-        name: 'KakaoPayRedirection',
-        configKey: 'KakaoPayRedirection',
+        name: 'KakaoPay',
+        configKey: 'KakaoPay',
     },
 
     setup(moduleOptions, nuxt) {
@@ -15,6 +15,11 @@ export default defineNuxtModule ({
                 name: 'KakaoPayRedirection',
                 path: '/kakao_pay/readyKakaoPay',
                 file: resolve(themeDir, 'kakaopay/pages/KakaoPayRedirection.vue'),
+            })
+            pages.push({
+                name: 'KakaoPayApprove',
+                path: '/kakao_pay/approveKakaoPay',
+                file: resolve(themeDir, 'kakaopay/pages/kakaoPayApprove.vue'),
             })
         })
 
