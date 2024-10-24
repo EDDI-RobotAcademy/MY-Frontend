@@ -1,3 +1,4 @@
+version: "3.7"
 services:
   nuxt:
     image: ghcr.io/${GITHUB_ACTOR}/my-nuxt-server:latest
@@ -11,9 +12,11 @@ services:
     networks:
       - app
   nginx:
-    image: ghcr.io/${GITHUB_ACTOR}/my-nginx:latest
+    image: "nginx:latest"
     container_name: frontend-deploy-nginx
-    restart: always
+    volumes:
+      - /home/ec2-user/my/vue-frontend/conf:/etc/nginx/conf.d
+    restart: unless-stopped
     ports:
       - "80:80"
     networks:
@@ -22,4 +25,3 @@ services:
 networks:
   app:
     driver: bridge
-
