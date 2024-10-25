@@ -37,13 +37,12 @@ const goToWritePage = () => {
   border-radius: 4px;
   cursor: pointer;
   font-size: 14px;
-  background-color: #e67e22;
+  background-color: #ff9033;
   color: #fff;
 }
 
 .write-button:hover {
   background-color: #e67e22;
-  transform: translateY(-2px);
 }
 
 .write-button:disabled {
