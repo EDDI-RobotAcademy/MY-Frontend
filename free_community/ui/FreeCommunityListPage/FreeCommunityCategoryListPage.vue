@@ -14,7 +14,9 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useFreeCommunityStore } from '../../stores/free_communityStore'
-
+import { useRoute, useRouter } from 'vue-router'
+const route = useRoute()
+const router = useRouter()  
 const props = defineProps<{
     modelValue: number | null
 }>()
@@ -27,12 +29,21 @@ const categories = ref<{ categoryId: number; name: string }[]>([])
 const fetchCategories = async () => {
     try {
         categories.value = await free_communityStore.getCategories()
+        const categoryFromQuery = route.query.category
+        if (categoryFromQuery) {
+            const categoryId = Number(categoryFromQuery)
+            selectCategory(categoryId)
+        }
     } catch (error) {
         console.error('카테고리를 가져오는 중 오류 발생:', error)
     }
 }
 
 const selectCategory = async (categoryId: number) => {
+    router.push({
+        query: { ...route.query, category: categoryId.toString() }
+    })
+
     emit('update:modelValue', categoryId)
     try {
         const response = await free_communityStore.getCategoriesContent(categoryId)
