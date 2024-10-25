@@ -56,7 +56,7 @@ const route = useRoute();
 }
 
 :deep(.comment-form) {
-    background-color: #f8f9fa;
+    background-color: #ffffff;
     padding: 15px;
     border-radius: 8px;
     margin-bottom: 20px;
@@ -67,18 +67,5 @@ const route = useRoute();
     border-radius: 8px;
     margin-bottom: 10px;
     padding: 15px;
-}
-
-/* 모바일 반응형 스타일 */
-@media (max-width: 640px) {
-    .content-container {
-        padding: 16px;
-        margin: 0 16px;
-    }
-    
-    :deep(.comment-form),
-    :deep(.comment-item) {
-        padding: 12px;
-    }
 }
 </style>
