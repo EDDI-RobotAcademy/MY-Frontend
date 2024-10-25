@@ -37,6 +37,11 @@ import { useRoute, useRouter } from 'vue-router';
 import { useFreeCommunityStore } from '../../stores/free_communityStore';
 import { useViewCountStore } from '~/viewCount/stores/viewCountStore';
 
+import { useAuthenticationStore } from '@/authentication/stores/authenticationStore'
+
+const authenticationStore = useAuthenticationStore();
+const isAuthenticated = computed(() => authenticationStore.isAuthenticated);
+
 const route = useRoute();
 const router = useRouter()
 const viewCountStore = useViewCountStore();
@@ -73,6 +78,8 @@ const fetchCheckAuthority = async () => {
 };
 
 const fetchIncrementCount = async () => {
+    if (!isAuthenticated.value) return;
+
     try {
         await viewCountStore.requestIncrementViewCount(free_communityId);
     } catch (err) {
@@ -107,7 +114,9 @@ const free_communityDelete = async () => {
 onMounted(() => {
     fetchFreeCommunityContent();
     fetchCheckAuthority();
-    fetchIncrementCount();
+    if (isAuthenticated.value) {
+        fetchIncrementCount();
+    }
 });
 </script>
 
