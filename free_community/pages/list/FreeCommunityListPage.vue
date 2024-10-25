@@ -3,11 +3,14 @@
     <div class="main-content">
       <div class="top-bar">
         <FreeCommunityCategoryListPage v-model="selectedCategoryId" />
-        <FreeCommunitySearchButton />
+        <div class="top-right">
+          <FreeCommunitySearchButton />
+        </div>
       </div>
       <ChatFloatingButton :nickname="nickname"></ChatFloatingButton>
       <div class="content-wrapper">
-        <FreeCommunityContent :selectedCategoryId="selectedCategoryId" />
+        <FreeCommunityContent ref="contentRef" :selectedCategoryId="selectedCategoryId" />
+        <FreeCommunitySortDropdown @sort="handleSort" />
       </div>
       <div class="bottom-bar">
         <FreeCommunityAddCategoryButton v-if="isAdmin" @categoryAdded="refreshCategories" />
@@ -25,6 +28,7 @@ import FreeCommunityAddCategoryButton from '../../ui/FreeCommunityListPage/FreeC
 import FreeCommunityWriteButton from '../../ui/FreeCommunityListPage/FreeCommunityWriteButton.vue'
 import FreeCommunityContent from '../../ui/FreeCommunityListPage/FreeCommunityContent.vue'
 import ChatFloatingButton from '../../ui/FreeCommunityListPage/FreeCommunityChatFloatingButton.vue'
+import FreeCommunitySortDropdown from '../../ui/FreeCommunityListPage/FreeCommunitySortDropdown.vue'
 import { useAuthenticationStore } from '@/authentication/stores/authenticationStore'
 import { useAccountStore } from '@/account/stores/accountStore'
 
@@ -44,6 +48,12 @@ const isAdmin = computed(() => authenticationStore.isAdmin);
 
 const nickname = ref('')
 const selectedCategoryId = ref<number | null>(null)
+const contentRef = ref<InstanceType<typeof FreeCommunityContent> | null>(null);
+
+const handleSort = (sortType: string) => {
+  contentRef.value?.sortBy(sortType);
+};
+
 const checkAndSetAuthStatus = () => {
   authenticationStore.checkAndSetAuthStatus()
 }
@@ -111,6 +121,12 @@ onMounted(() => {
   align-items: center;
 }
 
+.top-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
 .bottom-bar {
   padding: 0px 45px 20px 20px;
   background-color: #F1F1F1;
@@ -128,5 +144,11 @@ onMounted(() => {
   background-color: white;
   border-radius: 8px;
   margin: 20px;
+  position: relative;
+}
+
+:deep(.sort-dropdown) {
+  position: absolute;
+  left: 40px;
 }
 </style>
