@@ -19,6 +19,7 @@ export default defineNuxtConfig({
     './free_community/nuxt.config.ts',
     './subscription/nuxt.config.ts',
     './tosspayments/nuxt.config.ts',
+    './aiRequest/nuxt.config.ts',
   ],
 
   css: [
@@ -49,6 +50,7 @@ export default defineNuxtConfig({
     '~/free_community/index.ts',
     '~/subscription/index.ts',
     '~/tosspayments/index.ts',
+    '~/aiRequest/index.ts',
   ],
 
   imports: {
