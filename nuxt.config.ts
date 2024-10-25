@@ -18,6 +18,7 @@ export default defineNuxtConfig({
     './influencerAnalysis/nuxt.config.ts',
     './free_community/nuxt.config.ts',
     './subscription/nuxt.config.ts',
+    './tosspayments/nuxt.config.ts',
   ],
 
   css: [
@@ -30,10 +31,6 @@ export default defineNuxtConfig({
   },
 
   vite: {
-    sever: {
-      ws: false,
-      hmr: false,
-    },
     ssr: {
       noExternal: ['vuetify'] // SSR에서도 Vuetify를 외부 패키지로 처리하지 않도록 설정
     }
@@ -51,6 +48,7 @@ export default defineNuxtConfig({
     '~/influencerAnalysis/index.ts',
     '~/free_community/index.ts',
     '~/subscription/index.ts',
+    '~/tosspayments/index.ts',
   ],
 
   imports: {
@@ -70,6 +68,7 @@ export default defineNuxtConfig({
       FIREBASE_STORAGE_BUCKET: process.env.VUE_APP_FIREBASE_STORAGE_BUCKET,
       FIREBASE_MESSAGING_SENDER_ID: process.env.VUE_APP_FIREBASE_MESSAGING_SENDER_ID,
       FIREBASE_APP_ID: process.env.VUE_APP_FIREBASE_APP_ID,
+      TOSS_CLIENT_KEY: process.env.VUE_APP_TOSS_CLIENT_KEY,
     }
   }
 })
