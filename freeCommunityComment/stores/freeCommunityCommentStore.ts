@@ -7,7 +7,7 @@ interface CommentData {
     parent_id: number | null,
     content: string,
     userToken: string,
-    writer_nickname: string
+    nickname: string
 }
 interface CommentUpdateData {
     content: string;
@@ -86,5 +86,19 @@ export const useFreeCommunityCommentStore = defineStore('freeCommunityCommentSto
                 throw error
             }
         },
+        async checkAuthority(commentId: number, userToken: string) {
+            const { djangoAxiosInst } = createAxiosInstances()
+            try {
+                const userToken = localStorage.getItem('userToken')
+                console.log("userToken : ", userToken)
+                const response = await djangoAxiosInst.post(`free_community_comment/check-authority/${commentId}`, {
+                    userToken: userToken
+                })
+                return response.data
+            } catch (error) {
+                console.error('checkAuthority 중 에러:', error)
+                throw error
+            }
+        }
     }
 })
