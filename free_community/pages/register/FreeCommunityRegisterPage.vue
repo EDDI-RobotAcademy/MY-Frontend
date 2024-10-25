@@ -1,4 +1,5 @@
 <template>
+  
   <div class="free_community-register">
     <FreeCommunityForm :formData="postData" @update:formData="updatePostData" />
     <RegisterButton :postData="postData" @registerSuccess="handleRegisterSuccess"
@@ -15,7 +16,6 @@ import FreeCommunityForm from '../../ui/FreeCommunityRegisterPage/FreeCommunityR
 const router = useRouter()
 
 const postData = ref({
-  writer: '',
   title: '',
   content: '',
   category_id: null as number | null
@@ -37,9 +37,12 @@ const handleRegisterError = (error) => {
 </script>
 
 <style scoped>
+
 .free_community-register {
   max-width: 600px;
-  margin: 200px auto;
-  padding: 20px;
+  margin: 100px 100px 100px 400px;
+  padding: 40px 60px 40px 60px;
+  border-radius: 4px;
+  background-color: #f8f8f8
 }
 </style>

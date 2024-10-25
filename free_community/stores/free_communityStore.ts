@@ -30,7 +30,6 @@ export const useFreeCommunityStore = defineStore('free_communityStore', {
             }
         },
         async registerPost(postData: {
-            writer: string,
             title: string,
             content: string,
             category_id: number,
