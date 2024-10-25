@@ -1,4 +1,3 @@
-version: "3.7"
 services:
   nuxt:
     image: ghcr.io/${GITHUB_ACTOR}/my-nuxt-server:latest
@@ -7,8 +6,8 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - VUE_APP_BASE_URL=${VUE_APP_BASE_URL}
-      - VUE_APP_AI_BASE_URL=${VUE_APP_AI_BASE_URL}
+      - MAIN_API_URL=${MAIN_API_URL}
+      - AI_BASE_URL=${AI_BASE_URL}
     restart: always
     networks:
       - app
