@@ -11,7 +11,6 @@
             <div class="comments-section">
                 <FreeCommunityComment 
                 :freeCommunityId="Number(route.params.free_communityId)"
-                :nickname="userNickname"
                 />
             </div>
         </div>
@@ -19,29 +18,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 import { useRoute } from 'vue-router';
 import FreeCommunityReadContent from '../../ui/FreeCommunityReadPage/FreeCommunityReadContent.vue';
 import FreeCommunityComment from '@/freeCommunityComment/pages/FreeCommunityComment.vue';
-import { useAccountStore } from '~/account/stores/accountStore';
 
 const route = useRoute();
-const accountStore = useAccountStore()
-const userNickname = ref('')
 
-const fetchNickname = async () => {
-    try {
-        const nickname = await accountStore.getNickname('')
-        userNickname.value = nickname
-        console.log('현재 사용자 닉네임:', nickname)
-    } catch (error) {
-        console.error('닉네임 가져오기 실패:', error)
-    }
-}
-
-onMounted(async () => {
-    await fetchNickname()
-})
 </script>
 
 <style scoped>
@@ -73,7 +56,7 @@ onMounted(async () => {
 }
 
 :deep(.comment-form) {
-    background-color: #f8f9fa;
+    background-color: #ffffff;
     padding: 15px;
     border-radius: 8px;
     margin-bottom: 20px;
@@ -84,18 +67,5 @@ onMounted(async () => {
     border-radius: 8px;
     margin-bottom: 10px;
     padding: 15px;
-}
-
-/* 모바일 반응형 스타일 */
-@media (max-width: 640px) {
-    .content-container {
-        padding: 16px;
-        margin: 0 16px;
-    }
-    
-    :deep(.comment-form),
-    :deep(.comment-item) {
-        padding: 12px;
-    }
 }
 </style>
