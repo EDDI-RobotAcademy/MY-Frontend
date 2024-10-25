@@ -3,11 +3,12 @@ import * as axiosUtility from "../../utility/axiosInstance"
 export const aiRequestActions = {
     async aiRequestToDjango() {
         const { djangoAxiosInst } = axiosUtility.createAxiosInstances()
+        const userToken = localStorage.getItem("userToken")
 
         const payload = {
-            userToken: "test",
+            userToken: userToken,
             command: 1,
-            data: ["테스트용 데이터입니다."]
+            data: ["test data"]
         }
 
         try {
