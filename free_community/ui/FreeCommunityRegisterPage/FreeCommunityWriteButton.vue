@@ -1,5 +1,5 @@
 <template>
-  <button @click="register" :disabled="!isValid">글 등록</button>
+  <button @click="register" :disabled="!isValid">등록</button>
 </template>
 
 <script setup lang="ts">
@@ -51,15 +51,17 @@ const register = async () => {
 
 <style scoped>
 button {
-  background-color: #4CAF50;
+  background-color: #ff9033;
+  font-weight: bold;
+  border-radius: 4px;
   color: white;
-  padding: 10px 15px;
+  padding: 8px 20px 10px 20px;
   border: none;
   cursor: pointer;
 }
 
 button:hover {
-  background-color: #45a049;
+  background-color: #ff9033;
 }
 
 button:disabled {
