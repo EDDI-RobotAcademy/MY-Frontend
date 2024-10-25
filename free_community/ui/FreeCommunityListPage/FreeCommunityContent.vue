@@ -28,11 +28,12 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue';
 import { useFreeCommunityStore } from '../../stores/free_communityStore';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import { useViewCountStore } from '~/viewCount/stores/viewCountStore';
 
 const viewCountStore = useViewCountStore();
 const router = useRouter();
+const route = useRoute(); // route 추가
 const props = defineProps<{
     selectedCategoryId: number | null
 }>();
@@ -98,16 +99,28 @@ const formatDate = (dateString: string) => {
     return date.toISOString().split('T')[0];
 };
 
-watch(() => props.selectedCategoryId, (newCategoryId) => {
-    fetchFreeCommunityContents(newCategoryId);
-}, { immediate: true });
-
 onMounted(async () => {
-    if (props.selectedCategoryId === null) {
+    const categoryFromQuery = route.query.category ? Number(route.query.category) : null;
+    if (categoryFromQuery) {
+        await fetchFreeCommunityContents(categoryFromQuery);
+    } else if (props.selectedCategoryId === null) {
         await fetchFreeCommunityContents(null);
     }
     await fetchGetViewCount();
 });
+
+watch(
+    [
+        () => props.selectedCategoryId,
+        () => route.query.category
+    ],
+    ([newCategoryId, queryCategory]) => {
+        // query parameter가 있으면 그것을 우선 사용
+        const categoryToUse = queryCategory ? Number(queryCategory) : newCategoryId;
+        fetchFreeCommunityContents(categoryToUse);
+    },
+    { immediate: true }
+);
 </script>
 
 <style scoped>
