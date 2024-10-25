@@ -338,12 +338,17 @@
     }
     
     .replies-section {
-    margin-left: 20px;
-    margin-top: 10px;
+    /* margin-left: 10px; */
+        margin-top: 20px;
     }
     
     .replies-list {
-    margin-left: 40px;
+        margin-left: 50px;
+        border-left: 2px solid #eee;
+    }
+
+    .reply-item {
+        margin: 20px;
     }
     
     </style>
