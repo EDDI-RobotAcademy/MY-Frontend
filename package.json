@@ -15,6 +15,7 @@
     "@aws-sdk/credential-provider-cognito-identity": "^3.679.0",
     "@aws-sdk/credential-providers": "^3.679.0",
     "@pinia/nuxt": "^0.5.5",
+    "@tosspayments/tosspayments-sdk": "^2.3.2",
     "animejs": "^3.2.2",
     "axios": "^1.7.7",
     "chart.js": "^4.4.5",

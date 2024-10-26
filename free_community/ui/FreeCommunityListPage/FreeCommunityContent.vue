@@ -1,6 +1,6 @@
 <template>
     <div class="free_community-content">
-        <table v-if="free_communityContents.length > 0" class="free_community-table">
+        <table v-if="sortedContents.length > 0" class="free_community-table">
             <thead>
                 <tr>
                     <th class="no-column">No</th>
@@ -11,9 +11,9 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(content, index) in free_communityContents" :key="content.free_communityId"
+                <tr v-for="(content, index) in sortedContents" :key="content.free_communityId"
                     @click="goToFreeCommunityDetail(content.free_communityId)" class="free_community-row">
-                    <td>{{ free_communityContents.length - index }}</td>
+                    <td>{{ sortedContents.length - index }}</td>
                     <td class="title-cell">{{ content.title }}</td>
                     <td>{{ content.profile_nickname }}</td>
                     <td>{{ formatDate(content.regDate) }}</td>
@@ -21,18 +21,20 @@
                 </tr>
             </tbody>
         </table>
+
         <p v-else>{{ errorMessage || '게시글이 없습니다.' }}</p>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, computed } from 'vue';
 import { useFreeCommunityStore } from '../../stores/free_communityStore';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import { useViewCountStore } from '~/viewCount/stores/viewCountStore';
 
 const viewCountStore = useViewCountStore();
 const router = useRouter();
+const route = useRoute();
 const props = defineProps<{
     selectedCategoryId: number | null
 }>();
@@ -41,6 +43,26 @@ const free_communityStore = useFreeCommunityStore();
 const free_communityContents = ref([]);
 const errorMessage = ref('');
 const viewCounts = ref<{ [key: number]: number }>({});
+const currentSort = ref('date'); // 현재 정렬 방식을 저장
+
+// 정렬된 컨텐츠를 반환하는 computed 속성
+const sortedContents = computed(() => {
+    return [...free_communityContents.value].sort((a, b) => {
+        if (currentSort.value === 'date') {
+            return new Date(b.regDate).getTime() - new Date(a.regDate).getTime();
+        } else if (currentSort.value === 'views') {
+            const viewsA = getViewCount(a.free_communityId);
+            const viewsB = getViewCount(b.free_communityId);
+            return viewsB - viewsA;
+        }
+        return 0;
+    });
+});
+
+// 외부에서 호출할 수 있는 정렬 메소드
+const sortBy = (sortType: string) => {
+    currentSort.value = sortType;
+};
 
 const goToFreeCommunityDetail = (free_communityId: number) => {
     router.push(`/free_community/read/${free_communityId}`);
@@ -60,9 +82,9 @@ const fetchFreeCommunityContents = async (categoryId: number | null) => {
         }
 
         if (Array.isArray(response)) {
-            free_communityContents.value = response.slice(0, 20);
+            free_communityContents.value = response.slice(0, 30);
         } else if (response && Array.isArray(response.data)) {
-            free_communityContents.value = response.data.slice(0, 20);
+            free_communityContents.value = response.data.slice(0, 30);
         } else {
             throw new Error('Unexpected response format');
         }
@@ -79,7 +101,6 @@ const fetchGetViewCount = async () => {
     try {
         const response = await viewCountStore.requestGetViewCount();
         if (response && Array.isArray(response)) {
-            // viewCounts 객체 초기화
             const counts: { [key: number]: number } = {};
             response.forEach(item => {
                 if (item.community_id && item.count !== undefined) {
@@ -98,20 +119,36 @@ const formatDate = (dateString: string) => {
     return date.toISOString().split('T')[0];
 };
 
-watch(() => props.selectedCategoryId, (newCategoryId) => {
-    fetchFreeCommunityContents(newCategoryId);
-}, { immediate: true });
-
 onMounted(async () => {
-    if (props.selectedCategoryId === null) {
+    const categoryFromQuery = route.query.category ? Number(route.query.category) : null;
+    if (categoryFromQuery) {
+        await fetchFreeCommunityContents(categoryFromQuery);
+    } else if (props.selectedCategoryId === null) {
         await fetchFreeCommunityContents(null);
     }
     await fetchGetViewCount();
+});
+
+watch(
+    [
+        () => props.selectedCategoryId,
+        () => route.query.category
+    ],
+    ([newCategoryId, queryCategory]) => {
+        const categoryToUse = queryCategory ? Number(queryCategory) : newCategoryId;
+        fetchFreeCommunityContents(categoryToUse);
+    },
+    { immediate: true }
+);
+
+defineExpose({
+    sortBy
 });
 </script>
 
 <style scoped>
 .free_community-content {
+    position: relative;
     padding: 20px;
     width: 100%;
 }
@@ -124,9 +161,11 @@ onMounted(async () => {
 
 .free_community-table th,
 .free_community-table td {
-    padding: 12px 8px;
+    padding: 8px 6px;
     text-align: center;
     border-bottom: 1px solid #e0e0e0;
+    font-size: 0.85em;
+    line-height: 1.2;
 }
 
 .free_community-table th {
@@ -134,6 +173,7 @@ onMounted(async () => {
     font-weight: normal;
     color: #333;
     border-top: 1px solid #e0e0e0;
+    padding: 6px;
 }
 
 .no-column {
@@ -145,8 +185,9 @@ onMounted(async () => {
 }
 
 .title-cell {
-    text-align: left;
-    padding-left: 20px;
+    color: #333;
+    font-size: 0.9em;
+    padding-left: 15px;
 }
 
 .author-column {
@@ -171,7 +212,7 @@ onMounted(async () => {
 
 td {
     color: #666;
-    font-size: 0.9em;
+    font-size: 0.85em;
 }
 
 .title-cell {

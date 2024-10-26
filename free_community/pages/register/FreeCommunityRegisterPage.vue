@@ -1,6 +1,8 @@
 <template>
+
   <div class="free_community-register">
     <FreeCommunityForm :formData="postData" @update:formData="updatePostData" />
+    <CancelButton/>
     <RegisterButton :postData="postData" @registerSuccess="handleRegisterSuccess"
       @registerError="handleRegisterError" />
   </div>
@@ -10,12 +12,12 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import RegisterButton from '../../ui/FreeCommunityRegisterPage/FreeCommunityWriteButton.vue'
+import CancelButton from '../../ui/FreeCommunityRegisterPage/FreeCommunityCancelButton.vue'
 import FreeCommunityForm from '../../ui/FreeCommunityRegisterPage/FreeCommunityRegisterForm.vue'
 
 const router = useRouter()
 
 const postData = ref({
-  writer: '',
   title: '',
   content: '',
   category_id: null as number | null
@@ -27,7 +29,11 @@ const updatePostData = (newData) => {
 
 const handleRegisterSuccess = (result) => {
   console.log('글 등록 성공:', result)
-  router.push("/free_community/list")
+  console.log("postData.value.category_id ", postData.value.category_id )
+  router.push({
+    path: "/free_community/list",
+    query: { category: postData.value.category_id }
+  })
 }
 
 const handleRegisterError = (error) => {
@@ -39,7 +45,9 @@ const handleRegisterError = (error) => {
 <style scoped>
 .free_community-register {
   max-width: 600px;
-  margin: 200px auto;
-  padding: 20px;
+  margin: 100px 100px 100px 400px;
+  padding: 40px 60px 40px 60px;
+  border-radius: 4px;
+  background-color: #f8f8f8
 }
 </style>

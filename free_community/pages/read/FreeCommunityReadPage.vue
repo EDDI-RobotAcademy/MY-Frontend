@@ -1,13 +1,10 @@
 <template>
     <div class="read-page-container">
         <div class="content-container">
-            <!-- 게시글 내용 -->
             <FreeCommunityReadContent />
             
-            <!-- 구분선 -->
-            <div class="my-8 border-t border-gray-200"></div>
+            <div class="my-4 border-t border-gray-200"></div>
             
-            <!-- 댓글 섹션 -->
             <div class="comments-section">
                 <FreeCommunityComment 
                 :freeCommunityId="Number(route.params.free_communityId)"
@@ -34,6 +31,7 @@ const route = useRoute();
     align-items: flex-start;
     min-height: calc(100vh - 100px);
     padding: 20px 0;
+    margin-top: 60px;
 }
 
 .content-container {

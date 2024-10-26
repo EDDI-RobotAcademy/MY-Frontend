@@ -18,24 +18,28 @@
                 <router-link :to="{ name: 'FreeCommunityListPage' }">
                     <button class="btn btn-back">목록으로</button>
                 </router-link>
+                <div v-if="checkMyFreeCommunity" class="author-actions">
+                    <router-link :to="{ name: 'FreeCommunityModifyPage', params: { free_communityId } }">
+                        <button class="btn btn-modify">수정</button>
+                    </router-link>
+                    <button class="btn btn-delete" @click="free_communityDelete">삭제</button>
+                </div>
             </div>
         </div>
-
-        <div v-if="checkMyFreeCommunity" class="author-actions">
-            <router-link :to="{ name: 'FreeCommunityModifyPage', params: { free_communityId } }">
-                <button class="btn btn-modify">수정</button>
-            </router-link>
-            <button class="btn btn-delete" @click="free_communityDelete">삭제</button>
-        </div>
-
     </div>
 </template>
+
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useFreeCommunityStore } from '../../stores/free_communityStore';
 import { useViewCountStore } from '~/viewCount/stores/viewCountStore';
+
+import { useAuthenticationStore } from '@/authentication/stores/authenticationStore'
+
+const authenticationStore = useAuthenticationStore();
+const isAuthenticated = computed(() => authenticationStore.isAuthenticated);
 
 const route = useRoute();
 const router = useRouter()
@@ -73,6 +77,8 @@ const fetchCheckAuthority = async () => {
 };
 
 const fetchIncrementCount = async () => {
+    if (!isAuthenticated.value) return;
+
     try {
         await viewCountStore.requestIncrementViewCount(free_communityId);
     } catch (err) {
@@ -107,15 +113,23 @@ const free_communityDelete = async () => {
 onMounted(() => {
     fetchFreeCommunityContent();
     fetchCheckAuthority();
-    fetchIncrementCount();
+    if (isAuthenticated.value) {
+        fetchIncrementCount();
+    }
 });
 </script>
 
 <style scoped>
+.free_community-article-wrapper {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
 .free_community-article {
     background-color: white;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
     padding: 20px;
 }
 
@@ -143,14 +157,21 @@ onMounted(() => {
     line-height: 1.6;
     color: #333;
     white-space: pre-wrap;
+    margin-bottom: 20px;
 }
 
 .article-actions {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     margin-top: 30px;
     padding-top: 20px;
     border-top: 1px solid #eee;
+}
+
+.article-actions a {
+    text-decoration: none;
+    color: inherit;
 }
 
 .author-actions {
@@ -164,6 +185,11 @@ onMounted(() => {
     cursor: pointer;
     border: none;
     font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.btn:hover {
+    opacity: 0.9;
 }
 
 .btn-back {
@@ -172,13 +198,13 @@ onMounted(() => {
 }
 
 .btn-modify {
-    background-color: #4CAF50;
-    color: white;
+    background-color: #f0f0f0;
+    color: #333;
 }
 
 .btn-delete {
-    background-color: #f44336;
-    color: white;
+    background-color: #f0f0f0;
+    color: #333;
 }
 
 .error-message {
@@ -191,5 +217,36 @@ onMounted(() => {
     text-align: center;
     padding: 20px;
     color: #666;
+}
+
+/* 반응형 스타일 */
+@media (max-width: 768px) {
+    .free_community-article-wrapper {
+        padding: 10px;
+    }
+
+    .free_community-article {
+        padding: 15px;
+    }
+
+    .article-meta {
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .article-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .author-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .btn {
+        padding: 6px 12px;
+        font-size: 0.9em;
+    }
 }
 </style>
