@@ -1,6 +1,7 @@
 <!-- PostList.vue -->
 <template>
     <div class="post-list">
+        <NavHeader class="nav" />
         <div class="post-filter">
             <div class="filter-tabs">
                 <a href="#" class="tab active">트렌딩</a>
@@ -42,8 +43,12 @@
 </template>
 
 <script>
+import NavHeader from '../../ui/navigation/navigation.vue'
 export default {
     name: 'PostList',
+    components: {
+        NavHeader
+    },
     data() {
         return {
             posts: [
@@ -120,6 +125,9 @@ export default {
 </script>
 
 <style scoped>
+.nav {
+    margin-top: 70px;
+}
 .post-list {
     max-width: 1200px;
     margin: 0 auto;
@@ -127,7 +135,6 @@ export default {
 }
 
 .post-filter {
-    margin-top: 100px;
     display: flex;
     justify-content: space-between;
     align-items: center;
