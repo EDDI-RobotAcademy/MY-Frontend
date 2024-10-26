@@ -16,6 +16,11 @@ export default defineNuxtModule ({
                 path: '/aws/s3/test',
                 file: resolve(themeDir, 'smartContent/pages/FileS3TestPage.vue'),
             })
+            pages.push({
+                name: 'smart-content',
+                path: '/smart-content',
+                file: resolve(themeDir, 'smartContent/pages/SmartContent.vue'),  
+            })
         })
 
         nuxt.hook('imports:dirs', (dirs) => {
