@@ -20,6 +20,7 @@ export default defineNuxtConfig({
     './subscription/nuxt.config.ts',
     './tosspayments/nuxt.config.ts',
     './aiRequest/nuxt.config.ts',
+    './user_profile/nuxt.config.ts'
   ],
 
   css: [
@@ -28,7 +29,7 @@ export default defineNuxtConfig({
   ],
 
   build: {
-    transpile: ['vuetify'] // Vuetify를 빌드 시 트랜스파일링
+    transpile: ['vuetify']
   },
 
   vite: {
@@ -37,7 +38,7 @@ export default defineNuxtConfig({
       hmr: false,
     },
     ssr: {
-      noExternal: ['vuetify'] // SSR에서도 Vuetify를 외부 패키지로 처리하지 않도록 설정
+      noExternal: ['vuetify']
     }
   },
 
@@ -56,6 +57,7 @@ export default defineNuxtConfig({
     '~/smartContent/index.ts',
     '~/tosspayments/index.ts',
     '~/aiRequest/index.ts',
+    '~/user_profile/index.ts'
   ],
 
   imports: {
