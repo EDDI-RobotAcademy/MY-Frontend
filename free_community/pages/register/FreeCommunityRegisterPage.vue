@@ -2,6 +2,7 @@
 
   <div class="free_community-register">
     <FreeCommunityForm :formData="postData" @update:formData="updatePostData" />
+    <CancelButton/>
     <RegisterButton :postData="postData" @registerSuccess="handleRegisterSuccess"
       @registerError="handleRegisterError" />
   </div>
@@ -11,6 +12,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import RegisterButton from '../../ui/FreeCommunityRegisterPage/FreeCommunityWriteButton.vue'
+import CancelButton from '../../ui/FreeCommunityRegisterPage/FreeCommunityCancelButton.vue'
 import FreeCommunityForm from '../../ui/FreeCommunityRegisterPage/FreeCommunityRegisterForm.vue'
 
 const router = useRouter()
