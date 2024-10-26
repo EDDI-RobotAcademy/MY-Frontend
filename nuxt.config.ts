@@ -20,6 +20,7 @@ export default defineNuxtConfig({
     './subscription/nuxt.config.ts',
     './tosspayments/nuxt.config.ts',
     './aiRequest/nuxt.config.ts',
+    './smartContent/nuxt.config.ts',
   ],
 
   css: [
