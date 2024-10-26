@@ -44,7 +44,7 @@ const handleSort = () => {
 }
 
 .sort-select:hover {
-    background-color: #ffb04c;
+    background-color: #e67e22;
 }
 
 .sort-select:focus {
