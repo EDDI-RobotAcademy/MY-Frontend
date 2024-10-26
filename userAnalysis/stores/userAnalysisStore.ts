@@ -17,7 +17,10 @@ interface UserAnalysisInputAnswer {
 }
 
 export const useUserAnalysisStore = defineStore('userAnalysisStore', {
-  state: () => ({}),
+  state: () => ({
+    requests: [],
+    selectedRequestDetails: null,
+  }),
 
   actions: {
     async sendUserAnalysisToFastAPI(payload: UserAnalysisPayload): Promise<any> {
@@ -160,6 +163,27 @@ export const useUserAnalysisStore = defineStore('userAnalysisStore', {
     } catch (error) {
         console.log('requestCreateUserAnalysisSelectionToDjango() 중 에러 발생')
         throw error
+    }
+  },
+  async listAllUserAnalysisRequestToDjango(): Promise<any> {
+    const { djangoAxiosInst } = createAxiosInstances();
+    try {
+      const res = await djangoAxiosInst.get('user_analysis/list-all-request');
+      this.requests = res.data;
+      return res.data;
+    } catch (error) {
+      console.error('listAllUserAnalysisRequestToDjango() 중 에러 발생');
+      throw error;
+    }
+  },
+  async readUserAnalysisRequestToDjango(requestId: number): Promise<void> {
+    const { djangoAxiosInst } = createAxiosInstances();
+    try {
+      const res = await djangoAxiosInst.get(`user_analysis/read-request/${requestId}`);
+      this.selectedRequestDetails = res.data;  // 직접 업데이트
+    } catch (error) {
+      console.error('readUserAnalysisRequestToDjango() 중 에러 발생');
+      throw error;
     }
   },
   }

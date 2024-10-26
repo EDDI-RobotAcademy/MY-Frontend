@@ -22,9 +22,14 @@ export default defineNuxtModule ({
                 file: resolve(themeDir, 'userAnalysis/pages/UserAnalysisResultPage.vue'),
             })
             pages.push({
-                name: 'userAnalysisDashboard-page',
-                path:'/user-analysis/dashboard',
-                file: resolve(themeDir, 'userAnalysis/pages/UserAnalysisDashboardPage.vue'),
+                name: 'userAnalysisList-page',
+                path:'/user-analysis/list',
+                file: resolve(themeDir, 'userAnalysis/pages/UserAnalysisListPage.vue'),
+            })
+            pages.push({
+                name: 'userAnalysisRead-page',
+                path:'/user-analysis/read/:id',
+                file: resolve(themeDir, 'userAnalysis/pages/UserAnalysisReadPage.vue'),
             })
             pages.push({
                 name: 'userAnalysisVisualizateion-page',

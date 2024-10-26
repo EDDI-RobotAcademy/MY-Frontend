@@ -35,7 +35,7 @@
                         <ul>
                             <li @click="goToSurveyDashboardPage">피드백 답변목록</li>
                             <li @click="goToSurveyVisualizationPage">피드백 답변 시각화</li>
-                            <li @click="goToUserAnalysisDashboardPage">성향분석 답변목록</li>
+                            <li @click="goToUserAnalysisListPage">성향분석 답변목록</li>
                             <li @click="goToUserAnalysisVisualizationPage">성향분석 답변 시각화</li>
 
                         </ul>
@@ -103,7 +103,7 @@ const goToFreeCommunityPage = () => router.push("/free_community/list")
 const goToUserAnalysisPage = () => router.push("/user-analysis")
 const goToInfluencerAnalysisPage = () => router.push("/influencer-analysis")
 const goToSurveyDashboardPage = () => router.push("/survey/dashboard")
-const goToUserAnalysisDashboardPage = () => router.push("/user-analysis/dashboard")
+const goToUserAnalysisListPage = () => router.push("/user-analysis/list")
 const goToSurveyVisualizationPage = () => router.push("/survey/visualization")
 const goToUserAnalysisVisualizationPage = () => router.push("/user-analysis/visualization")
 
