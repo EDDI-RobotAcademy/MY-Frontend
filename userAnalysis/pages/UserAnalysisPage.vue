@@ -172,16 +172,16 @@ const getPlaceholder = (index) => {
 }
 
 const submitSurvey = async () => {
-  const UserAnalysisInputAnswers = questions.value.map(question => ({
-    question_id: question.id,
-    answer_data: question.answer || ''
-  }))
-  console.log("Survey submitted:", JSON.stringify(questions.value))
-
-  const userToken = null
+  const userAnalysisAnswer = questions.value.reduce((acc, question, index) => {
+    acc[String(index + 1)] = question.answer || '';
+    return acc;
+  }, {});
 
   try {
-    const response = await userAnalysisStore.requestSubmitAnswerToDjango({ user_analysis_answer: UserAnalysisInputAnswers, userToken: userToken })
+    const response = await userAnalysisStore.requestSubmitAnswerToDjango({ 
+      user_analysis: userAnalysisInputId.value,
+      user_analysis_answer: userAnalysisAnswer
+    })
     console.log('설문이 제출되었습니다:', response)
 
     const surveyData = {
