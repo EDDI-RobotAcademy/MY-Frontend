@@ -14,7 +14,17 @@ export default defineNuxtModule({
             pages.push({
                 name: 'userProfile-page',
                 path: '/my-page',
-                file: resolve(themeDir, 'user_profile/pages/MyProfilePage.vue'),
+                file: resolve(themeDir, 'user_profile/pages/MyProfile/MyProfilePage.vue'),
+            })
+            pages.push({
+                name: 'growthDiary-page',
+                path: '/growthDiary',
+                file: resolve(themeDir, 'user_profile/pages/GrowthDiary/GrowthDiary.vue'),
+            })
+            pages.push({
+                name: 'growthDiaryMyPage-page',
+                path: '/growthDiaryMyPage',
+                file: resolve(themeDir, 'user_profile/pages/GrowthDiary/GrowthDiaryMyPage.vue'),
             })
         })
 
