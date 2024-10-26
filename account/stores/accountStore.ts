@@ -33,23 +33,23 @@ export const useAccountStore = defineStore('accountStore', {
         throw error
       }
     },
-    async getNickname(nickname: string) {
+    async requestGetUserProfileByAccountIdToDjango(): Promise<void> {
       const { djangoAxiosInst } = createAxiosInstances()
       const userToken = localStorage.getItem("userToken")
 
-      if (!userToken) {
-          console.error('userToken is missing')
-          return
+      const payload = {
+          userToken: userToken,
       }
-
       try {
-          const response = await djangoAxiosInst.post('user_profile/get-nickname', { userToken })
-          console.log('nickname response:', response.data.nickname)
-          return response.data.nickname
+        const response = await djangoAxiosInst.post('/user_profile/get-self-profile', payload)
+        if (response.data) {
+          console.log("사용자 정보 요청 완료")
+          return response.data
+        }
       } catch (error) {
-          console.error('프로필 닉네임 가져오는 중 에러 발생:', error)
-          throw error
+        console.error('사용자 정보 요청 실패:', error)
+        throw error
       }
-    }
+    },
   }
 })
