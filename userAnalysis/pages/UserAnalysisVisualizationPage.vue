@@ -57,8 +57,7 @@
     }
   
     let payload = {
-      filter: 'user_analysis',
-      user_analysis_Id: userAnalysisId.value,
+      user_analysis_id: userAnalysisId.value,
     }
   
     try {

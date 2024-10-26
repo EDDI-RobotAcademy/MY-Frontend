@@ -131,18 +131,11 @@ export const useUserAnalysisStore = defineStore('userAnalysisStore', {
     }
   },
   async requestListUserAnalysisAnswerToDjango(payload: {
-    filter: string,
-    user_analysis_Id: number | null,
-    question_Id: number | null,
-    account_Id: number | null
+    user_analysis_id: number
   }): Promise<void> {
-    const { filter, user_analysis_Id, question_Id, account_Id  } = payload
     const { djangoAxiosInst } = createAxiosInstances()
     try {
-      const res = await djangoAxiosInst.post('user_analysis/list-answer', {
-        filter, user_analysis_Id, question_Id, account_Id
-      });
-      
+      const res = await djangoAxiosInst.post('user_analysis/list-answer', payload);   
       const data = res.data;
       return data
     } catch (error) {
