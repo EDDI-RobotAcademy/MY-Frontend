@@ -1,4 +1,3 @@
-<!-- PostList.vue -->
 <template>
     <div class="post-list">
         <NavHeader class="nav" />
@@ -12,117 +11,73 @@
                 <button class="period-button">이번 주 <span class="arrow">▼</span></button>
                 <button class="more-button">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                        <path
-                            d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
+                        <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
                     </svg>
                 </button>
             </div>
         </div>
-
         <div class="post-grid">
-            <article v-for="post in posts" :key="post.id" class="post-card">
-                <img :src="post.thumbnail" :alt="post.title" class="post-thumbnail">
-                <div class="post-content">
-                    <h2 class="post-title">{{ post.title }}</h2>
-                    <p class="post-excerpt">{{ post.excerpt }}</p>
-                    <div class="post-meta">
-                        <span class="post-date">{{ post.date }} · {{ post.comments }}개의 댓글</span>
-                        <div class="author">
-                            <img :src="post.authorAvatar" :alt="post.author" class="author-avatar">
-                            <span>by {{ post.author }}</span>
-                            <div class="likes">
-                                <span>♥</span>
-                                <span>{{ post.likes }}</span>
-                            </div>
+        <article v-for="content in smartContents" :key="content.id" class="post-card">
+            <div class="post-content">
+                <img :src="defaultThumbnail" :alt="content.title" class="post-thumbnail">
+                <h2 class="post-title">{{ content.title }}</h2>
+                <div class="post-meta">
+                    <span class="post-date">{{ formatDate(content.regDate) }} · {{ content.comments }}개의 댓글</span>
+                    <div class="author">
+                        <img :src="defaultImage" :alt="content.author" class="author-avatar">
+                        <span>by {{ content.nickname }}</span>
+                        <div class="likes">
+                            <span>♥</span>
+                            <span>{{ content.likes }}</span>
                         </div>
                     </div>
                 </div>
-            </article>
-        </div>
+            </div>
+        </article>
     </div>
+</div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, onMounted } from 'vue'
 import NavHeader from '../../ui/navigation/navigation.vue'
-export default {
-    name: 'PostList',
-    components: {
-        NavHeader
-    },
-    data() {
-        return {
-            posts: [
-                {
-                    id: 1,
-                    thumbnail: 'https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/javascript/javascript.png',
-                    title: '서류 탈락을 거듭한 끝에 깨달은 신입 ...',
-                    excerpt: '23년도 3월부터 서류지원을 시작했습니다. 약 1년 반동안 500개 이상의 서류를 넣었던 것 같습니다. 정말 서류 난사였죠. 하지만 그 결...',
-                    date: '2024년 10월 13일',
-                    comments: 4,
-                    author: 'junhyeong',
-                    authorAvatar: 'https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/vue/vue.png',
-                    likes: 189
-                },
-                {
-                    id: 2,
-                    thumbnail: 'https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/react/react.png',
-                    title: '에어비앤비는 어떻게 리액트를 점진적...',
-                    excerpt: '에어비앤비는 최근 리액트 16에서 리액트 18로 업그레이드 하는 대규모 프로젝트를 진행했습니다. 이 과정에서의 고충과 해결법, 결...',
-                    date: '5월 전',
-                    comments: 27,
-                    author: 'Saetbyeol',
-                    authorAvatar: 'https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/nodejs/nodejs.png',
-                    likes: 22
-                },
-                {
-                    id: 3,
-                    thumbnail: 'https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/python/python.png',
-                    title: '제 사이트 프로젝트 홍보 방법이요? 어...',
-                    excerpt: '열심히 서비스를 만들었는데... 왜 아무도 안들어오죠?',
-                    date: '7일 전',
-                    comments: 8,
-                    author: '혜율이',
-                    authorAvatar: 'https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/typescript/typescript.png',
-                    likes: 69
-                },
-                {
-                    id: 4,
-                    thumbnail: 'https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/docker/docker.png',
-                    title: '프론트엔드 개발자의 하루',
-                    excerpt: '실제 프론트엔드 개발자의 일상을 공유합니다...',
-                    date: '3일 전',
-                    comments: 15,
-                    author: 'frontend_dev',
-                    authorAvatar: 'https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/git/git.png',
-                    likes: 156
-                },
-                {
-                    id: 5,
-                    thumbnail: 'https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/angular/angular.png',
-                    title: 'Vue.js vs React 현직자가 비교해봤습니다',
-                    excerpt: '실제 프로젝트에서 겪은 두 프레임워크의 차이점을 설명합니다...',
-                    date: '1일 전',
-                    comments: 42,
-                    author: 'tech_reviewer',
-                    authorAvatar: 'https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/vue/vue.png',
-                    likes: 234
-                },
-                {
-                    id: 6,
-                    thumbnail: 'https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/kubernetes/kubernetes.png',
-                    title: '주니어 개발자의 첫 이직 이야기',
-                    excerpt: '2년차 개발자의 이직 과정과 면접 경험을 공유합니다...',
-                    date: '2일 전',
-                    comments: 31,
-                    author: 'junior_dev',
-                    authorAvatar: 'https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/nodejs/nodejs.png',
-                    likes: 178
-                }
-            ]
-        }
+import { useSmartContentStore } from '@/smartContent/stores/smartContentStore'
+import defaultImage from '~/assets/fixed/login/google_login_round.png'
+import defaultThumbnail from '~/assets/fixed/chatbot/background_gradient.png'
+
+
+const smartContentStore = useSmartContentStore()
+const smartContents = ref([])
+
+
+// formatDate 함수 정의
+const formatDate = (date: any) => {
+    if (!(date instanceof Date)) {
+        date = new Date(date);
+    }
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+}
+
+const fetchSmartContents = async () => {
+    try {
+        const response = await smartContentStore.requestListSmartContentToDjango();
+        smartContents.value = response;
+    } catch (error) {
+        console.error('SmartContent 목록 조회 실패:', error);
     }
 }
+
+// onMounted에서 fetchSmartContents 호출
+onMounted(() => {
+    fetchSmartContents()
+})
 </script>
+
 
 <style scoped>
 .nav {
@@ -216,8 +171,14 @@ export default {
 
 .post-thumbnail {
     width: 100%;
-    height: 200px;
-    object-fit: cover;
+    height: 200px; /* 원하는 높이로 조정 */
+    overflow: hidden;
+}
+
+.post-thumbnail img {
+    width: 100%;
+    height: auto; /* 비율 유지 */
+    object-fit: cover; /* 이미지 비율 유지 */
 }
 
 .post-content {
