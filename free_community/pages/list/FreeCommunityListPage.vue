@@ -59,7 +59,8 @@ const checkAndSetAuthStatus = () => {
 }
 
 const getNickname = async () => {
-  nickname.value = await accountStore.getNickname()
+  const userProfile = await accountStore.requestGetUserProfileByAccountIdToDjango()
+  nickname.value = userProfile.nickname
 }
 
 const refreshCategories = () => {
