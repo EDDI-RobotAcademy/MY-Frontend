@@ -36,7 +36,9 @@ const viewCountStore = useViewCountStore();
 const router = useRouter();
 const route = useRoute();
 const props = defineProps<{
-    selectedCategoryId: number | null
+    selectedCategoryId: number | null,
+    searchQuery: string,
+    searchType: string
 }>();
 
 const free_communityStore = useFreeCommunityStore();
@@ -72,13 +74,16 @@ const getViewCount = (communityId: number) => {
     return viewCounts.value[communityId] || 0;
 };
 
-const fetchFreeCommunityContents = async (categoryId: number | null) => {
+const fetchFreeCommunityContents = async (categoryId: number | null, searchQuery: string = '', searchType: string = 'title') => {
     try {
         let response;
-        if (categoryId === null) {
-            response = await free_communityStore.getFreeCommunityContent();
-        } else {
+
+        if (searchQuery) {
+            response = await free_communityStore.searchFreeCommunity(searchQuery, searchType);
+        } else if (categoryId !== null) {
             response = await free_communityStore.getCategoriesContent(categoryId);
+        } else {
+            response = await free_communityStore.getFreeCommunityContent();       
         }
 
         if (Array.isArray(response)) {
@@ -132,11 +137,13 @@ onMounted(async () => {
 watch(
     [
         () => props.selectedCategoryId,
-        () => route.query.category
+        () => route.query.category,
+        () => props.searchQuery,
+        () => props.searchType
     ],
-    ([newCategoryId, queryCategory]) => {
+    ([newCategoryId, queryCategory, newSearchQuery, newSearchType]) => {
         const categoryToUse = queryCategory ? Number(queryCategory) : newCategoryId;
-        fetchFreeCommunityContents(categoryToUse);
+        fetchFreeCommunityContents(categoryToUse, newSearchQuery, newSearchType);
     },
     { immediate: true }
 );

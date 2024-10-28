@@ -4,12 +4,12 @@
       <div class="top-bar">
         <FreeCommunityCategoryListPage v-model="selectedCategoryId" />
         <div class="top-right">
-          <FreeCommunitySearchButton />
+          <FreeCommunitySearchButton @search="handleSearch" />
         </div>
       </div>
       <ChatFloatingButton :nickname="nickname"></ChatFloatingButton>
       <div class="content-wrapper">
-        <FreeCommunityContent ref="contentRef" :selectedCategoryId="selectedCategoryId" />
+        <FreeCommunityContent ref="contentRef" :selectedCategoryId="selectedCategoryId" :searchQuery="searchQuery" :searchType="searchType" />
         <FreeCommunitySortDropdown @sort="handleSort" />
       </div>
       <div class="bottom-bar">
@@ -49,9 +49,17 @@ const isAdmin = computed(() => authenticationStore.isAdmin);
 const nickname = ref('')
 const selectedCategoryId = ref<number | null>(null)
 const contentRef = ref<InstanceType<typeof FreeCommunityContent> | null>(null);
+const searchQuery = ref('')  
+const searchType = ref('title')  
+
 
 const handleSort = (sortType: string) => {
   contentRef.value?.sortBy(sortType);
+};
+
+const handleSearch = ({ query, type }: { query: string, type: string }) => {
+  searchQuery.value = query;
+  searchType.value = type;
 };
 
 const checkAndSetAuthStatus = () => {
