@@ -20,8 +20,9 @@ export default defineNuxtConfig({
     './subscription/nuxt.config.ts',
     './tosspayments/nuxt.config.ts',
     './aiRequest/nuxt.config.ts',
-    './user_profile/nuxt.config.ts',
+    './userProfile/nuxt.config.ts',
     './smartContent/nuxt.config.ts',
+    './growthBlog/nuxt.config.ts',
   ],
 
   css: [
@@ -58,7 +59,8 @@ export default defineNuxtConfig({
     '~/smartContent/index.ts',
     '~/tosspayments/index.ts',
     '~/aiRequest/index.ts',
-    '~/user_profile/index.ts'
+    '~/userProfile/index.ts',
+    '~/growthBlog/index.ts',
   ],
 
   imports: {
