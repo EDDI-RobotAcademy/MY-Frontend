@@ -36,9 +36,7 @@
                 <div class="posts-section">
                     <article class="post-item">
                         <h2 class="post-title">justify-content</h2>
-                        <p class="post-description">justify-content: flex-start;
-                            !codepen[gzhfhlil-the-styleful/embed/qBeBMZw?default-tab=html%2Cresult] justify-content:
-                            flex-end; !codepen[gzhfhlil-the...</p>
+                        <p class="post-description">content</p>
                         <div class="post-meta">
                             <div class="post-info">
                                 <span>2024년 9월 24일</span>
