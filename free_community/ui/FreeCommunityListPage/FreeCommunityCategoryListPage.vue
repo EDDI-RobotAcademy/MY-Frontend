@@ -1,6 +1,12 @@
 <template>
     <nav class="category-nav">
         <ul class="category-buttons">
+            <li>
+                <button class="category-button" :class="{ 'selected': modelValue === null }"
+                    @click="selectCategory(null)">
+                    전체 글 보기
+                </button>
+            </li>
             <li v-for="category in categories" :key="category.categoryId">
                 <button class="category-button" :class="{ 'selected': modelValue === category.categoryId }"
                     @click="selectCategory(category.categoryId)">
@@ -15,8 +21,9 @@
 import { ref, onMounted } from 'vue'
 import { useFreeCommunityStore } from '../../stores/free_communityStore'
 import { useRoute, useRouter } from 'vue-router'
+
 const route = useRoute()
-const router = useRouter()  
+const router = useRouter()
 const props = defineProps<{
     modelValue: number | null
 }>()
@@ -33,20 +40,32 @@ const fetchCategories = async () => {
         if (categoryFromQuery) {
             const categoryId = Number(categoryFromQuery)
             selectCategory(categoryId)
+        } else {
+            selectCategory(null)
         }
     } catch (error) {
         console.error('카테고리를 가져오는 중 오류 발생:', error)
     }
 }
 
-const selectCategory = async (categoryId: number) => {
-    router.push({
-        query: { ...route.query, category: categoryId.toString() }
-    })
+const selectCategory = async (categoryId: number | null) => {
+    if (categoryId === null) {
+        const { category, ...queryWithoutCategory } = route.query
+        router.push({ query: queryWithoutCategory })
+    } else {
+        router.push({
+            query: { ...route.query, category: categoryId.toString() }
+        })
+    }
 
     emit('update:modelValue', categoryId)
     try {
-        const response = await free_communityStore.getCategoriesContent(categoryId)
+        let response;
+        if (categoryId === null) {
+            response = await free_communityStore.getAllContent()
+        } else {
+            response = await free_communityStore.getCategoriesContent(categoryId)
+        }
 
         let dataToProcess = response;
         if (response && response.data !== undefined) {
@@ -55,13 +74,17 @@ const selectCategory = async (categoryId: number) => {
 
         let filteredContent = [];
         if (Array.isArray(dataToProcess)) {
-            filteredContent = dataToProcess.filter(
-                (item: any) => item.categoryFreeCommunityId === categoryId
-            );
+            filteredContent = categoryId === null
+                ? dataToProcess
+                : dataToProcess.filter(
+                    (item: any) => item.categoryFreeCommunityId === categoryId
+                );
         } else if (typeof dataToProcess === 'object' && dataToProcess !== null) {
-            filteredContent = [dataToProcess].filter(
-                (item: any) => item.categoryFreeCommunityId === categoryId
-            );
+            filteredContent = categoryId === null
+                ? [dataToProcess]
+                : [dataToProcess].filter(
+                    (item: any) => item.categoryFreeCommunityId === categoryId
+                );
         }
 
         emit('categoryContentLoaded', filteredContent)
