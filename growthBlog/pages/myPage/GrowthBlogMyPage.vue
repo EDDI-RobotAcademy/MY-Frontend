@@ -34,16 +34,15 @@
                 </div>
 
                 <div class="posts-section">
-                    <article class="post-item">
-                        <h2 class="post-title">justify-content</h2>
-                        <p class="post-description">content</p>
+                    <article v-for="post in posts" :key="post.id" class="post-item">
+                        <h2 class="post-title">{{ post.title }}</h2>
                         <div class="post-meta">
                             <div class="post-info">
-                                <span>2024년 9월 24일</span>
+                                <span>{{ formatDate(post.regDate) }}</span>
                                 <span class="separator">·</span>
-                                <span>0개의 댓글</span>
+                                <span>{{ post.commentsCount }}개의 댓글</span>
                                 <span class="separator">·</span>
-                                <span class="likes">♥ 0</span>
+                                <span class="likes">♥ {{ post.likes }}</span>
                             </div>
                         </div>
                     </article>
@@ -52,16 +51,40 @@
         </main>
     </div>
 </template>
-<script>
-import NavHeader from '../../ui/navigation/navigation.vue'
 
-export default {
-    name: 'MainComponent',
-    components: {
-        NavHeader
-    }
-}
+<script setup>
+import NavHeader from '@/growthBlog/ui/navigation/navigation.vue'; 
+import { useSmartContentStore } from '~/smartContent/stores/smartContentStore';
+import { ref, onMounted } from 'vue';
+
+const smartContentStore = useSmartContentStore()
+const posts = ref([])
+
+const formatDate = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); 
+    const day = String(date.getDate()).padStart(2, '0'); 
+    return `${year}-${month}-${day}`; 
+};
+
+
+const fetchMySmartContents = async () => {
+    const userToken = localStorage.getItem('userToken')
+        try {
+            const response = await smartContentStore.requestListMySmartContentToDjango(userToken);
+            posts.value = response;
+        } catch (error) {
+            console.error('내 SmartContent 목록 조회 실패:', error);
+        }
+};
+
+onMounted(() => {
+    fetchMySmartContents();
+});
 </script>
+
 <style scoped>
 .container {
     margin-top: 70px;
