@@ -33,6 +33,26 @@ export const useSmartContentStore = defineStore('smartContentStore', {
           throw error
         }
       },
-      
+      async requestListItemsToDjango(content_id: string) {
+        const { djangoAxiosInst } = createAxiosInstances()
+
+        try {
+          const response = await djangoAxiosInst.post('/smart_content/list-items', { content_id: content_id })
+          return response.data
+        } catch (error) {
+          console.error('requestListItemsToDjango 중 에러 발생:', error)
+          throw error
+        }  
+      },
+      async readSmartContentToDjango(contentId: number) {
+        const { djangoAxiosInst } = createAxiosInstances()
+        try {
+            const response = await djangoAxiosInst.get(`smart_content/read/${contentId}`)
+            return response.data
+        } catch (error) {
+            console.error('readSmartContentToDjango 중 에러:', error)
+            throw error
+        }
+      },
     }
 })
