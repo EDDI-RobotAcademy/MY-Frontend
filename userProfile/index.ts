@@ -12,19 +12,14 @@ export default defineNuxtModule({
 
         nuxt.hook('pages:extend', (pages) => {
             pages.push({
-                name: 'userProfile-page',
+                name: 'myProfile-page',
                 path: '/my-page',
-                file: resolve(themeDir, 'user_profile/pages/MyProfile/MyProfilePage.vue'),
+                file: resolve(themeDir, 'userProfile/pages/myProfile/MyProfilePage.vue'),
             })
             pages.push({
-                name: 'growthDiary-page',
-                path: '/growthDiary',
-                file: resolve(themeDir, 'user_profile/pages/GrowthDiary/GrowthDiary.vue'),
-            })
-            pages.push({
-                name: 'growthDiaryMyPage-page',
-                path: '/growthDiaryMyPage',
-                file: resolve(themeDir, 'user_profile/pages/GrowthDiary/GrowthDiaryMyPage.vue'),
+                name: 'myInfo-page',
+                path: '/my-info',
+                file: resolve(themeDir, 'userProfile/pages/myInfo/MyInfoPage.vue'),
             })
         })
 

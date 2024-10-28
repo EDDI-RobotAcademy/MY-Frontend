@@ -11,32 +11,6 @@
                 </div>
             </div>
         </div>
-
-        <div class="button-grid">
-            <NuxtLink to="/growth-history" class="menu-button">
-                <div class="button-content">
-                    <h3>성장 히스토리</h3>
-                    <span class="arrow">→</span>
-                    <p>나의 성장 과정을 확인하세요</p>
-                </div>
-            </NuxtLink>
-
-            <NuxtLink to="/growth-blog" class="menu-button">
-                <div class="button-content">
-                    <h3>성장 블로그</h3>
-                    <span class="arrow">→</span>
-                    <p>나의 블로그 글을 관리하세요</p>
-                </div>
-            </NuxtLink>
-
-            <NuxtLink to="/my-info" class="menu-button">
-                <div class="button-content">
-                    <h3>내 정보</h3>
-                    <span class="arrow">→</span>
-                    <p>개인정보를 관리하세요</p>
-                </div>
-            </NuxtLink>
-        </div>
     </div>
 </template>
 
@@ -109,55 +83,8 @@ onMounted(() => {
     color: #666;
 }
 
-.button-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-}
-
-.menu-button {
-    background: white;
-    border-radius: 10px;
-    padding: 20px;
-    text-decoration: none;
-    color: inherit;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.menu-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.button-content {
-    position: relative;
-}
-
-.button-content h3 {
-    font-size: 18px;
-    font-weight: bold;
-    margin-bottom: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.arrow {
-    color: #999;
-}
-
-.button-content p {
-    font-size: 14px;
-    color: #666;
-}
-
 /* 반응형 디자인 */
 @media (max-width: 768px) {
-    .button-grid {
-        grid-template-columns: 1fr;
-    }
-
     .profile-info {
         flex-direction: column;
         text-align: center;

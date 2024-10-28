@@ -19,6 +19,11 @@
                         <span>네트워킹</span>
                     </button>
                 </div>
+                <div class="blog-container" ref="blogContainer">
+                    <button class="menu-item button" data-text="블로그" @click="goToGrowthBlogListPage">
+                        <span>블로그</span>
+                    </button>
+                </div>
                 <div class="feedback-container" ref="feedbackContainer">
                     <button class="menu-item button" data-text="피드백" @click="goToSurveyPage">
                         <span>피드백</span>
@@ -70,6 +75,7 @@ const navbarBackground = ref(null)
 const centerMenuContainer = ref(null)
 const feedbackContainer = ref(null)
 const boardContainer = ref(null)
+const blogContainer = ref(null)
 const userNickname = ref('')
 const isAuthenticated = computed(() => authenticationStore.isAuthenticated)
 const isAdmin = computed(() => authenticationStore.isAdmin)
@@ -99,6 +105,7 @@ const goToHomePage = () => router.push("/")
 const goToLoginPage = () => router.push("/login")
 const goToSurveyPage = () => router.push("/survey")
 const goToFreeCommunityPage = () => router.push("/free_community/list")
+const goToGrowthBlogListPage = () => router.push("/growth-blog/list")
 const goToUserAnalysisPage = () => router.push("/user-analysis")
 const goToInfluencerAnalysisPage = () => router.push("/influencer-analysis")
 const goToSurveyDashboardPage = () => router.push("/survey/dashboard")
@@ -167,7 +174,7 @@ const animateNavbar = (show) => {
 
     if (show) {
         anime({
-            targets: [navbarBackground.value, boardContainer.value, feedbackContainer.value],
+            targets: [navbarBackground.value, boardContainer.value, blogContainer.value, feedbackContainer.value],
             scaleY: [0, 1],
             duration: duration,
             easing: easing
@@ -181,7 +188,7 @@ const animateNavbar = (show) => {
         })
     } else {
         anime({
-            targets: [navbarBackground.value, boardContainer.value, feedbackContainer.value],
+            targets: [navbarBackground.value, boardContainer.value, blogContainer.value, feedbackContainer.value],
             scaleY: [1, 0],
             duration: duration,
             easing: easing
@@ -272,7 +279,7 @@ onBeforeUnmount(() => {
     height: 100%;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    /* justify-content: space-between; 제거 */
     padding: 0 20px;
 }
 
@@ -283,13 +290,13 @@ onBeforeUnmount(() => {
     font-size: 16px;
     font-weight: bold;
     transition: color 0.3s ease;
+    margin-right: 40px; /* 로고와 center-menu 사이 간격 추가 */
 }
 
 .center-menu-container {
     height: 100%;
     display: flex;
-    align-items: center;
-    margin-left: 10%;
+    align-items: center; /* left를 center로 변경 */
     transform-origin: top;
     overflow: hidden;
 }
@@ -302,9 +309,16 @@ onBeforeUnmount(() => {
 .right-menu {
     display: flex;
     align-items: center;
+    margin-left: auto; /* 오른쪽 메뉴를 오른쪽 끝으로 밀어냄 */
 }
 
 .board-container {
+    margin-right: 20px;
+    transform-origin: top;
+    overflow: hidden;
+}
+
+.blog-container {
     margin-right: 20px;
     transform-origin: top;
     overflow: hidden;
