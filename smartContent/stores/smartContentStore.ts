@@ -22,5 +22,17 @@ export const useSmartContentStore = defineStore('smartContentStore', {
           throw error
         }
       },
+      async requestListSmartContentToDjango() {
+        const { djangoAxiosInst } = createAxiosInstances()
+  
+        try {
+          const response = await djangoAxiosInst.post('/smart_content/list')
+          return response.data
+        } catch (error) {
+          console.error('requestListSmartContentToDjango 중 에러 발생:', error)
+          throw error
+        }
+      },
+      
     }
 })
