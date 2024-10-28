@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { defineStore } from 'pinia'
 import { createAxiosInstances } from '../../utility/axiosInstance'
+
 export const useFreeCommunityStore = defineStore('free_communityStore', {
     actions: {
         async addCategory(name: string): Promise<string> {
@@ -108,6 +109,29 @@ export const useFreeCommunityStore = defineStore('free_communityStore', {
                 console.error('checkAuthority 중 에러:', error)
                 throw error
             }
-        }
+        },
+        async searchFreeCommunity(searchQuery: string, searchType: 'title' | 'content' | 'nickname') {
+            const { djangoAxiosInst } = createAxiosInstances()
+            let endpoint = ''
+
+            if (searchType === 'title') {
+                endpoint = 'free_community/list-by-title'
+            } else if (searchType === 'content') {
+                endpoint = 'free_community/list-by-content'
+            } else if (searchType === 'nickname') {
+                endpoint = 'free_community/list-by-nickname'
+            }
+
+            try {
+                const response = await djangoAxiosInst.post(endpoint, {
+                    query: searchQuery
+                })
+                return response.data
+            } catch (error) {
+                console.log(searchType, searchQuery)
+                console.error(`${searchType} 검색 중 오류 발생:`, error)
+                return []
+            }
+        },
     }
 })
