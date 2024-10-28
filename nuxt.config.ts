@@ -23,6 +23,7 @@ export default defineNuxtConfig({
     './userProfile/nuxt.config.ts',
     './smartContent/nuxt.config.ts',
     './growthBlog/nuxt.config.ts',
+    './growthHistory/nuxt.config.ts',
   ],
 
   css: [
@@ -61,6 +62,7 @@ export default defineNuxtConfig({
     '~/aiRequest/index.ts',
     '~/userProfile/index.ts',
     '~/growthBlog/index.ts',
+    '~/growthHistory/index.ts',
   ],
 
   imports: {
