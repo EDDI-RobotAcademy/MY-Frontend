@@ -24,20 +24,17 @@
                         <span>피드백</span>
                     </button>
                 </div>
-                <!-- 관리자만 볼 수 있는 버튼 -->
                 <div class="admin-menu-container" v-if="isAdmin" ref="adminMenuContainer">
                     <button @click="toggleAdminMenu" class="admin-button">
                         관리자 메뉴
                     </button>
 
-                    <!-- 관리자 드롭다운 메뉴 -->
                     <div v-if="isAdminMenuOpen" class="admin-dropdown-menu">
                         <ul>
                             <li @click="goToSurveyDashboardPage">피드백 답변목록</li>
                             <li @click="goToSurveyVisualizationPage">피드백 답변 시각화</li>
                             <li @click="goToUserAnalysisListPage">성향분석 답변목록</li>
                             <li @click="goToUserAnalysisVisualizationPage">성향분석 답변 시각화</li>
-
                         </ul>
                     </div>
                 </div>
@@ -46,8 +43,9 @@
                         :style="{ color: currentColor }">
                         LOGIN
                     </button>
-                    <button v-if="isAuthenticated" @click="logOut" class="logout" :style="{ color: currentColor }">
-                        LOGOUT
+                    <button v-if="isAuthenticated" @click="goToMyPage" class="goToMyPage"
+                        :style="{ color: currentColor }">
+                        {{ userNickname }}
                     </button>
                 </div>
             </div>
@@ -58,22 +56,23 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { useAccountStore } from '../../account/stores/accountStore.ts'
+import { useAccountStore } from '@/account/stores/accountStore'
 import { useAuthenticationStore } from '@/authentication/stores/authenticationStore'
-import anime from 'animejs';
+import anime from 'animejs'
 
 const router = useRouter()
 const route = useRoute()
 const accountStore = useAccountStore()
+const authenticationStore = useAuthenticationStore()
+
 const navbarContainer = ref(null)
 const navbarBackground = ref(null)
 const centerMenuContainer = ref(null)
 const feedbackContainer = ref(null)
 const boardContainer = ref(null)
-
-const authenticationStore = useAuthenticationStore();
-const isAuthenticated = computed(() => authenticationStore.isAuthenticated);
-const isAdmin = computed(() => authenticationStore.isAdmin);
+const userNickname = ref('')
+const isAuthenticated = computed(() => authenticationStore.isAuthenticated)
+const isAdmin = computed(() => authenticationStore.isAdmin)
 
 const lastScrollTop = ref(0)
 const isNavbarVisible = ref(true)
@@ -88,13 +87,13 @@ const isAdminMenuOpen = ref(false)
 
 const isHomePage = computed(() => route.path === '/')
 
-const toggleAdminMenu = () => {
-    isAdminMenuOpen.value = !isAdminMenuOpen.value
-}
-
 const isPaymentPage = computed(() => {
     return route.path.includes('/tosspayments')
 })
+
+const toggleAdminMenu = () => {
+    isAdminMenuOpen.value = !isAdminMenuOpen.value
+}
 
 const goToHomePage = () => router.push("/")
 const goToLoginPage = () => router.push("/login")
@@ -107,13 +106,24 @@ const goToUserAnalysisListPage = () => router.push("/user-analysis/list")
 const goToSurveyVisualizationPage = () => router.push("/survey/visualization")
 const goToUserAnalysisVisualizationPage = () => router.push("/user-analysis/visualization")
 
-const logOut = async () => {
-    await authenticationStore.requestLogoutToDjango()
-    router.push("/")
+const goToMyPage = async () => {
+    router.push("/my-page")
 }
 
-const checkAndSetAuthStatus = () => {
-    authenticationStore.checkAndSetAuthStatus()
+const getNickname = async () => {
+    if (isAuthenticated.value) {
+        try {
+            const userProfile = await accountStore.requestGetUserProfileByAccountIdToDjango()
+            userNickname.value = userProfile.nickname
+        } catch (error) {
+            console.error('Failed to fetch nickname:', error)
+            userNickname.value = '사용자'
+        }
+    }
+}
+
+const checkAndSetAuthStatus = async () => {
+    await authenticationStore.checkAndSetAuthStatus()
 }
 
 const handleScroll = () => {
@@ -157,7 +167,7 @@ const animateNavbar = (show) => {
 
     if (show) {
         anime({
-            targets: [navbarBackground.value, , boardContainer.value, feedbackContainer.value],
+            targets: [navbarBackground.value, boardContainer.value, feedbackContainer.value],
             scaleY: [0, 1],
             duration: duration,
             easing: easing
@@ -187,6 +197,14 @@ const animateNavbar = (show) => {
     isNavbarVisible.value = show
 }
 
+watch(() => isAuthenticated.value, (newValue) => {
+    if (newValue) {
+        getNickname()
+    } else {
+        userNickname.value = ''
+    }
+})
+
 watch(() => route.path, (to) => {
     if (to !== '/') {
         currentColor.value = 'rgb(255, 255, 255)'
@@ -206,9 +224,12 @@ watch(() => route.path, (to) => {
     }
 })
 
-onMounted(() => {
+onMounted(async () => {
     console.log("navigation bar mounted()")
-    checkAndSetAuthStatus()
+    await checkAndSetAuthStatus()
+    if (isAuthenticated.value) {
+        await getNickname()
+    }
     window.addEventListener('scroll', handleScroll)
 })
 
@@ -346,7 +367,7 @@ onBeforeUnmount(() => {
 }
 
 .login,
-.logout {
+.goToMyPage {
     background: none;
     border: none;
     cursor: pointer;
@@ -356,7 +377,7 @@ onBeforeUnmount(() => {
 }
 
 .login:hover,
-.logout:hover {
+.goToMyPage:hover {
     opacity: 0.8;
 }
 
@@ -365,19 +386,15 @@ onBeforeUnmount(() => {
     align-items: center;
 }
 
-/* 관리자 메뉴 컨테이너 */
 .admin-menu-container {
     position: relative;
-    /* 부모 요소에 대해 절대 위치 지정 */
     margin-right: 40px;
-    /* 오른쪽에서 20px 떨어짐 */
     margin-left: 20px;
     margin-bottom: 5px;
     display: inline-block;
     z-index: 1001;
 }
 
-/* 관리자 버튼 스타일 */
 .admin-button {
     background: none;
     border: none;
@@ -391,7 +408,6 @@ onBeforeUnmount(() => {
     color: rgba(255, 255, 255, 1);
 }
 
-/* 드롭다운 메뉴 스타일 */
 .admin-dropdown-menu {
     position: absolute;
     top: 100%;
