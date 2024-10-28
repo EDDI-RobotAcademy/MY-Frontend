@@ -3,7 +3,6 @@
     <div>
       <label for="category">카테고리</label>
       <select id="category" v-model="selectedCategoryName" @change="handleCategoryChange" required class="form-input">
-        <option value="">카테고리 선택</option>
         <option v-for="category in categories" :key="category.categoryId" :value="category.name">
           {{ category.name }}
         </option>
