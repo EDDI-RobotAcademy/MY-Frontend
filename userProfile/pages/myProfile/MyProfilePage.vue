@@ -50,6 +50,7 @@ import { useAccountStore } from '@/account/stores/accountStore'
 import { useAuthenticationStore } from '@/authentication/stores/authenticationStore'
 import defaultProfile from '~/assets/fixed/login/google_login_round.png'
 
+const isAuthenticated = computed(() => authenticationStore.isAuthenticated);
 const router = useRouter()
 const authenticationStore = useAuthenticationStore();
 const accountStore = useAccountStore()
@@ -71,6 +72,12 @@ const logOut = async () => {
     console.log("로그아웃 처리가 완료되었습니다.")
     router.push("/")
 }
+
+onBeforeMount(() => {
+    if (!isAuthenticated.value) {
+        router.push("/login")
+    }
+})
 
 onMounted(() => {
     getNickname()
