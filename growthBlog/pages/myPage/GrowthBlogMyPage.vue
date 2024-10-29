@@ -1,5 +1,5 @@
 <template>
-    <div class="container">
+    <div class="container" @scroll.passive="handleScroll">
         <NavHeader />
 
         <main class="main-content">
@@ -54,6 +54,7 @@
 
 <script setup>
 import NavHeader from '@/growthBlog/ui/navigation/navigation.vue';
+
 import { useSmartContentStore } from '~/smartContent/stores/smartContentStore';
 import { useAccountStore } from '@/account/stores/accountStore';
 import { useAuthenticationStore } from '@/authentication/stores/authenticationStore';
@@ -70,7 +71,7 @@ const { isAuthenticated } = storeToRefs(authenticationStore);
 
 const computedNickname = computed(() => nickname.value || 'Guest');
 
-const formatDate = (dateString) => {
+const formatDate = (dateString: string) => {
     if (!dateString) return '';
     const date = new Date(dateString);
     const year = date.getFullYear();
@@ -94,6 +95,8 @@ const getNickname = async () => {
 };
 
 const fetchMySmartContents = async () => {
+    if (isLoading.value) return
+    isLoading.value = true
     const userToken = localStorage.getItem('userToken')
     try {
         const response = await smartContentStore.requestListMySmartContentToDjango(userToken);
@@ -109,9 +112,12 @@ onMounted(async () => {
 });
 </script>
 
+
 <style scoped>
 .container {
     margin-top: 70px;
+    height: 100vh;
+    overflow-y: auto;
 }
 
 .nav-header {
