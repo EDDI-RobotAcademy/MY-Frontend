@@ -51,5 +51,21 @@ export const useAccountStore = defineStore('accountStore', {
         throw error
       }
     },
+    async requestchangeNicknameToDjango(newNickname: string, userToken: string) {
+      const { djangoAxiosInst } = createAxiosInstances()
+      try {
+        const response = await djangoAxiosInst.put('/user_profile/change-nickname', {
+          newNickname: newNickname, 
+          userToken: userToken
+        })
+        if (response.data) {
+          console.log('사용자 닉네임 변경 요청 완료')
+          return response.data
+        }
+      } catch (error) {
+        console.error('사용자 닉네임 변경 요청 실패:', error)
+        throw error
+      }
+    }
   }
 })
