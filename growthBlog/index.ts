@@ -22,6 +22,11 @@ export default defineNuxtModule({
                 file: resolve(themeDir, 'growthBlog/pages/myPage/GrowthBlogMyPage.vue'),
             })
             pages.push({
+                name: 'growthBlogUserPage-page',
+                path: '/growth-blog/my-page/:nickname',
+                file: resolve(themeDir, 'growthBlog/pages/myPage/GrowthBlogUserPage.vue'),
+            })
+            pages.push({
                 name: 'growthBlogRead-page',
                 path: '/growth-blog/:id',
                 file: resolve(themeDir, 'growthBlog/pages/read/GrowthBlogRead.vue'),
