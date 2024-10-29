@@ -18,10 +18,10 @@
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                     </svg>
                 </button>
-                <button class="write-button" @click="writeText" v-if="isAuthenticated">
+                <button class="write-button" @click="goToRegister" v-if="isAuthenticated">
                     <span class="write-text">새 글 작성</span>
                 </button>
-                <button class="login-button" v-if="!isAuthenticated">
+                <button class="login-button" @click="goToLogin" v-if="!isAuthenticated">
                     <span class="login-text">로그인</span>
                 </button>
             </div>
@@ -39,16 +39,19 @@ export default {
     setup() {
         const authenticationStore = useAuthenticationStore();
         const isAuthenticated = computed(() => authenticationStore.isAuthenticated);
-        const router = useRouter(); // useRouter를 setup 안에서 호출
+        const router = useRouter()
 
-        const writeText = async () => {
-            console.log("writeTextClick");
+        const goToRegister = async () => {
             router.push(`/growth-blog/register`);
+        };
+        const goToLogin = async () => {
+            router.push(`/login`);
         };
 
         return {
             isAuthenticated,
-            writeText // writeText 함수를 반환하여 템플릿에서 사용 가능하게 함
+            goToRegister,
+            goToLogin,
         };
     }
 }
@@ -107,7 +110,12 @@ export default {
 }
 
 .write-button {
-    background: #12b886;
+    background: #ff9033;
+}
+.login-button {
+    background: #ff9033;
+}
+.write-button, .login-button {
     color: white;
     border: none;
     border-radius: 20px;
@@ -118,13 +126,14 @@ export default {
     margin-left: 8px;
 }
 
-.write-button:hover {
-    background: #0ca678;
+.write-button:hover, .login-button:hover {
+    background: #ffbc86;
 }
 
-.write-text {
+.write-text, .login-text {
     line-height: 1.2;
 }
+
 
 @media (max-width: 768px) {
     .nav-content {
