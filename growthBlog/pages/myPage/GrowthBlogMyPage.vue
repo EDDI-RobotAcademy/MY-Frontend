@@ -5,7 +5,7 @@
         <main class="main-content">
             <div class="profile-section">
                 <img src="/assets/fixed/login/google_login_round.png" alt="Profile" class="profile-image">
-                <h1 class="profile-name">돈과젤리</h1>
+                <h1 class="profile-name">{{ computedNickname }}</h1>
                 <div class="profile-stats">
                     <span>1 팔로잉</span>
                     <span>0 팔로워</span>
@@ -52,24 +52,46 @@
     </div>
 </template>
 
-<script setup lang="ts">
-import NavHeader from '@/growthBlog/ui/navigation/navigation.vue'; 
-import { useSmartContentStore } from '~/smartContent/stores/smartContentStore';
-import { ref, onMounted } from 'vue';
+<script setup>
+import NavHeader from '@/growthBlog/ui/navigation/navigation.vue';
 
-const smartContentStore = useSmartContentStore()
-const posts = ref([])
-const itemsPerPage = 6
-const currentPage = ref(1)
-const isLoading = ref(false)
+import { useSmartContentStore } from '~/smartContent/stores/smartContentStore';
+import { useAccountStore } from '@/account/stores/accountStore';
+import { useAuthenticationStore } from '@/authentication/stores/authenticationStore';
+import { ref, onMounted, computed } from 'vue';
+import { storeToRefs } from 'pinia';
+
+const smartContentStore = useSmartContentStore();
+const accountStore = useAccountStore();
+const authenticationStore = useAuthenticationStore();
+const posts = ref([]);
+const nickname = ref('Guest');
+
+const { isAuthenticated } = storeToRefs(authenticationStore);
+
+const computedNickname = computed(() => nickname.value || 'Guest');
 
 const formatDate = (dateString: string) => {
     if (!dateString) return '';
     const date = new Date(dateString);
     const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0'); 
-    const day = String(date.getDate()).padStart(2, '0'); 
-    return `${year}-${month}-${day}`; 
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+};
+
+const getNickname = async () => {
+    try {
+        if (isAuthenticated.value) {
+            const userProfile = await accountStore.requestGetUserProfileByAccountIdToDjango();
+            if (userProfile && userProfile.nickname) {
+                nickname.value = userProfile.nickname;
+            }
+        }
+    } catch (error) {
+        console.error('Failed to fetch nickname:', error);
+        nickname.value = 'Guest';
+    }
 };
 
 const fetchMySmartContents = async () => {
@@ -77,33 +99,17 @@ const fetchMySmartContents = async () => {
     isLoading.value = true
     const userToken = localStorage.getItem('userToken')
     try {
-        console.log('Requesting page:', currentPage.value, 'with page size:', itemsPerPage);
-        const response = await smartContentStore.requestListMySmartContentToDjango(userToken, currentPage.value, itemsPerPage)
-        
-        if (response.length === 0) {
-            return
-        }
-
-        posts.value.push(...response)
-        currentPage.value++
+        const response = await smartContentStore.requestListMySmartContentToDjango(userToken);
+        posts.value = response;
     } catch (error) {
         console.error('내 SmartContent 목록 조회 실패:', error);
-    } finally {
-        isLoading.value = false
     }
-}
+};
 
-const handleScroll = (event) => {
-    const target = event.target as HTMLElement
-    const bottomReached = target.scrollHeight - target.scrollTop <= target.clientHeight + 100
-    if (bottomReached && !isLoading.value) {
-        fetchMySmartContents()
-    }
-}
-
-onMounted(() => {
-    fetchMySmartContents()
-})
+onMounted(async () => {
+    await getNickname();
+    await fetchMySmartContents();
+});
 </script>
 
 
