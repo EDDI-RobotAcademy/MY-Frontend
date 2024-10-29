@@ -29,15 +29,14 @@
   const mbtiType = ref('')
   const strategyText = ref('')
   const surveyData = ref(null)
+  const userAnalysisRequest = ref(route.query.userAnalysisRequest)
   const contentStrategyText = ref('')
   const contentStrategySubtitle = ref('')
   
   onMounted(() => {
-    const surveyDataString = route.query.surveyData
-    if (surveyDataString) {
+    console.log("userAnalysisRequest: ", userAnalysisRequest)
+    if (userAnalysisRequest) {
       try {
-        surveyData.value = JSON.parse(surveyDataString)
-        console.log("Received surveyData:", surveyData.value)
         sendSurveyToFastAPI()
       } catch (error) {
         console.error("Failed to parse surveyData:", error)
@@ -49,7 +48,7 @@
   
   const sendSurveyToFastAPI = async () => {
     try {
-      const response = await userAnalysisStore.sendUserAnalysisToFastAPI(surveyData.value)
+      const response = await userAnalysisStore.sendUserAnalysisRequestToFastapiByDjango(userAnalysisRequest.value)
       console.log("응답 데이터", response)
   
       processAnalysisData(response)

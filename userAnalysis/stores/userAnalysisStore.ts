@@ -186,5 +186,22 @@ export const useUserAnalysisStore = defineStore('userAnalysisStore', {
       throw error;
     }
   },
+  async sendUserAnalysisRequestToFastapiByDjango(request_id: number): Promise<any>{
+    const { djangoAxiosInst } = createAxiosInstances();
+    const userToken = localStorage.getItem("userToken")
+    const payload = {
+      command: 7,
+      request_id: request_id,
+      userToken: userToken
+    }
+    try {
+      console.log('request_id: ', request_id)
+      const res = await djangoAxiosInst.post('ai_request/send', payload)
+    } catch (error) {
+      console.error('sendUserAnalysisRequestToFastapiByDjango() 중 에러 발생');
+      throw error;
+    }
+  
   }
+}
 })
