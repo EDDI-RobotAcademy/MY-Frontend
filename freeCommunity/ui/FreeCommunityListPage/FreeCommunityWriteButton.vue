@@ -1,27 +1,28 @@
 <template>
-  <div class="add-write-container">
-    <button @click="goToWritePage" :disabled="!selectedCategoryId" class="write-button">
-      글쓰기
-    </button>
-  </div>
+  <button 
+    class="write-button"
+    @click="handleClick"
+  >
+    글쓰기
+  </button>
 </template>
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
 
 const props = defineProps<{
-  selectedCategoryId: number | null
-}>()
+  selectedCategoryId?: number | null
+}>();
 
-const router = useRouter()
+const router = useRouter();
 
-const goToWritePage = () => {
-  if (props.selectedCategoryId) {
-    router.push({
-      path: '/free-community/register',
-      query: { categoryId: props.selectedCategoryId.toString() }
-    });
-  }
+const handleClick = () => {
+  router.push({
+    path: '/free-community/register',
+    query: {
+      category: props.selectedCategoryId || null
+    }
+  });
 };
 </script>
 

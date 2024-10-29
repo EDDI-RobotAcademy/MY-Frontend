@@ -10,6 +10,7 @@
                     <span>1 팔로잉</span>
                     <span>0 팔로워</span>
                 </div>
+                <button class="follow-button" @click="handleFollow">팔로우</button>
             </div>
 
             <nav class="navigation-tabs">
@@ -55,11 +56,13 @@
 <script setup>
 import NavHeader from '@/growthBlog/ui/navigation/navigation.vue';
 import { useSmartContentStore } from '~/smartContent/stores/smartContentStore';
+import { useGrowthBlogStore } from '~/growthBlog/stores/growthBlogStore';
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 
 const route = useRoute();
 const smartContentStore = useSmartContentStore();
+const growthBlogStore = useGrowthBlogStore();
 const posts = ref([]);
 const userNickname = computed(() => route.params.nickname);
 
@@ -78,6 +81,15 @@ const fetchUserSmartContents = async () => {
         posts.value = response;
     } catch (error) {
         console.error('사용자 SmartContent 목록 조회 실패:', error);
+    }
+};
+
+const handleFollow = async () => {
+    try {
+        const response =await growthBlogStore.registerSocial(userNickname.value);;
+        console.log('팔로우 성공:', response);
+    } catch (error) {
+        console.error('팔로우 실패:', error);
     }
 };
 
@@ -323,6 +335,24 @@ onMounted(() => {
 .likes {
     color: #868e96;
 }
+
+.follow-button {
+    margin-top: 16px;
+    padding: 8px 48px;
+    border: 1px solid #12b886;
+    border-radius: 25px;
+    background-color: white;
+    color: #12b886;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.follow-button:hover {
+    background-color: #12b886;
+    color: white;
+}
+
 
 @media (max-width: 768px) {
     .nav-content {
