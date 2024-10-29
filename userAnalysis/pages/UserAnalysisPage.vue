@@ -198,7 +198,10 @@ const submitSurvey = async () => {
     // 쿼리 파라미터로 데이터를 전달합니다.
     router.push({
       path: '/user-analysis/result',
-      query: { surveyData: JSON.stringify(surveyData) }
+      query: { 
+        surveyData: JSON.stringify(surveyData),
+        userAnalysisRequest : response.id
+      }
     })
   } catch (error) {
     console.error('설문 제출 중 오류 발생: ', error)
