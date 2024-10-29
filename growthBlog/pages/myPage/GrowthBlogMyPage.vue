@@ -1,5 +1,5 @@
 <template>
-    <div class="container">
+    <div class="container" @scroll.passive="handleScroll">
         <NavHeader />
 
         <main class="main-content">
@@ -52,15 +52,18 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import NavHeader from '@/growthBlog/ui/navigation/navigation.vue'; 
 import { useSmartContentStore } from '~/smartContent/stores/smartContentStore';
 import { ref, onMounted } from 'vue';
 
 const smartContentStore = useSmartContentStore()
 const posts = ref([])
+const itemsPerPage = 6
+const currentPage = ref(1)
+const isLoading = ref(false)
 
-const formatDate = (dateString) => {
+const formatDate = (dateString: string) => {
     if (!dateString) return '';
     const date = new Date(dateString);
     const year = date.getFullYear();
@@ -69,25 +72,46 @@ const formatDate = (dateString) => {
     return `${year}-${month}-${day}`; 
 };
 
-
 const fetchMySmartContents = async () => {
+    if (isLoading.value) return
+    isLoading.value = true
     const userToken = localStorage.getItem('userToken')
-        try {
-            const response = await smartContentStore.requestListMySmartContentToDjango(userToken);
-            posts.value = response;
-        } catch (error) {
-            console.error('내 SmartContent 목록 조회 실패:', error);
+    try {
+        console.log('Requesting page:', currentPage.value, 'with page size:', itemsPerPage);
+        const response = await smartContentStore.requestListMySmartContentToDjango(userToken, currentPage.value, itemsPerPage)
+        
+        if (response.length === 0) {
+            return
         }
-};
+
+        posts.value.push(...response)
+        currentPage.value++
+    } catch (error) {
+        console.error('내 SmartContent 목록 조회 실패:', error);
+    } finally {
+        isLoading.value = false
+    }
+}
+
+const handleScroll = (event) => {
+    const target = event.target as HTMLElement
+    const bottomReached = target.scrollHeight - target.scrollTop <= target.clientHeight + 100
+    if (bottomReached && !isLoading.value) {
+        fetchMySmartContents()
+    }
+}
 
 onMounted(() => {
-    fetchMySmartContents();
-});
+    fetchMySmartContents()
+})
 </script>
+
 
 <style scoped>
 .container {
     margin-top: 70px;
+    height: 100vh;
+    overflow-y: auto;
 }
 
 .nav-header {

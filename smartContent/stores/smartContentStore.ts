@@ -57,10 +57,14 @@ export const useSmartContentStore = defineStore('smartContentStore', {
             throw error
         }
       },
-      async requestListMySmartContentToDjango(userToken: string) {
+      async requestListMySmartContentToDjango(userToken: string, page, pageSize) {
         const { djangoAxiosInst } = createAxiosInstances()
         try {
-          const response = await djangoAxiosInst.post(`smart_content/list-my-content`, { userToken })
+          const response = await djangoAxiosInst.post(`smart_content/list-my-content`, { 
+            userToken,
+            page: page,
+            page_size: pageSize
+           })
           return response.data
         } catch (error) {
             console.error('requestListMySmartContentToDjango 중 에러:', error)
