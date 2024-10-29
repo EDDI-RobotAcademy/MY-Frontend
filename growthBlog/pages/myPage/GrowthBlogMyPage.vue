@@ -66,12 +66,15 @@ const accountStore = useAccountStore();
 const authenticationStore = useAuthenticationStore();
 const posts = ref([]);
 const nickname = ref('Guest');
+const itemsPerPage = 6
+const currentPage = ref(1)
+const isLoading = ref(false)
 
 const { isAuthenticated } = storeToRefs(authenticationStore);
 
 const computedNickname = computed(() => nickname.value || 'Guest');
 
-const formatDate = (dateString: string) => {
+const formatDate = (dateString) => {
     if (!dateString) return '';
     const date = new Date(dateString);
     const year = date.getFullYear();
@@ -99,10 +102,25 @@ const fetchMySmartContents = async () => {
     isLoading.value = true
     const userToken = localStorage.getItem('userToken')
     try {
-        const response = await smartContentStore.requestListMySmartContentToDjango(userToken);
-        posts.value = response;
+        console.log('Requesting page:', currentPage.value, 'with page size:', itemsPerPage);
+        const response = await smartContentStore.requestListMySmartContentToDjango(userToken, currentPage.value, itemsPerPage);
+        if (response.length === 0) {
+            return; 
+        }
+
+        posts.value.push(...response);
+        currentPage.value++;
     } catch (error) {
         console.error('내 SmartContent 목록 조회 실패:', error);
+    } finally {
+        isLoading.value = false
+    }
+};
+
+const handleScroll = (event) => {
+    const bottomReached = event.target.scrollHeight - event.target.scrollTop <= event.target.clientHeight + 100;
+    if (bottomReached && !isLoading.value) {
+        fetchMySmartContents();
     }
 };
 
