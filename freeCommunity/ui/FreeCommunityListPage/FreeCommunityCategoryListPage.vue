@@ -52,31 +52,24 @@ const categories = ref<{ categoryId: number; name: string }[]>([])
 const showAllCategories = ref(false)
 const VISIBLE_CATEGORIES_COUNT = 9 // 전체 버튼 제외하고 9개 표시
 
-// 보이는 카테고리 계산
 const visibleCategories = computed(() => {
     return categories.value.slice(0, VISIBLE_CATEGORIES_COUNT)
 })
 
-// 숨겨진 카테고리 계산
 const hiddenCategories = computed(() => {
     return categories.value.slice(VISIBLE_CATEGORIES_COUNT)
 })
 
-// 더보기 버튼 표시 여부
 const hasMoreCategories = computed(() => {
     return categories.value.length > VISIBLE_CATEGORIES_COUNT
 })
 
-// 팝업 위치 조정을 위한 ref 추가
 const moreButtonRef = ref<HTMLElement | null>(null)
 const popupRef = ref<HTMLElement | null>(null)
-
-// 더보기 토글 함수 수정
 const toggleMoreCategories = () => {
     showAllCategories.value = !showAllCategories.value
     
     if (showAllCategories.value) {
-        // DOM 업데이트 후 위치 계산을 위해 nextTick 사용
         nextTick(() => {
             const buttonEl = moreButtonRef.value
             const popupEl = popupRef.value
@@ -146,20 +139,17 @@ const selectCategory = async (categoryId: number | null) => {
     }
 }
 
-// 클릭 이벤트 핸들러 추가
 const handleClickOutside = (event: MouseEvent) => {
     const popupEl = popupRef.value
     const buttonEl = moreButtonRef.value
     
     if (showAllCategories.value && popupEl && buttonEl) {
-        // 클릭된 요소가 팝업 내부도 아니고 더보기 버튼도 아닌 경우
         if (!popupEl.contains(event.target as Node) && !buttonEl.contains(event.target as Node)) {
             showAllCategories.value = false
         }
     }
 }
 
-// 컴포넌트 마운트/언마운트시 이벤트 리스너 관리
 onMounted(() => {
     document.addEventListener('click', handleClickOutside)
 })

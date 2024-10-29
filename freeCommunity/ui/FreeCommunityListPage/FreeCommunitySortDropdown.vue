@@ -40,7 +40,7 @@ const handleSort = () => {
     background-repeat: no-repeat;
     background-position: right 8px center;
     background-size: 16px;
-    min-width: 120px;
+    min-width: 80px;
 }
 
 .sort-select:hover {
