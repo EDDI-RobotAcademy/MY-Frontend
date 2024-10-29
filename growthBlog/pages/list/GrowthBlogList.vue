@@ -48,7 +48,7 @@ import defaultThumbnail from '~/assets/fixed/chatbot/background_gradient.png'
 
 const smartContentStore = useSmartContentStore()
 const smartContents = ref([])
-const itemsPerPage = 9
+const itemsPerPage = 6
 const currentPage = ref(1)
 const isLoading = ref(false)
 
