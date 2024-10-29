@@ -1,8 +1,8 @@
 <template>
     <div class="sort-dropdown">
         <select v-model="selectedSort" @change="handleSort" class="sort-select">
-            <option value="date">등록일순</option>
-            <option value="views">조회수순</option>
+            <option value="date">최신순</option>
+            <option value="views">인기순</option>
         </select>
     </div>
 </template>
