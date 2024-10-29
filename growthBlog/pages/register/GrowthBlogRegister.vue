@@ -24,6 +24,10 @@ import {
     ObjectCannedACL
 } from '@aws-sdk/client-s3'
 import { useSmartContentStore } from '@/smartContent/stores/smartContentStore'
+import { useRouter, useRoute } from 'vue-router'
+
+const router = useRouter()
+const route = useRoute()
 
 interface ContentBlock {
     type: 'text' | 'image'
@@ -322,6 +326,14 @@ const saveContent = async () => {
 
         if (result) {
             alert('저장되었습니다.')
+             // 이전 페이지 확인
+            const from = route.query.from;
+            
+            if (from === 'mypage') {
+                router.push('/growth-blog/my-page');
+            } else {
+                router.push('/growth-blog/list');
+            }
         } else {
             throw new Error('저장 실패')
         }

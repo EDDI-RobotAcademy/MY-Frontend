@@ -57,7 +57,13 @@ export default {
         });
 
         const goToRegister = () => {
-            router.push(`/growth-blog/register`);
+            // 현재 경로를 확인
+            const currentPath = route.path;
+            if (currentPath.includes('/growth-blog/my-page')) {
+                router.push('/growth-blog/register?from=mypage');
+            } else {
+                router.push('/growth-blog/register?from=list');
+            }
         };
 
         const goToLogin = () => {
