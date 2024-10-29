@@ -1,6 +1,6 @@
 <template>
-    <div class="free_community-content">
-        <table v-if="sortedContents.length > 0" class="free_community-table">
+    <div class="free-community-content">
+        <table v-if="sortedContents.length > 0" class="free-community-table">
             <thead>
                 <tr>
                     <th class="no-column">No</th>
@@ -12,7 +12,7 @@
             </thead>
             <tbody>
                 <tr v-for="(content, index) in sortedContents" :key="content.free_communityId"
-                    @click="goToFreeCommunityDetail(content.free_communityId)" class="free_community-row">
+                    @click="goToFreeCommunityDetail(content.free_communityId)" class="free-community-row">
                     <td>{{ sortedContents.length - index }}</td>
                     <td class="title-cell">{{ content.title }}</td>
                     <td>{{ content.profile_nickname }}</td>
@@ -28,7 +28,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, watch, computed } from 'vue';
-import { useFreeCommunityStore } from '../../stores/free_communityStore';
+import { useFreeCommunityStore } from '../../stores/freeCommunityStore';
 import { useRouter, useRoute } from 'vue-router';
 import { useViewCountStore } from '~/viewCount/stores/viewCountStore';
 
@@ -41,15 +41,15 @@ const props = defineProps<{
     searchType: string
 }>();
 
-const free_communityStore = useFreeCommunityStore();
-const free_communityContents = ref([]);
+const freeCommunityStore = useFreeCommunityStore();
+const freeCommunityContents = ref([]);
 const errorMessage = ref('');
 const viewCounts = ref<{ [key: number]: number }>({});
 const currentSort = ref('date'); // 현재 정렬 방식을 저장
 
 // 정렬된 컨텐츠를 반환하는 computed 속성
 const sortedContents = computed(() => {
-    return [...free_communityContents.value].sort((a, b) => {
+    return [...freeCommunityContents.value].sort((a, b) => {
         if (currentSort.value === 'date') {
             return new Date(b.regDate).getTime() - new Date(a.regDate).getTime();
         } else if (currentSort.value === 'views') {
@@ -67,7 +67,7 @@ const sortBy = (sortType: string) => {
 };
 
 const goToFreeCommunityDetail = (free_communityId: number) => {
-    router.push(`/free_community/read/${free_communityId}`);
+    router.push(`/free-community/read/${free_communityId}`);
 };
 
 const getViewCount = (communityId: number) => {
@@ -79,17 +79,17 @@ const fetchFreeCommunityContents = async (categoryId: number | null, searchQuery
         let response;
 
         if (searchQuery) {
-            response = await free_communityStore.searchFreeCommunity(searchQuery, searchType);
+            response = await freeCommunityStore.searchFreeCommunity(searchQuery, searchType);
         } else if (categoryId !== null) {
-            response = await free_communityStore.getCategoriesContent(categoryId);
+            response = await freeCommunityStore.getCategoriesContent(categoryId);
         } else {
-            response = await free_communityStore.getFreeCommunityContent();       
+            response = await freeCommunityStore.getFreeCommunityContent();       
         }
 
         if (Array.isArray(response)) {
-            free_communityContents.value = response.slice(0, 30);
+            freeCommunityContents.value = response.slice(0, 30);
         } else if (response && Array.isArray(response.data)) {
-            free_communityContents.value = response.data.slice(0, 30);
+            freeCommunityContents.value = response.data.slice(0, 30);
         } else {
             throw new Error('Unexpected response format');
         }
@@ -97,7 +97,7 @@ const fetchFreeCommunityContents = async (categoryId: number | null, searchQuery
         errorMessage.value = '';
     } catch (error) {
         console.error('게시글을 가져오는 중 오류 발생:', error);
-        free_communityContents.value = [];
+        freeCommunityContents.value = [];
         errorMessage.value = '게시글을 불러오는 데 실패했습니다. 다시 시도해 주세요.';
     }
 };
@@ -154,20 +154,20 @@ defineExpose({
 </script>
 
 <style scoped>
-.free_community-content {
+.free-community-content {
     position: relative;
     padding: 20px;
     width: 100%;
 }
 
-.free_community-table {
+.free-community-table {
     width: 100%;
     border-collapse: collapse;
     table-layout: fixed;
 }
 
-.free_community-table th,
-.free_community-table td {
+.free-community-table th,
+.free-community-table td {
     padding: 8px 6px;
     text-align: center;
     border-bottom: 1px solid #e0e0e0;
@@ -175,7 +175,7 @@ defineExpose({
     line-height: 1.2;
 }
 
-.free_community-table th {
+.free-community-table th {
     background-color: white;
     font-weight: normal;
     color: #333;
@@ -209,11 +209,11 @@ defineExpose({
     width: 12%;
 }
 
-.free_community-row {
+.free-community-row {
     cursor: pointer;
 }
 
-.free_community-row:hover {
+.free-community-row:hover {
     background-color: #f5f5f5;
 }
 

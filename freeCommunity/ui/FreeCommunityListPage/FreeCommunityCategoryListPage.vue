@@ -19,7 +19,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { useFreeCommunityStore } from '../../stores/free_communityStore'
+import { useFreeCommunityStore } from '../../stores/freeCommunityStore'
 import { useRoute, useRouter } from 'vue-router'
 
 const route = useRoute()
@@ -30,12 +30,12 @@ const props = defineProps<{
 
 const emit = defineEmits(['update:modelValue', 'categoryContentLoaded'])
 
-const free_communityStore = useFreeCommunityStore()
+const freeCommunityStore = useFreeCommunityStore()
 const categories = ref<{ categoryId: number; name: string }[]>([])
 
 const fetchCategories = async () => {
     try {
-        categories.value = await free_communityStore.getCategories()
+        categories.value = await freeCommunityStore.getCategories()
         const categoryFromQuery = route.query.category
         if (categoryFromQuery) {
             const categoryId = Number(categoryFromQuery)
@@ -60,13 +60,7 @@ const selectCategory = async (categoryId: number | null) => {
 
     emit('update:modelValue', categoryId)
     try {
-        let response;
-        if (categoryId === null) {
-            response = await free_communityStore.getAllContent()
-        } else {
-            response = await free_communityStore.getCategoriesContent(categoryId)
-        }
-
+        let response = await freeCommunityStore.getCategoriesContent(categoryId)
         let dataToProcess = response;
         if (response && response.data !== undefined) {
             dataToProcess = response.data;
@@ -77,13 +71,13 @@ const selectCategory = async (categoryId: number | null) => {
             filteredContent = categoryId === null
                 ? dataToProcess
                 : dataToProcess.filter(
-                    (item: any) => item.categoryFreeCommunityId === categoryId
+                    (item: any) => item.categoryfree_communityId === categoryId
                 );
         } else if (typeof dataToProcess === 'object' && dataToProcess !== null) {
             filteredContent = categoryId === null
                 ? [dataToProcess]
                 : [dataToProcess].filter(
-                    (item: any) => item.categoryFreeCommunityId === categoryId
+                    (item: any) => item.categoryfree_communityId === categoryId
                 );
         }
 

@@ -97,7 +97,7 @@
     import ReplyToggle from '../ui/ReplyToggle.vue'
     
     const props = defineProps<{
-        freeCommunityId: number,
+        free_communityId: number,
     }>()
     
     const freeCommunityCommentStore = useFreeCommunityCommentStore()
@@ -112,7 +112,7 @@
     // 댓글 목록 로드
     const loadComments = async () => {
         try {
-            const commentsData = await freeCommunityCommentStore.getFreeCommunityComments(props.freeCommunityId)
+            const commentsData = await freeCommunityCommentStore.getFreeCommunityComments(props.free_communityId)
             const parentData = commentsData.filter((comment: any) => !comment.parent)
             totalComments.value = commentsData.length
 
@@ -147,7 +147,7 @@
         
             try {
                 const commentData = {
-                    free_community_id: props.freeCommunityId,
+                    free_community_id: props.free_communityId,
                     parent_id: null,
                     content,
                     userToken,
@@ -184,7 +184,7 @@
         
             try {
                 const replyData = {
-                    free_community_id: props.freeCommunityId,
+                    free_community_id: props.free_communityId,
                     parent_id: parentId,
                     content,
                     userToken,
