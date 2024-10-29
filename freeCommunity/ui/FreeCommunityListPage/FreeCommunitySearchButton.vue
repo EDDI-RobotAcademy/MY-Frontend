@@ -30,20 +30,26 @@ const performSearch = () => {
   }
 
   .search-type {
-  padding: 8px 12px;
-  border: none;
-  border-radius: 4px 0 0 4px;
-  background-color: #ffffff;
-  color: #333;
-  font-size: 14px;
-  cursor: pointer;
-  margin-right: -1px;
-}
+    padding: 8px 12px;
+    padding-right: 30px;
+    border: none;
+    border-radius: 4px;
+    background-color: #ffffff;
+    color: #333;
+    font-size: 14px;
+    cursor: pointer;
+    margin-right: -1px;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23808080' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 16px;
+  }
   
   .search-bar input {
     padding: 8px 12px;
     border: none;
-    border-radius: 4px 0 0 4px;
+    border-radius: 4px;
     background-color: white;
     color: black;
     font-size: 14px;
@@ -54,7 +60,7 @@ const performSearch = () => {
     background-color: #ff9033;
     color: white;
     border: none;
-    border-radius: 0 4px 4px 0;
+    border-radius: 4px;
     cursor: pointer;
     font-size: 14px;
   }

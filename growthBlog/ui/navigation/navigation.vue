@@ -1,9 +1,8 @@
-<!-- NavHeader.vue -->
 <template>
     <nav class="nav-header">
         <div class="nav-content">
             <div class="nav-left">
-                <div class="blog-title">moneyandjelly_.log</div>
+                <div class="blog-title">{{ displayTitle }}</div>
             </div>
             <div class="nav-right">
                 <button class="search-button">
@@ -19,8 +18,11 @@
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                     </svg>
                 </button>
-                <button class="write-button">
+                <button class="write-button" @click="goToRegister" v-if="isAuthenticated">
                     <span class="write-text">새 글 작성</span>
+                </button>
+                <button class="login-button" @click="goToLogin" v-if="!isAuthenticated">
+                    <span class="login-text">로그인</span>
                 </button>
             </div>
         </div>
@@ -28,8 +30,79 @@
 </template>
 
 <script>
+import { computed, ref, onMounted, watch } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import { useAuthenticationStore } from '@/authentication/stores/authenticationStore';
+import { useAccountStore } from '@/account/stores/accountStore';
+import { storeToRefs } from 'pinia';
+
 export default {
-    name: 'NavHeader'
+    name: 'NavHeader',
+    setup() {
+        const router = useRouter();
+        const route = useRoute();
+        const authenticationStore = useAuthenticationStore();
+        const accountStore = useAccountStore();
+        
+        const { isAuthenticated } = storeToRefs(authenticationStore);
+        const nickname = ref('Guest');
+
+        const computedNickname = computed(() => nickname.value || 'Guest');
+        
+        const displayTitle = computed(() => {
+            if (route.path.includes('/growth-blog/my-page')) {
+                return `${computedNickname.value}.gblog`;
+            }
+            return 'gblog';
+        });
+
+        const goToRegister = () => {
+            router.push(`/growth-blog/register`);
+        };
+
+        const goToLogin = () => {
+            router.push(`/login`);
+        };
+
+        const getNickname = async () => {
+            try {
+                if (isAuthenticated.value) {
+                    const userProfile = await accountStore.requestGetUserProfileByAccountIdToDjango();
+                    if (userProfile && userProfile.nickname) {
+                        nickname.value = userProfile.nickname;
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to fetch nickname:', error);
+                nickname.value = 'Guest';
+            }
+        };
+
+        onMounted(() => {
+            getNickname();
+        });
+
+        watch(isAuthenticated, (newValue) => {
+            if (newValue) {
+                getNickname();
+            } else {
+                nickname.value = 'Guest';
+            }
+        });
+
+        watch(() => route.path, () => {
+            if (route.path.includes('/growth-blog/my-page')) {
+                getNickname();
+            }
+        });
+
+        return {
+            isAuthenticated,
+            displayTitle,
+            goToRegister,
+            goToLogin,
+        };
+    }
 }
 </script>
 
@@ -85,7 +158,15 @@ export default {
 }
 
 .write-button {
-    background: #12b886;
+    background: #ff9033;
+}
+
+.login-button {
+    background: #ff9033;
+}
+
+.write-button,
+.login-button {
     color: white;
     border: none;
     border-radius: 20px;
@@ -96,11 +177,13 @@ export default {
     margin-left: 8px;
 }
 
-.write-button:hover {
-    background: #0ca678;
+.write-button:hover,
+.login-button:hover {
+    background: #ffbc86;
 }
 
-.write-text {
+.write-text,
+.login-text {
     line-height: 1.2;
 }
 
