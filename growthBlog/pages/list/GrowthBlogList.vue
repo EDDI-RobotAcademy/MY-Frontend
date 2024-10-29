@@ -17,7 +17,7 @@
             </div>
         </div>
         <div class="post-grid">
-        <article v-for="content in smartContents" :key="content.id" class="post-card">
+        <article v-for="content in smartContents" :key="content.id" class="post-card" @click="goToReadPage(content.id)">
             <div class="post-content">
                 <img :src="defaultThumbnail" :alt="content.title" class="post-thumbnail">
                 <h2 class="post-title">{{ content.title }}</h2>
@@ -45,7 +45,7 @@ import { useSmartContentStore } from '@/smartContent/stores/smartContentStore'
 import defaultImage from '~/assets/fixed/login/google_login_round.png'
 import defaultThumbnail from '~/assets/fixed/chatbot/background_gradient.png'
 
-
+const router = useRouter()
 const smartContentStore = useSmartContentStore()
 const smartContents = ref([])
 const itemsPerPage = 6
@@ -95,7 +95,10 @@ const handleScroll = (event) => {
     }
 }
 
-// onMounted에서 fetchSmartContents 호출
+const goToReadPage = (id: number) => {
+    router.push({ name: 'growthBlogRead-page', params: { id } })
+}
+
 onMounted(() => {
     fetchSmartContents()
 })
