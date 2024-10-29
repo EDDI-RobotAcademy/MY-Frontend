@@ -1,4 +1,3 @@
-<!-- NavHeader.vue -->
 <template>
     <nav class="nav-header">
         <div class="nav-content">
@@ -19,8 +18,11 @@
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                     </svg>
                 </button>
-                <button class="write-button">
+                <button class="write-button" @click="goToRegister" v-if="isAuthenticated">
                     <span class="write-text">새 글 작성</span>
+                </button>
+                <button class="login-button" @click="goToLogin" v-if="!isAuthenticated">
+                    <span class="login-text">로그인</span>
                 </button>
             </div>
         </div>
@@ -28,10 +30,33 @@
 </template>
 
 <script>
+import { computed } from 'vue';
+import { useAuthenticationStore } from '@/authentication/stores/authenticationStore';
+import { useRouter } from 'vue-router';
+
 export default {
-    name: 'NavHeader'
+    name: 'NavHeader',
+    setup() {
+        const authenticationStore = useAuthenticationStore();
+        const isAuthenticated = computed(() => authenticationStore.isAuthenticated);
+        const router = useRouter()
+
+        const goToRegister = async () => {
+            router.push(`/growth-blog/register`);
+        };
+        const goToLogin = async () => {
+            router.push(`/login`);
+        };
+
+        return {
+            isAuthenticated,
+            goToRegister,
+            goToLogin,
+        };
+    }
 }
 </script>
+
 
 <style scoped>
 .nav-header {
@@ -85,7 +110,12 @@ export default {
 }
 
 .write-button {
-    background: #12b886;
+    background: #ff9033;
+}
+.login-button {
+    background: #ff9033;
+}
+.write-button, .login-button {
     color: white;
     border: none;
     border-radius: 20px;
@@ -96,13 +126,14 @@ export default {
     margin-left: 8px;
 }
 
-.write-button:hover {
-    background: #0ca678;
+.write-button:hover, .login-button:hover {
+    background: #ffbc86;
 }
 
-.write-text {
+.write-text, .login-text {
     line-height: 1.2;
 }
+
 
 @media (max-width: 768px) {
     .nav-content {
