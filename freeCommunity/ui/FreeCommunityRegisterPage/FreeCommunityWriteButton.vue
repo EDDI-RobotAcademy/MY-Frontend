@@ -4,9 +4,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useFreeCommunityStore } from '../../stores/free_communityStore'
+import { useFreeCommunityStore } from '../../stores/freeCommunityStore'
 
-const free_communityStore = useFreeCommunityStore()
+const freeCommunityStore = useFreeCommunityStore()
 
 const props = defineProps<{
   postData: {
@@ -40,7 +40,7 @@ const register = async () => {
         ...props.postData,
         userToken
       }
-      const result = await free_communityStore.registerPost(postDataWithToken)
+      const result = await freeCommunityStore.registerPost(postDataWithToken)
       emit('registerSuccess', result)
     } catch (error) {
       emit('registerError', error)

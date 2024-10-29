@@ -22,7 +22,7 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import { useFreeCommunityStore } from '../../stores/free_communityStore'
+import { useFreeCommunityStore } from '../../stores/freeCommunityStore'
 
 const props = defineProps<{
   formData: {
@@ -37,7 +37,7 @@ const emit = defineEmits<{
 }>()
 
 const route = useRoute()
-const free_communityStore = useFreeCommunityStore()
+const freeCommunityStore = useFreeCommunityStore()
 const localFormData = ref({ ...props.formData })
 const categories = ref<any[]>([])
 const selectedCategoryName = ref('')
@@ -54,7 +54,7 @@ const handleCategoryChange = () => {
 
 onMounted(async () => {
   try {
-    const rawCategories = await free_communityStore.getCategories()
+    const rawCategories = await freeCommunityStore.getCategories()
     console.log('원본 카테고리 데이터:', rawCategories)
 
     categories.value = rawCategories.map(category => ({

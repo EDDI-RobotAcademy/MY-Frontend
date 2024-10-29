@@ -1,5 +1,5 @@
 <template>
-  <div class="free_community-container">
+  <div class="free-community-container">
     <div class="main-content">
       <div class="top-bar">
         <FreeCommunityCategoryListPage v-model="selectedCategoryId" />
@@ -88,7 +88,7 @@ onMounted(() => {
   font-family: 'Noto Sans KR', sans-serif;
 }
 
-.free_community-container {
+.free-community-container {
   display: flex;
   height: 100%;
   background-color: #f5f5f5;

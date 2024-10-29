@@ -104,7 +104,7 @@ const toggleAdminMenu = () => {
 const goToHomePage = () => router.push("/")
 const goToLoginPage = () => router.push("/login")
 const goToSurveyPage = () => router.push("/survey")
-const goToFreeCommunityPage = () => router.push("/free_community/list")
+const goToFreeCommunityPage = () => router.push("/free-community/list")
 const goToGrowthBlogListPage = () => router.push("/growth-blog/list")
 const goToUserAnalysisPage = () => router.push("/user-analysis")
 const goToInfluencerAnalysisPage = () => router.push("/influencer-analysis")

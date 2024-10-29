@@ -13,23 +13,23 @@ export default defineNuxtModule({
         nuxt.hook('pages:extend', (pages) => {
             pages.push({
                 name: 'FreeCommunityListPage',
-                path: '/free_community/list',
-                file: resolve(themeDir, 'free_community/pages/list/FreeCommunityListPage.vue'),
+                path: '/free-community/list',
+                file: resolve(themeDir, 'freeCommunity/pages/list/FreeCommunityListPage.vue'),
             })
             pages.push({
                 name: 'FreeCommunityRegisterPage',
-                path: '/free_community/register',
-                file: resolve(themeDir, 'free_community/pages/register/FreeCommunityRegisterPage.vue'),
+                path: '/free-community/register',
+                file: resolve(themeDir, 'freeCommunity/pages/register/FreeCommunityRegisterPage.vue'),
             })
             pages.push({
                 name: 'FreeCommunityModifyPage',
-                path: '/free_community/modify/:free_communityId',
-                file: resolve(themeDir, 'free_community/pages/modify/FreeCommunityModifyPage.vue'),
+                path: '/free-community/modify/:free_communityId',
+                file: resolve(themeDir, 'freeCommunity/pages/modify/FreeCommunityModifyPage.vue'),
             })
             pages.push({
                 name: 'FreeCommunityReadPage',
-                path: '/free_community/read/:free_communityId',
-                file: resolve(themeDir, 'free_community/pages/read/FreeCommunityReadPage.vue'),
+                path: '/free-community/read/:free_communityId',
+                file: resolve(themeDir, 'freeCommunity/pages/read/FreeCommunityReadPage.vue'),
             })
         })
         nuxt.hook('imports:dirs', (dirs) => {

@@ -1,6 +1,6 @@
 <template>
-    <div class="free_community-article">
-        <div v-if="free_communityContent" class="modify-form">
+    <div class="free-community-article">
+        <div v-if="freeCommunityContent" class="modify-form">
             <div class="form-group">
                 <label for="category">카테고리</label>
                 <select id="category" v-model="modifiedContent.category_id" class="form-select">
@@ -43,14 +43,14 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { useFreeCommunityStore } from '../../stores/free_communityStore';
+import { useFreeCommunityStore } from '../../stores/freeCommunityStore';
 
 const route = useRoute();
 const router = useRouter();
-const free_communityStore = useFreeCommunityStore();
+const freeCommunityStore = useFreeCommunityStore();
 
 const free_communityId = parseInt(route.params.free_communityId as string);
-const free_communityContent = ref<any>(null);
+const freeCommunityContent = ref<any>(null);
 const error = ref<string>('');
 const categories = ref([]);
 
@@ -62,8 +62,8 @@ const modifiedContent = ref({
 
 const fetchFreeCommunityContent = async () => {
     try {
-        const response = await free_communityStore.readFreeCommunityContent(free_communityId);
-        free_communityContent.value = response;
+        const response = await freeCommunityStore.readFreeCommunityContent(free_communityId);
+        freeCommunityContent.value = response;
         // 기존 내용을 수정 폼에 설정
         modifiedContent.value = {
             title: response.title,
@@ -72,13 +72,13 @@ const fetchFreeCommunityContent = async () => {
         };
     } catch (err) {
         error.value = '게시글을 불러오는데 실패했습니다.';
-        console.error('Error fetching free_community content:', err);
+        console.error('Error fetching free-community content:', err);
     }
 };
 
 const fetchCategories = async () => {
     try {
-        const response = await free_communityStore.getCategories();
+        const response = await freeCommunityStore.getCategories();
         categories.value = response;
     } catch (err) {
         console.error('Error fetching categories:', err);
@@ -96,16 +96,16 @@ const handleSubmit = async () => {
             return;
         }
 
-        await free_communityStore.updateFreeCommunityContent(free_communityId, modifiedContent.value);
-        router.push(`/free_community/read/${free_communityId}`);
+        await freeCommunityStore.updateFreeCommunityContent(free_communityId, modifiedContent.value);
+        router.push(`/free-community/read/${free_communityId}`);
     } catch (err) {
         error.value = '게시글 수정에 실패했습니다.';
-        console.error('Error updating free_community:', err);
+        console.error('Error updating free-community:', err);
     }
 };
 
 const handleCancel = () => {
-    router.push(`/free_community/read/${free_communityId}`);
+    router.push(`/free-community/read/${free_communityId}`);
 };
 
 onMounted(() => {
@@ -115,7 +115,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.free_community-article {
+.free-community-article {
     background-color: white;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);

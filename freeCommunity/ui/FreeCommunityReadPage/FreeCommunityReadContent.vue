@@ -1,17 +1,17 @@
 <template>
-    <div class="free_community-article-wrapper">
-        <div v-if="free_communityContent" class="free_community-article">
+    <div class="free-community-article-wrapper">
+        <div v-if="freeCommunityContent" class="free-community-article">
             <div class="article-header">
-                <h2 class="article-title">{{ free_communityContent.title }}</h2>
+                <h2 class="article-title">{{ freeCommunityContent.title }}</h2>
                 <div class="article-meta">
-                    <span class="author">{{ free_communityContent.profile_nickname }}</span>
-                    <span class="date">{{ formatDate(free_communityContent.regDate) }}</span>
-                    <span class="category">{{ free_communityContent.category_name }}</span>
+                    <span class="author">{{ freeCommunityContent.profile_nickname }}</span>
+                    <span class="date">{{ formatDate(freeCommunityContent.regDate) }}</span>
+                    <span class="category">{{ freeCommunityContent.category_name }}</span>
                 </div>
             </div>
 
             <div class="article-content">
-                {{ free_communityContent.content }}
+                {{ freeCommunityContent.content }}
             </div>
 
             <div class="article-actions">
@@ -22,7 +22,7 @@
                     <router-link :to="{ name: 'FreeCommunityModifyPage', params: { free_communityId } }">
                         <button class="btn btn-modify">수정</button>
                     </router-link>
-                    <button class="btn btn-delete" @click="free_communityDelete">삭제</button>
+                    <button class="btn btn-delete" @click="freeCommunityDelete">삭제</button>
                 </div>
             </div>
         </div>
@@ -33,9 +33,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { useFreeCommunityStore } from '../../stores/free_communityStore';
+import { useFreeCommunityStore } from '../../stores/freeCommunityStore';
 import { useViewCountStore } from '~/viewCount/stores/viewCountStore';
-
 import { useAuthenticationStore } from '@/authentication/stores/authenticationStore'
 
 const authenticationStore = useAuthenticationStore();
@@ -44,35 +43,35 @@ const isAuthenticated = computed(() => authenticationStore.isAuthenticated);
 const route = useRoute();
 const router = useRouter()
 const viewCountStore = useViewCountStore();
-const free_communityStore = useFreeCommunityStore();
+const freeCommunityStore = useFreeCommunityStore();
 
 const free_communityId = parseInt(route.params.free_communityId as string);
-const free_communityContent = ref<any>(null);
+const freeCommunityContent = ref<any>(null);
 const error = ref<string>('');
 const checkMyFreeCommunity = ref(false)
 
 const fetchFreeCommunityContent = async () => {
     try {
-        const response = await free_communityStore.readFreeCommunityContent(free_communityId);
+        const response = await freeCommunityStore.readFreeCommunityContent(free_communityId);
         console.log("readFreeCommunityContent 데이터", response);
-        free_communityContent.value = response;
+        freeCommunityContent.value = response;
 
     } catch (err) {
         error.value = '게시글을 불러오는데 실패했습니다.';
-        console.error('Error fetching free_community content:', err);
+        console.error('Error fetching free-community content:', err);
     }
 };
 
 const fetchCheckAuthority = async () => {
     try {
         console.log("fetchCheckAuthority 접근")
-        const response = await free_communityStore.checkAuthority(free_communityId);
+        const response = await freeCommunityStore.checkAuthority(free_communityId);
         console.log("readFreeCommunityCofetchCheckAuthorityntent 데이터", response.is_authorized);
         checkMyFreeCommunity.value = response.is_authorized
         console.log("checkMyFreeCommunity 확인", checkMyFreeCommunity.value)
     } catch (err) {
         error.value = 'fetchCheckAuthority 에러';
-        console.error('Error fetching free_community content:', err);
+        console.error('Error fetching free-community content:', err);
     }
 };
 
@@ -83,7 +82,7 @@ const fetchIncrementCount = async () => {
         await viewCountStore.requestIncrementViewCount(free_communityId);
     } catch (err) {
         error.value = 'fetchIncrementCount 에러';
-        console.error('Error fetching free_community content:', err);
+        console.error('Error fetching free-community content:', err);
     }
 };
 
@@ -98,14 +97,14 @@ const formatDate = (dateString: string) => {
     });
 };
 
-const free_communityDelete = async () => {
+const freeCommunityDelete = async () => {
     if (confirm('정말 삭제하시겠습니까?')) {
         try {
-            await free_communityStore.deleteFreeCommunityContent(free_communityId);
-            router.push("/free_community/list");
+            await freeCommunityStore.deleteFreeCommunityContent(free_communityId);
+            router.push("/free-community/list");
         } catch (err) {
             error.value = '게시글 삭제에 실패했습니다.';
-            console.error('Error deleting free_community:', err);
+            console.error('Error deleting free-community:', err);
         }
     }
 };
@@ -120,14 +119,14 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.free_community-article-wrapper {
+.free-community-article-wrapper {
     width: 100%;
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
 }
 
-.free_community-article {
+.free-community-article {
     background-color: white;
     border-radius: 8px;
     padding: 20px;
@@ -221,11 +220,11 @@ onMounted(() => {
 
 /* 반응형 스타일 */
 @media (max-width: 768px) {
-    .free_community-article-wrapper {
+    .free-community-article-wrapper {
         padding: 10px;
     }
 
-    .free_community-article {
+    .free-community-article {
         padding: 15px;
     }
 
