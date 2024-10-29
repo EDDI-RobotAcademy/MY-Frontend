@@ -1,15 +1,16 @@
 <template>
-    <div class="container" @scroll.passive="handleScroll">
+    <div class="container">
         <NavHeader />
 
         <main class="main-content">
             <div class="profile-section">
                 <img src="/assets/fixed/login/google_login_round.png" alt="Profile" class="profile-image">
-                <h1 class="profile-name">{{ computedNickname }}</h1>
+                <h1 class="profile-name">{{ userNickname }}</h1>
                 <div class="profile-stats">
                     <span>1 팔로잉</span>
                     <span>0 팔로워</span>
                 </div>
+                <button class="follow-button" @click="handleFollow">팔로우</button>
             </div>
 
             <nav class="navigation-tabs">
@@ -54,25 +55,16 @@
 
 <script setup>
 import NavHeader from '@/growthBlog/ui/navigation/navigation.vue';
-
 import { useSmartContentStore } from '~/smartContent/stores/smartContentStore';
-import { useAccountStore } from '@/account/stores/accountStore';
-import { useAuthenticationStore } from '@/authentication/stores/authenticationStore';
-import { ref, onMounted, computed } from 'vue';
-import { storeToRefs } from 'pinia';
+import { useGrowthBlogStore } from '~/growthBlog/stores/growthBlogStore';
+import { ref, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
 
+const route = useRoute();
 const smartContentStore = useSmartContentStore();
-const accountStore = useAccountStore();
-const authenticationStore = useAuthenticationStore();
+const growthBlogStore = useGrowthBlogStore();
 const posts = ref([]);
-const nickname = ref('Guest');
-const itemsPerPage = 6
-const currentPage = ref(1)
-const isLoading = ref(false)
-
-const { isAuthenticated } = storeToRefs(authenticationStore);
-
-const computedNickname = computed(() => nickname.value || 'Guest');
+const userNickname = computed(() => route.params.nickname);
 
 const formatDate = (dateString) => {
     if (!dateString) return '';
@@ -83,59 +75,32 @@ const formatDate = (dateString) => {
     return `${year}-${month}-${day}`;
 };
 
-const getNickname = async () => {
+const fetchUserSmartContents = async () => {
     try {
-        if (isAuthenticated.value) {
-            const userProfile = await accountStore.requestGetUserProfileByAccountIdToDjango();
-            if (userProfile && userProfile.nickname) {
-                nickname.value = userProfile.nickname;
-            }
-        }
+        const response = await smartContentStore.requestListUserSmartContentToDjango(userNickname.value);
+        posts.value = response;
     } catch (error) {
-        console.error('Failed to fetch nickname:', error);
-        nickname.value = 'Guest';
+        console.error('사용자 SmartContent 목록 조회 실패:', error);
     }
 };
 
-const fetchMySmartContents = async () => {
-    if (isLoading.value) return
-    isLoading.value = true
-    const userToken = localStorage.getItem('userToken')
+const handleFollow = async () => {
     try {
-        console.log('Requesting page:', currentPage.value, 'with page size:', itemsPerPage);
-        const response = await smartContentStore.requestListMySmartContentToDjango(userToken, currentPage.value, itemsPerPage);
-        if (response.length === 0) {
-            return; 
-        }
-
-        posts.value.push(...response);
-        currentPage.value++;
+        const response =await growthBlogStore.registerSocial(userNickname.value);;
+        console.log('팔로우 성공:', response);
     } catch (error) {
-        console.error('내 SmartContent 목록 조회 실패:', error);
-    } finally {
-        isLoading.value = false
+        console.error('팔로우 실패:', error);
     }
 };
 
-const handleScroll = (event) => {
-    const bottomReached = event.target.scrollHeight - event.target.scrollTop <= event.target.clientHeight + 100;
-    if (bottomReached && !isLoading.value) {
-        fetchMySmartContents();
-    }
-};
-
-onMounted(async () => {
-    await getNickname();
-    await fetchMySmartContents();
+onMounted(() => {
+    fetchUserSmartContents();
 });
 </script>
-
 
 <style scoped>
 .container {
     margin-top: 70px;
-    height: 100vh;
-    overflow-y: auto;
 }
 
 .nav-header {
@@ -370,6 +335,24 @@ onMounted(async () => {
 .likes {
     color: #868e96;
 }
+
+.follow-button {
+    margin-top: 16px;
+    padding: 8px 48px;
+    border: 1px solid #12b886;
+    border-radius: 25px;
+    background-color: white;
+    color: #12b886;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.follow-button:hover {
+    background-color: #12b886;
+    color: white;
+}
+
 
 @media (max-width: 768px) {
     .nav-content {
