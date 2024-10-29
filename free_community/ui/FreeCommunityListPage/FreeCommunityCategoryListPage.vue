@@ -60,13 +60,7 @@ const selectCategory = async (categoryId: number | null) => {
 
     emit('update:modelValue', categoryId)
     try {
-        let response;
-        if (categoryId === null) {
-            response = await free_communityStore.getAllContent()
-        } else {
-            response = await free_communityStore.getCategoriesContent(categoryId)
-        }
-
+        let response = await free_communityStore.getCategoriesContent(categoryId)
         let dataToProcess = response;
         if (response && response.data !== undefined) {
             dataToProcess = response.data;
