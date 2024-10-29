@@ -14,7 +14,12 @@
                 <tr v-for="(content, index) in sortedContents" :key="content.free_communityId"
                     @click="goToFreeCommunityDetail(content.free_communityId)" class="free-community-row">
                     <td>{{ sortedContents.length - index }}</td>
-                    <td class="title-cell">{{ content.title }}</td>
+                    <td class="title-cell">
+                        {{ content.title }}
+                        <span v-if="getCommentCount(content.free_communityId) > 0" class="comment-count">
+                            <i class="fas fa-comment"></i> {{ getCommentCount(content.free_communityId) }}
+                        </span>
+                    </td>
                     <td>{{ content.profile_nickname }}</td>
                     <td>{{ formatDate(content.regDate) }}</td>
                     <td>{{ getViewCount(content.free_communityId) }}</td>
@@ -31,6 +36,8 @@ import { ref, onMounted, watch, computed } from 'vue';
 import { useFreeCommunityStore } from '../../stores/freeCommunityStore';
 import { useRouter, useRoute } from 'vue-router';
 import { useViewCountStore } from '~/viewCount/stores/viewCountStore';
+import { useFreeCommunityCommentStore } from '~/freeCommunityComment/stores/freeCommunityCommentStore';
+import '@fortawesome/fontawesome-free/css/all.css'
 
 const viewCountStore = useViewCountStore();
 const router = useRouter();
@@ -46,6 +53,8 @@ const freeCommunityContents = ref([]);
 const errorMessage = ref('');
 const viewCounts = ref<{ [key: number]: number }>({});
 const currentSort = ref('date'); // 현재 정렬 방식을 저장
+const commentStore = useFreeCommunityCommentStore();
+const commentCounts = ref<{ [key: number]: number }>({});
 
 // 정렬된 컨텐츠를 반환하는 computed 속성
 const sortedContents = computed(() => {
@@ -124,6 +133,22 @@ const formatDate = (dateString: string) => {
     return date.toISOString().split('T')[0];
 };
 
+const getCommentCount = (communityId: number) => {
+    return commentCounts.value[communityId] || 0;
+};
+
+const fetchCommentCounts = async () => {
+    for (const content of freeCommunityContents.value) {
+        try {
+            const comments = await commentStore.getFreeCommunityComments(content.free_communityId);
+            commentCounts.value[content.free_communityId] = comments.length;
+        } catch (error) {
+            console.error('댓글 수를 가져오는 중 오류 발생:', error);
+            commentCounts.value[content.free_communityId] = 0;
+        }
+    }
+};
+
 onMounted(async () => {
     const categoryFromQuery = route.query.category ? Number(route.query.category) : null;
     if (categoryFromQuery) {
@@ -132,6 +157,7 @@ onMounted(async () => {
         await fetchFreeCommunityContents(null);
     }
     await fetchGetViewCount();
+    await fetchCommentCounts();
 });
 
 watch(
@@ -141,9 +167,10 @@ watch(
         () => props.searchQuery,
         () => props.searchType
     ],
-    ([newCategoryId, queryCategory, newSearchQuery, newSearchType]) => {
+    async ([newCategoryId, queryCategory, newSearchQuery, newSearchType]) => {
         const categoryToUse = queryCategory ? Number(queryCategory) : newCategoryId;
-        fetchFreeCommunityContents(categoryToUse, newSearchQuery, newSearchType);
+        await fetchFreeCommunityContents(categoryToUse, newSearchQuery, newSearchType);
+        await fetchCommentCounts();
     },
     { immediate: true }
 );
@@ -225,5 +252,18 @@ td {
 .title-cell {
     color: #333;
     font-size: 1em;
+}
+
+.comment-count {
+    display: inline-block;
+    margin-left: 8px;
+    color: #666;
+    font-size: 0.9em;
+    font-weight: bold;
+}
+
+.comment-count i {
+    color: #ff9033;
+    margin-right: 2px;
 }
 </style>
