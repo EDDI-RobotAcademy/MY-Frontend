@@ -1,4 +1,3 @@
-<!-- NavHeader.vue -->
 <template>
     <nav class="nav-header">
         <div class="nav-content">
@@ -19,8 +18,11 @@
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                     </svg>
                 </button>
-                <button class="write-button">
+                <button class="write-button" @click="writeText" v-if="isAuthenticated">
                     <span class="write-text">새 글 작성</span>
+                </button>
+                <button class="login-button" v-if="!isAuthenticated">
+                    <span class="login-text">로그인</span>
                 </button>
             </div>
         </div>
@@ -28,10 +30,30 @@
 </template>
 
 <script>
+import { computed } from 'vue';
+import { useAuthenticationStore } from '@/authentication/stores/authenticationStore';
+import { useRouter } from 'vue-router';
+
 export default {
-    name: 'NavHeader'
+    name: 'NavHeader',
+    setup() {
+        const authenticationStore = useAuthenticationStore();
+        const isAuthenticated = computed(() => authenticationStore.isAuthenticated);
+        const router = useRouter(); // useRouter를 setup 안에서 호출
+
+        const writeText = async () => {
+            console.log("writeTextClick");
+            router.push(`/growth-blog/register`);
+        };
+
+        return {
+            isAuthenticated,
+            writeText // writeText 함수를 반환하여 템플릿에서 사용 가능하게 함
+        };
+    }
 }
 </script>
+
 
 <style scoped>
 .nav-header {
