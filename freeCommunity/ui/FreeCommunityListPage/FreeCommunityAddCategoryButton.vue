@@ -11,15 +11,15 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useFreeCommunityStore } from '../../stores/free_communityStore'
+import { useFreeCommunityStore } from '../../stores/freeCommunityStore'
 
-const free_communityStore = useFreeCommunityStore()
+const freeCommunityStore = useFreeCommunityStore()
 const showForm = ref(false)
 const newCategory = ref('')
 
 const addCategory = async () => {
   if (newCategory.value) {
-    const message = await free_communityStore.addCategory(newCategory.value)
+    const message = await freeCommunityStore.addCategory(newCategory.value)
     alert(message)
     if (message === '카테고리 생성 완료') {
       newCategory.value = ''

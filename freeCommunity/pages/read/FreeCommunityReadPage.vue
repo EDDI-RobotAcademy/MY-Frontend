@@ -7,7 +7,7 @@
             
             <div class="comments-section">
                 <FreeCommunityComment 
-                :freeCommunityId="Number(route.params.free_communityId)"
+                :free_communityId="Number(route.params.free_communityId)"
                 />
             </div>
         </div>

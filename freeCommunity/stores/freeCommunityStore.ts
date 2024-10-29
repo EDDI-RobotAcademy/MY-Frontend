@@ -2,7 +2,7 @@ import axios from 'axios'
 import { defineStore } from 'pinia'
 import { createAxiosInstances } from '../../utility/axiosInstance'
 
-export const useFreeCommunityStore = defineStore('free_communityStore', {
+export const useFreeCommunityStore = defineStore('freeCommunityStore', {
     actions: {
         async addCategory(name: string): Promise<string> {
             const { djangoAxiosInst } = createAxiosInstances()

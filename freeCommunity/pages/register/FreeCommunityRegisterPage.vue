@@ -1,6 +1,6 @@
 <template>
 
-  <div class="free_community-register">
+  <div class="free-community-register">
     <FreeCommunityForm :formData="postData" @update:formData="updatePostData" />
     <CancelButton/>
     <RegisterButton :postData="postData" @registerSuccess="handleRegisterSuccess"
@@ -31,7 +31,7 @@ const handleRegisterSuccess = (result) => {
   console.log('글 등록 성공:', result)
   console.log("postData.value.category_id ", postData.value.category_id )
   router.push({
-    path: "/free_community/list",
+    path: "/free-community/list",
     query: { category: postData.value.category_id }
   })
 }
@@ -43,7 +43,7 @@ const handleRegisterError = (error) => {
 </script>
 
 <style scoped>
-.free_community-register {
+.free-community-register {
   max-width: 600px;
   margin: 100px 100px 100px 400px;
   padding: 40px 60px 40px 60px;
