@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import ChatComponent from './FreeCommunityChatForm.vue'
 
 const props = defineProps({
@@ -31,6 +31,25 @@ const isOpen = ref(false)
 const toggleChat = () => {
   isOpen.value = !isOpen.value
 }
+
+const handleClickOutside = (event: MouseEvent) => {
+  const chatPanel = document.querySelector('.chat-panel')
+  const chatButton = document.querySelector('.chat-button')
+  
+  if (isOpen.value && chatPanel && chatButton) {
+    if (!chatPanel.contains(event.target as Node) && !chatButton.contains(event.target as Node)) {
+      isOpen.value = false
+    }
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside)
+})
 </script>
 
 <style scoped>
