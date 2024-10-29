@@ -1,6 +1,6 @@
 <template>
-    <div class="post-list">
-        <NavHeader class="nav" />
+    <div class="post-list" @scroll.passive="handleScroll">
+            <NavHeader class="nav" />
         <div class="post-filter">
             <div class="filter-tabs">
                 <a href="#" class="tab active">트렌딩</a>
@@ -48,6 +48,9 @@ import defaultThumbnail from '~/assets/fixed/chatbot/background_gradient.png'
 
 const smartContentStore = useSmartContentStore()
 const smartContents = ref([])
+const itemsPerPage = 9
+const currentPage = ref(1)
+const isLoading = ref(false)
 
 
 // formatDate 함수 정의
@@ -64,11 +67,31 @@ const formatDate = (date: any) => {
 }
 
 const fetchSmartContents = async () => {
+    if (isLoading.value) return
+    isLoading.value = true
     try {
-        const response = await smartContentStore.requestListSmartContentToDjango();
-        smartContents.value = response;
+        console.log('Requesting page:', currentPage.value, 'with page size:', itemsPerPage);
+        const response = await smartContentStore.requestListSmartContentToDjango(currentPage.value, itemsPerPage)
+        
+        // 데이터가 없으면 로딩 중단
+        if (response.length === 0) {
+            return
+        }
+
+        smartContents.value.push(...response)
+        currentPage.value++
     } catch (error) {
-        console.error('SmartContent 목록 조회 실패:', error);
+        console.error('SmartContent 목록 조회 실패:', error)
+    } finally {
+        isLoading.value = false
+    }
+}
+
+// 스크롤 이벤트 핸들러
+const handleScroll = (event) => {
+    const bottomReached = event.target.scrollHeight - event.target.scrollTop <= event.target.clientHeight + 100
+    if (bottomReached && !isLoading.value) {
+        fetchSmartContents()
     }
 }
 
@@ -87,6 +110,9 @@ onMounted(() => {
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
+    height: 100vh;
+    overflow-y: auto;
+    scrollbar-width: none;
 }
 
 .post-filter {
