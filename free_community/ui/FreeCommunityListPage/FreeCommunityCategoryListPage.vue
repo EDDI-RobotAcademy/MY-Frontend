@@ -62,7 +62,7 @@ const selectCategory = async (categoryId: number | null) => {
     try {
         let response;
         if (categoryId === null) {
-            response = await free_communityStore.getFreeCommunityContent()
+            response = await free_communityStore.getAllContent()
         } else {
             response = await free_communityStore.getCategoriesContent(categoryId)
         }
