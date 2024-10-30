@@ -18,7 +18,8 @@
                         <span class="initial-text">{{ index + 1 }}</span>
                     </div>
                     <div class="user-info">
-                        <span class="user-name">{{ follower.nickname }}</span>
+                        <span class="user-name" @click="goToUserPage(follower.nickname)" style="cursor: pointer">{{
+                            follower.nickname }}</span>
                     </div>
                 </div>
                 <button class="follow-button">팔로우</button>
@@ -29,16 +30,22 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useAccountStore } from '@/account/stores/accountStore'
 
 const route = useRoute();
+const router = useRouter();
 const nickname = ref('');
 const following = ref('');
 const followers = ref('');
 const followersCount = ref('');
 const followersList = ref([]);
 const accountStore = useAccountStore();
+
+const goToUserPage = (userNickname) => {
+    router.push(`/growth-blog/my-page/${userNickname}`);
+};
+
 const getFollowerNicknames = async (followersString) => {
     if (!followersString) return;
 
@@ -186,5 +193,10 @@ onMounted(async () => {
 
 .follow-button:hover {
     background-color: #ecfdf5;
+}
+
+.user-name:hover {
+    text-decoration: underline;
+    color: #3b82f6;
 }
 </style>

@@ -6,10 +6,10 @@
                 <span class="header-text">기다려</span>
             </div>
             <span class="divider">></span>
-            <span class="header-text">팔로워</span>
+            <span class="header-text">팔로잉</span>
         </div>
 
-        <h1 class="title">{{ followingCount }}명의 팔로워</h1>
+        <h1 class="title">{{ followingCount }}명의 팔로잉</h1>
 
         <div class="follower-container">
             <div v-for="(follower, index) in followingList" :key="follower.id" class="follower-item">
@@ -18,7 +18,8 @@
                         <span class="initial-text">{{ index + 1 }}</span>
                     </div>
                     <div class="user-info">
-                        <span class="user-name">{{ follower.nickname }}</span>
+                        <span class="user-name" @click="goToUserPage(follower.nickname)" style="cursor: pointer">{{
+                            follower.nickname }}</span>
                     </div>
                 </div>
                 <button class="follow-button">팔로우</button>
@@ -29,16 +30,22 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useAccountStore } from '@/account/stores/accountStore'
 
 const route = useRoute();
+const router = useRouter();
 const nickname = ref('');
 const following = ref('');
 const followers = ref('');
 const followingCount = ref('');
 const followingList = ref([]);
 const accountStore = useAccountStore();
+
+const goToUserPage = (userNickname) => {
+    router.push(`/growth-blog/my-page/${userNickname}`);
+};
+
 const getFollowerNicknames = async (followingString) => {
     if (!followingString) return;
 
@@ -186,5 +193,10 @@ onMounted(async () => {
 
 .follow-button:hover {
     background-color: #ecfdf5;
+}
+
+.user-name:hover {
+    text-decoration: underline;
+    color: #3b82f6;
 }
 </style>
