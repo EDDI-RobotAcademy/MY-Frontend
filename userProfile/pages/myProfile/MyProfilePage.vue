@@ -46,6 +46,14 @@
                     <p>개인정보를 관리하세요</p>
                 </div>
             </NuxtLink>
+            
+            <NuxtLink to="/user-analysis/list" class="menu-button">
+                <div class="button-content">
+                    <h3>성향 분석 요청 기록</h3>
+                    <span class="arrow">→</span>
+                    <p>내가 보낸 요청 기록을 확인하세요</p>
+                </div>
+            </NuxtLink>
         </div>
     </div>
 </template>
