@@ -12,20 +12,20 @@
             <v-card-title class="text-h5 font-weight-bold">
               {{ subscription.name }}
             </v-card-title>
-            <v-card-subtitle class="price-text">
-              월 {{ formatPrice(subscription.price) }}원
-            </v-card-subtitle>
-            <v-card-text>
+            <v-card-text class="description-text">
               <p v-if="subscription.brief_description">{{ subscription.brief_description }}</p>
               <p v-else>설명 없음</p>
             </v-card-text>
+            <v-card-subtitle class="price-text">
+              월 {{ formatPrice(subscription.price) }}원
+            </v-card-subtitle>
             <v-card-actions>
               <v-btn 
                 class="apply-btn" 
                 color="white" 
                 block 
                 @click="goToDetails(subscription.id)"> <!-- 클릭 이벤트 추가 -->
-                Show Details
+                자세히 알아보기
               </v-btn>
             </v-card-actions>
           </v-card>
@@ -49,15 +49,12 @@
 
   const subscriptions = ref([])
 
-  // Vue Router 사용 설정
   const router = useRouter()
   const subscriptionStore = useSubscriptionStore()
   const authenticationStore = useAuthenticationStore()
 
-  // 관리자 권한 가져오기
   const isAdmin = computed(() => authenticationStore.isAdmin)
   
-  // 구독권 목록 불러오기
   const loadSubscriptions = async () => {
     try {
       const data = await subscriptionStore.getSubscription()
@@ -67,17 +64,14 @@
     }
   }
 
-  // 구독권 등록 페이지로 이동하는 함수
   const goToRegisterPage = () => {
     router.push({ name: 'SubscriptionRegisterPage' })
   }
 
-  // 구독권 상세 페이지로 이동하는 함수
   const goToDetails = (subscriptionId) => {
     router.push({ name: 'SubscriptionReadPage', params: { subscriptionId } })
   }
 
-  // 가격 포맷 함수
   const formatPrice = (price) => {
     return parseFloat(price).toLocaleString()
   }
@@ -88,37 +82,59 @@
   </script>
   
   <style scoped>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap');
+
+  * {
+    font-family: 'Noto Sans KR', sans-serif;
+  }
+
   .subscription-card {
+    background-color: rgb(255, 255, 255, 0.8);
     border: 1px solid #e0e0e0;
     border-radius: 10px;
-    padding: 16px;
+    padding: 20px;
     text-align: center;
-    margin-top: 70px;
+    margin: 150px 50px 0px 50px;
+    height: 500px;
+    min-width: 300px;
+    transition: transform 0.3s ease;
+  }
+
+  .subscription-card:hover {
+    transform: translateY(-5px); 
   }
   
   .price-text {
     font-size: 24px;
     font-weight: bold;
-    color: #333;
+    color: #000000;
+    margin-top: 50px;
   }
   
+  .description-text {
+    font-size: 18px;
+    color: #000000;
+    margin-top: 40px;
+  }
+
   .apply-btn {
-    background-color: #ffbc86;
+    margin-top: 30px;
+    background-color: #ff9033;
     color: white;
   }
   
   .apply-btn:hover {
-    background-color: #ff9033;
+    background-color: #cf7022;
   }
   
   .subscription-card .v-card-title {
-    background-color: #f5f5f5;
+    background-color: #f4f4f4;
     padding: 16px;
-    border-bottom: 1px solid #e0e0e0;
+    border-radius: 10px;
   }
   
   .v-card-actions {
-    margin-top: 16px;
+    margin-top: 30px;
   }
   
   .v-list-item {
