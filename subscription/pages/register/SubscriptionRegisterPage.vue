@@ -53,9 +53,11 @@
   import { ref } from 'vue'
   import { useRouter } from 'vue-router'
   import { useSubscriptionStore } from '~/stores/subscriptionStore'
+  import { useAuthenticationStore } from '~/authentication/stores/authenticationStore';
   
   const router = useRouter()
   const subscriptionStore = useSubscriptionStore()
+  const authenticationStore = useAuthenticationStore()
   
   const formData = ref({
     name: '',
@@ -80,6 +82,12 @@
       console.error('Error registering subscription:', err)
     }
   }
+
+  onMounted(async () => {
+    if (!authenticationStore.isAdmin) {
+        router.push("/subscription/list")
+    }
+  });
   </script>
   
   <style scoped>
