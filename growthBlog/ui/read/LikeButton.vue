@@ -24,15 +24,24 @@
   </template>
   
   <script setup lang="ts">
-  import { ref } from 'vue'
+  import { ref, onMounted } from 'vue'
   import { useLikeCountStore } from '@/likeCount/stores/likeCountStore'
   
-  const props = defineProps<{
-    contentId: number
-    initialLikeCount?: number
-    initialLikedState?: boolean
-  }>()
-  
+  const props = defineProps({
+    contentId: {
+        type: Number,
+        required: true
+    },
+    initialLikeCount: {
+        type: Number,
+        required: true
+    },
+    initialLikedState: {
+        type: Boolean,
+        required: true
+    }   
+});
+
   const likeCountStore = useLikeCountStore()
   const isLiked = ref(props.initialLikedState || false)
   const likeCount = ref(props.initialLikeCount || 0)
@@ -56,6 +65,19 @@
       console.error('Error toggling like:', error)
     }
   }
+
+  const fetchLikeCount = async () => {
+    try {
+        const currentLikeCount = await likeCountStore.requestLikeCountToDjango(props.contentId);
+        likeCount.value = currentLikeCount;
+    } catch (error) {
+        console.error('Error fetching like count:', error);
+    }
+  }
+
+  onMounted(async () => {
+    await fetchLikeCount()
+  })
   </script>
 
 <style scoped>
