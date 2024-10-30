@@ -14,8 +14,15 @@
                 <button @click="logOut" class="logout-button">로그아웃</button>
             </div>
         </div>
-        
         <div class="button-grid">
+            <NuxtLink to="/subscription/list" class="menu-button">
+                <div class="button-content">
+                    <h3>구독권</h3>
+                    <span class="arrow">→</span>
+                    <p>베이직, 프리미엄 구독권 구독을 통해<br>보다 체계적인 성장 전략을 제공받으세요.</p>
+                </div>
+            </NuxtLink>
+
             <NuxtLink to="/growth-history" class="menu-button">
                 <div class="button-content">
                     <h3>성장 히스토리</h3>
