@@ -36,6 +36,16 @@ export default defineNuxtModule({
                 path: '/growth-blog/register',
                 file: resolve(themeDir, 'growthBlog/pages/register/GrowthBlogRegister.vue'),
             })
+            pages.push({
+                name: 'growthBlogFollowersListPage',
+                path: '/growth-blog/followers',
+                file: resolve(themeDir, 'growthBlog/pages/followList/growthBlogFollowersList.vue'),
+            })
+            pages.push({
+                name: 'growthBlogFollowingListPage',
+                path: '/growth-blog/following',
+                file: resolve(themeDir, 'growthBlog/pages/followList/growthBlogFollowingList.vue'),
+            })
         })
 
         nuxt.hook('imports:dirs', (dirs) => {

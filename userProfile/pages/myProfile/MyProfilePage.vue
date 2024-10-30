@@ -87,7 +87,7 @@ const getLoginType = async () => {
 };
 
 const getNickname = async () => {
-    const response = await accountStore.requestGetUserProfileByAccountIdToDjango()
+    const response = await accountStore.requestGetUserProfileByUserTokenToDjango()
     userInfo.value = {
         nickname: response.nickname || 'None',
         email: response.email || 'None'

@@ -77,7 +77,7 @@ const formatDate = (dateString) => {
 const getNickname = async () => {
     try {
         if (isAuthenticated.value) {
-            const userProfile = await accountStore.requestGetUserProfileByAccountIdToDjango();
+            const userProfile = await accountStore.requestGetUserProfileByUserTokenToDjango();
             if (userProfile && userProfile.nickname) {
                 nickname.value = userProfile.nickname;
             }

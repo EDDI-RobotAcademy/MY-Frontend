@@ -70,7 +70,7 @@ const checkAndSetAuthStatus = () => {
 }
 
 const getNickname = async () => {
-  const userProfile = await accountStore.requestGetUserProfileByAccountIdToDjango()
+  const userProfile = await accountStore.requestGetUserProfileByUserTokenToDjango()
   nickname.value = userProfile.nickname
 }
 

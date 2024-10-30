@@ -3,8 +3,28 @@
         <img src="/assets/fixed/login/google_login_round.png" :alt="`${nickname}의 프로필`" class="profile-image">
         <h1 class="profile-name">{{ nickname }}</h1>
         <div class="profile-stats">
-            <span>{{ growthBlogStore.followingCount }} 팔로잉</span>
-            <span>{{ growthBlogStore.followersCount }} 팔로워</span>
+            <span class="stat-item" @click="$router.push({
+                path: '/growth-blog/following',
+                query: {
+                    nickname: nickname,
+                    following: growthBlogStore.following.toString(),
+                    followers: growthBlogStore.followers.toString(),
+                    followingCount: growthBlogStore.followingCount.toString(),
+                }
+            })">
+                {{ growthBlogStore.followingCount }} 팔로잉
+            </span>
+            <span class="stat-item" @click="$router.push({
+                path: '/growth-blog/followers',
+                query: {
+                    nickname: nickname,
+                    following: growthBlogStore.following.toString(),
+                    followers: growthBlogStore.followers.toString(),
+                    followersCount: growthBlogStore.followersCount.toString(),
+                }
+            })">
+                {{ growthBlogStore.followersCount }} 팔로워
+            </span>
         </div>
         <FollowButton :is-following="growthBlogStore.isFollowing" @follow="handleFollow" @unfollow="handleUnfollow"
             :disabled="growthBlogStore.isLoading" />
@@ -15,12 +35,8 @@
 import { ref, onMounted } from 'vue';
 import FollowButton from './FollowButton.vue';
 import { useGrowthBlogStore } from '~/growthBlog/stores/growthBlogStore';
-import { useAccountStore } from '@/account/stores/accountStore'
 
-const accountStore = useAccountStore();
 const growthBlogStore = useGrowthBlogStore();
-
-const accountid = ref('')
 
 const props = defineProps({
     nickname: {
@@ -50,6 +66,7 @@ onMounted(async () => {
 });
 </script>
 
+
 <style scoped>
 .profile-section {
     text-align: center;
@@ -77,5 +94,18 @@ onMounted(async () => {
     color: #666;
     font-size: 14px;
     margin-bottom: 16px;
+}
+
+.stat-item {
+    cursor: pointer;
+    padding: 4px 8px;
+    /* 클릭 영역을 좀 더 넓게 */
+    transition: color 0.2s;
+    /* 호버 효과 부드럽게 */
+}
+
+.stat-item:hover {
+    color: #333;
+    /* 호버 시 색상 변경 */
 }
 </style>

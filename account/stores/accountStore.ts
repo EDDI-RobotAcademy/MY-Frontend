@@ -33,12 +33,12 @@ export const useAccountStore = defineStore('accountStore', {
         throw error
       }
     },
-    async requestGetUserProfileByAccountIdToDjango(): Promise<void> {
+    async requestGetUserProfileByUserTokenToDjango(): Promise<void> {
       const { djangoAxiosInst } = createAxiosInstances()
       const userToken = localStorage.getItem("userToken")
 
       const payload = {
-          userToken: userToken,
+        userToken: userToken,
       }
       try {
         const response = await djangoAxiosInst.post('/user_profile/get-self-profile', payload)
@@ -55,7 +55,7 @@ export const useAccountStore = defineStore('accountStore', {
       const { djangoAxiosInst } = createAxiosInstances()
       try {
         const response = await djangoAxiosInst.put('/user_profile/change-nickname', {
-          newNickname: newNickname, 
+          newNickname: newNickname,
           userToken: userToken
         })
         if (response.data) {
@@ -64,6 +64,23 @@ export const useAccountStore = defineStore('accountStore', {
         }
       } catch (error) {
         console.error('사용자 닉네임 변경 요청 실패:', error)
+        throw error
+      }
+    },
+    // 기존 함수 수정
+    async requestGetUserProfileByAccountIdToDjango(accountIds: string[]): Promise<void> {
+      const { djangoAxiosInst } = createAxiosInstances()
+
+      try {
+        const response = await djangoAxiosInst.post('/user_profile/nickname-by-accountid', {
+          accountIds: accountIds  // 배열로 전송
+        })
+        if (response.data) {
+          console.log("닉네임 반환")
+          return response.data
+        }
+      } catch (error) {
+        console.error('requestGetUserProfileByAccountIdToDjango 실패:', error)
         throw error
       }
     }
