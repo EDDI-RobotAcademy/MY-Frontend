@@ -120,7 +120,7 @@ const goToMyPage = async () => {
 const getNickname = async () => {
     if (isAuthenticated.value) {
         try {
-            const userProfile = await accountStore.requestGetUserProfileByAccountIdToDjango()
+            const userProfile = await accountStore.requestGetUserProfileByUserTokenToDjango()
             userNickname.value = userProfile.nickname
         } catch (error) {
             console.error('Failed to fetch nickname:', error)
