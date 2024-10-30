@@ -59,10 +59,12 @@
   import { ref, onMounted } from 'vue';
   import { useRoute, useRouter } from 'vue-router';
   import { useSubscriptionStore } from '~/stores/subscriptionStore';
+  import { useAuthenticationStore } from '~/authentication/stores/authenticationStore';
   
   const route = useRoute();
   const router = useRouter();
   const subscriptionStore = useSubscriptionStore();
+  const authenticationStore = useAuthenticationStore();
   
   const subscriptionId = parseInt(route.params.subscriptionId as string);
   const subscriptionContent = ref<any>(null);
@@ -95,9 +97,12 @@
     }
   };
   
-  // 컴포넌트가 마운트될 때 구독권 정보 가져오기
+
   onMounted(async () => {
-    await fetchSubscriptionContent();
+    if (!authenticationStore.isAdmin) {
+        router.push("/subscription/list")
+    }
+    await fetchSubscriptionContent();  // 컴포넌트가 마운트될 때 구독권 정보 가져오기
   });
   </script>
   
