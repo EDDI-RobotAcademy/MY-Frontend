@@ -1,6 +1,12 @@
 <template>
     <v-container>
-      <v-row justify="center">
+      <!-- 구독권이 없을 때 메시지 표시 -->
+      <v-row v-if="subscriptions.length === 0" justify="center">
+        <v-col cols="12" class="text-center empty-message">
+          <p>등록된 구독권이 없습니다.</p>
+        </v-col>
+      </v-row>
+      <v-row else justify="center">
         <!-- 구독권 카드 반복 -->
         <v-col
           v-for="(subscription, index) in subscriptions"
@@ -34,7 +40,7 @@
 
       <!-- 관리자만 구독권 등록 버튼 표시 -->
       <v-row justify="end" v-if="isAdmin">
-        <v-btn @click="goToRegisterPage()" color="primary" class="mt-4">
+        <v-btn @click="goToRegisterPage()" class="admin-btn">
           구독권 등록
         </v-btn>
       </v-row>
@@ -140,4 +146,15 @@
   .v-list-item {
     padding: 4px 0;
   }
+
+  .empty-message {
+  margin-top: 200px; 
+  font-size: 1.2em;  
+}
+
+.admin-btn {
+  margin-top: 50px !important; 
+  background-color: #ff9033 !important;
+  color: white !important;
+}
   </style>
