@@ -103,7 +103,29 @@ export const useAuthenticationStore = defineStore('authentication', {
         console.error('Error creating guest token:', error);
         throw error;
       }
-    }
+    },
+
+    async requestAccountLoginType(): Promise<void> {
+      const { djangoAxiosInst } = createAxiosInstances()
+      const userToken = localStorage.getItem("userToken")
+      if (userToken) {
+        try{
+          const res = await djangoAxiosInst.post('/account/logintype-check',{
+            userToken
+          })
+          if (res.data === "KAKAO"){
+            console.log("카카오 로그인 사용자입니다.")
+          }
+          else {
+            console.log("구글 로그인 사용자입니다.")
+          }
+
+          return res.data
+        } catch (error){
+          console.error("로그인 타입 확인 중 오류 발생: ", error);
+        }
+      }
+    },
   },
 
   getters: {
