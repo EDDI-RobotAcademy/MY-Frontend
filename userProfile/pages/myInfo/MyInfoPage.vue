@@ -177,6 +177,9 @@ const handleSubmit = async () => {
 }
 
 onMounted(() => {
+    if (!authenticationStore.isAuthenticated) {
+        router.push("/login")
+    }
     getNickname(),
     getLoginType()
 })
