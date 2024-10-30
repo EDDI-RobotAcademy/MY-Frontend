@@ -7,9 +7,9 @@
     <div v-if="requests.length > 0">
       <ul class="request-list">
         <li v-for="request in requests" :key="request.id" @click="viewRequestDetails(request.id)">
-          <span> NO. {{ request.id }} </span>
-          <span> {{ request.user_analysis_title }} </span>
-          <span> {{ request.profile_nickname }} </span>
+          <span class="request-id">NO. {{ request.id }}</span>
+          <span class="request-title">{{ request.user_analysis_title }}</span>
+          <span class="request-nickname">{{ request.profile_nickname }}</span>
           <span class="created-at">{{ formatDate(request.created_at) }}</span>
         </li>
       </ul>
@@ -63,8 +63,22 @@ onMounted(() => {
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;
-  background-color: #f9f9f9;
-  margin-top: 70px
+  background-color: #fff8f0; /* 밝은 배경색 */
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  margin-top: 70px;
+}
+
+.request-list-page h2 {
+  color: #ff9033;
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.request-list-page p {
+  color: #555;
+  margin-bottom: 20px;
 }
 
 .request-list {
@@ -76,14 +90,50 @@ onMounted(() => {
   display: flex;
   justify-content: space-between; /* 왼쪽 ID와 오른쪽 날짜 시간 정렬 */
   cursor: pointer;
-  padding: 10px;
-  margin: 5px 0;
-  background: #f0f0f0;
-  border-radius: 4px;
-  transition: background-color 0.3s;
+  padding: 12px;
+  margin: 8px 0;
+  background: #ffe8d8;
+  border-radius: 6px;
+  border: 1px solid #ff9033;
+  transition: background-color 0.3s, box-shadow 0.3s;
 }
 
 .request-list li:hover {
-  background-color: #e0e0e0;
+  background-color: #ffd1b8;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
+
+.request-list li span {
+  font-size: 14px;
+  color: #333;
+}
+
+.request-list li .request-id,
+.request-list li .request-title,
+.request-list li .request-nickname,
+.request-list li .created-at {
+  margin-right: 30px; /* 각 요소 사이 간격 추가 */
+}
+
+.request-id {
+  font-weight: bold;
+  color: #ff9033;
+}
+
+.request-title {
+  flex: 1;
+  margin-left: 10px;
+  font-weight: 500;
+}
+
+.request-nickname {
+  font-style: italic;
+  color: #777;
+}
+
+.created-at {
+  font-size: 12px;
+  color: #666;
+}
+
 </style>
