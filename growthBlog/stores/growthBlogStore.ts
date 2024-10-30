@@ -3,28 +3,64 @@ import { defineStore } from 'pinia'
 import { createAxiosInstances } from '../../utility/axiosInstance'
 
 export const useGrowthBlogStore = defineStore('growthBlogStore', {
+    state: () => ({
+        followingCount: 0,
+        followersCount: 0,
+        following: [],
+        followers: [],
+        isFollowing: false,
+        isLoading: false
+    }),
     actions: {
-        async registerSocial(FollowerNickname: string): Promise<string> {
+        async getFollowInfo() {
             const { djangoAxiosInst } = createAxiosInstances()
+            try {
+                const path = window.location.pathname
+                let requestData = {}
+
+                if (path === '/growth-blog/my-page') {
+                    const userToken = localStorage.getItem("userToken")
+                    requestData = { userToken: userToken }
+                } else {
+                    const nickname = path.split('/').pop()
+                    requestData = { nickname: nickname }
+                }
+
+                const response = await djangoAxiosInst.post('growth_blog/getFollowInfo', requestData)
+
+                this.followingCount = response.data.following.length
+                this.followersCount = response.data.followers.length
+                this.following = response.data.following
+                this.followers = response.data.followers
+                console.log('팔로우 정보:', response.data)
+                console.log('팔로잉 수:', this.followingCount)
+                console.log('팔로워 수:', this.followersCount)
+                return response.data
+            } catch (error) {
+                console.error('팔로우 정보 조회 실패:', error)
+                throw error
+            }
+        },
+        async registerSocial(FollowerNickname: string) {
+            const { djangoAxiosInst } = createAxiosInstances()
+            this.isLoading = true
             try {
                 const userToken = localStorage.getItem("userToken")
 
-                const payload = {
+                const response = await djangoAxiosInst.post('growth_blog/registerSocial', {
                     userToken: userToken,
                     FollowerNickname: FollowerNickname
-                }
-                const response = await djangoAxiosInst.post('growth_blog/registerSocial', payload)
+                })
+
+                this.isFollowing = true
+                await this.getFollowInfo()
                 return response.data
             } catch (error) {
-                if (axios.isAxiosError(error)) {
-                    if (error.response?.status === 400) {
-                        return error.response.data.message || 'registerSocial 400 오류'
-                    } else if (error.response?.status === 403) {
-                        return 'registerSocial 중 오류가 발생했습니다.'
-                    }
-                }
-                return 'registerSocial 중 오류가 발생했습니다.'
+                console.error('팔로우 실패:', error)
+                throw error
+            } finally {
+                this.isLoading = false
             }
-        }
+        },
     }
 })

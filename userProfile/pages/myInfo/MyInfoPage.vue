@@ -18,11 +18,13 @@
             <div class="profile-content">
                 <div class="info-row">
                     <div class="info-label">이메일</div>
+                    <div class="login-type-image">
+                        <img :src="defaultProfile"/>
+                    </div>
                     <div class="info-value disabled">
                         {{ userInfo.email }}
                     </div>
                 </div>
-
                 <div class="info-row">
                     <div class="info-label">닉네임</div>
                     <div class="info-value-group">
@@ -94,9 +96,14 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useAccountStore } from '@/account/stores/accountStore'
-import defaultProfile from '~/assets/fixed/login/google_login_round.png'
+import { useAuthenticationStore } from '@/authentication/stores/authenticationStore'
+import cooingProfile from '~/assets/fixed/login/cooing_logo.png'
+import kakaoProfile from '~/assets/fixed/login/kakao_login_round.png'
+import googleProfile from '~/assets/fixed/login/google_login_round.png'
+
 
 const accountStore = useAccountStore()
+const authenticationStore = useAuthenticationStore()
 const userInfo = ref({
     nickname: '',
     email: '',
@@ -108,6 +115,17 @@ const newNickname = ref('')
 const hasError = ref(false)
 const errorMessage = ref('')
 const emailNotification = ref(false)
+const defaultProfile = ref(cooingProfile);
+
+const getLoginType = async () => {
+    const response = await authenticationStore.requestAccountLoginType();
+    console.log("loginType:", response);
+    if (response === 'GOOGLE') {
+        defaultProfile.value = googleProfile;
+    } else if (response === 'KAKAO') {
+        defaultProfile.value = kakaoProfile;
+    }
+};
 
 const isValidNickname = computed(() => {
     return newNickname.value.length >= 2 && newNickname.value.length <= 20
@@ -159,7 +177,8 @@ const handleSubmit = async () => {
 }
 
 onMounted(() => {
-    getNickname()
+    getNickname(),
+    getLoginType()
 })
 </script>
 
@@ -212,6 +231,20 @@ onMounted(() => {
 .profile-content {
     max-width: 600px;
     margin: 0 auto;
+}
+
+.login-type-image {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-right: 5px;
+}
+
+.login-type-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .info-row {
