@@ -37,7 +37,25 @@
   const isLiked = ref(props.initialLikedState || false)
   const likeCount = ref(props.initialLikeCount || 0)
   
- 
+  const handleLike = async () => {
+    try {
+      const response = await likeCountStore.requestToggleLikeToDjango(props.contentId)
+      
+      if (response.success) {
+        isLiked.value = response.liked
+
+        if (!response.liked && likeCount.value === 0) {
+            return
+        }
+        likeCount.value = isLiked.value ? likeCount.value + 1 : likeCount.value - 1
+      } else {
+        console.error('좋아요 처리 실패:', response.error)
+        // 필요한 경우 사용자에게 에러 메시지 표시
+      }
+    } catch (error) {
+      console.error('Error toggling like:', error)
+    }
+  }
   </script>
 
 <style scoped>
