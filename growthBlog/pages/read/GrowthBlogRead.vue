@@ -90,7 +90,11 @@ const fetchSmartContent = async () => {
         if (!contentId) return;
         
         const response = await smartContentStore.readSmartContentToDjango(Number(contentId));
-        content.value = response;
+        content.value = {
+            ...response,
+            likeCount: response.like_count || 0,
+            userHasLiked: response.user_has_liked || false
+        }
     } catch (error) {
         console.error('Error fetching smart content:', error);
     }

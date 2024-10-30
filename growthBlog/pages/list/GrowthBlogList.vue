@@ -28,7 +28,7 @@
                         <span>by {{ content.nickname }}</span>
                         <div class="likes">
                             <span>♥</span>
-                            <span>{{ content.likes }}</span>
+                            <span>{{ likeCounts[content.id] || 0 }}</span>
                         </div>
                     </div>
                 </div>
@@ -42,6 +42,7 @@
 import { ref, onMounted } from 'vue'
 import NavHeader from '../../ui/navigation/navigation.vue'
 import { useSmartContentStore } from '@/smartContent/stores/smartContentStore'
+import { useLikeCountStore } from '~/likeCount/stores/likeCountStore'
 import defaultImage from '~/assets/fixed/login/google_login_round.png'
 import defaultThumbnail from '~/assets/fixed/chatbot/background_gradient.png'
 
@@ -51,6 +52,9 @@ const smartContents = ref([])
 const itemsPerPage = 6
 const currentPage = ref(1)
 const isLoading = ref(false)
+const likeCountStore = useLikeCountStore()
+
+const likeCounts = ref({})
 
 
 // formatDate 함수 정의
@@ -76,6 +80,17 @@ const fetchSmartContents = async () => {
         // 데이터가 없으면 로딩 중단
         if (response.length === 0) {
             return
+        }
+
+        // 각 컨텐츠의 좋아요 수 가져오기
+        for (const content of response) {
+            try {
+                const likeCount = await likeCountStore.requestLikeCountToDjango(content.id)
+                likeCounts.value[content.id] = likeCount
+            } catch (error) {
+                console.error(`좋아요 수 조회 실패 (컨텐츠 ID: ${content.id}):`, error)
+                likeCounts.value[content.id] = 0
+            }
         }
 
         smartContents.value.push(...response)
