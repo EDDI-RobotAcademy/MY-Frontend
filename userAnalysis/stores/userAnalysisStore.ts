@@ -176,6 +176,22 @@ export const useUserAnalysisStore = defineStore('userAnalysisStore', {
       throw error;
     }
   },
+  async listOwnUserAnalysisRequestToDjango(): Promise<any> {
+    const { djangoAxiosInst } = createAxiosInstances();
+    const userToken = localStorage.getItem("userToken")
+    try {
+      const res = await djangoAxiosInst.get('user_analysis/list-own-request', {
+        params: {
+          userToken: userToken
+        }
+      });
+      this.requests = res.data;
+      return res.data;
+    } catch (error) {
+      console.error('listOwnUserAnalysisRequestToDjango() 중 에러 발생');
+      throw error;
+    }
+  },
   async readUserAnalysisRequestToDjango(requestId: number): Promise<void> {
     const { djangoAxiosInst } = createAxiosInstances();
     try {
