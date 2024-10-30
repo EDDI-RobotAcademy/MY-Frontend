@@ -48,9 +48,10 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAccountStore } from '@/account/stores/accountStore'
 import { useAuthenticationStore } from '@/authentication/stores/authenticationStore'
-import defaultProfile from '~/assets/fixed/login/google_login_round.png'
+import cooingProfile from '~/assets/fixed/login/cooing_logo.png'
+import kakaoProfile from '~/assets/fixed/login/kakao_login_round.png'
+import googleProfile from '~/assets/fixed/login/google_login_round.png'
 
-const isAuthenticated = computed(() => authenticationStore.isAuthenticated);
 const router = useRouter()
 const authenticationStore = useAuthenticationStore();
 const accountStore = useAccountStore()
@@ -58,6 +59,17 @@ const userInfo = ref({
     nickname: '',
     email: ''
 })
+const defaultProfile = ref(cooingProfile);
+
+const getLoginType = async () => {
+    const response = await authenticationStore.requestAccountLoginType();
+    console.log("loginType:", response);
+    if (response === 'GOOGLE') {
+        defaultProfile.value = googleProfile;
+    } else if (response === 'KAKAO') {
+        defaultProfile.value = kakaoProfile;
+    }
+};
 
 const getNickname = async () => {
     const response = await accountStore.requestGetUserProfileByAccountIdToDjango()
@@ -73,11 +85,12 @@ const logOut = async () => {
     router.push("/")
 }
 
-onMounted(() => {
-    if (!isAuthenticated.value) {
+onMounted(async () => {
+    if (!authenticationStore.isAuthenticated) {
         router.push("/login")
     }
-    getNickname()
+    await getNickname();
+    await getLoginType();
 })
 </script>
 
