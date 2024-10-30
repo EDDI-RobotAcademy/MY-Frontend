@@ -73,13 +73,10 @@ const logOut = async () => {
     router.push("/")
 }
 
-onBeforeMount(() => {
+onMounted(() => {
     if (!isAuthenticated.value) {
         router.push("/login")
     }
-})
-
-onMounted(() => {
     getNickname()
 })
 </script>
