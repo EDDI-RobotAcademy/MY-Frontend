@@ -1,48 +1,56 @@
 <template>
     <div class="container">
         <NavHeader />
-    <div class="blog_container">
-    <!-- Header Section -->
-    <div class="blog_header">
-        <div class="header_inner">
-        <div class="header_content">
-            <h1 class="post_title">{{ content.title }}</h1>
-            <div class="post_info">
-            <span class="writer">by {{ content.nickname }}</span>
-            <span class="date">{{ formatDate(content.regDate) }}</span>
+        <div class="blog_container">
+            <!-- Header Section -->
+            <div class="blog_header">
+                <div class="header_inner">
+                    <div class="header_content">
+                        <h1 class="post_title">{{ content.title }}</h1>
+                        <div class="post_info">
+                            <span class="writer">by {{ content.nickname }}</span>
+                            <span class="date">{{ formatDate(content.regDate) }}</span>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
-        </div>
-    </div>
 
-    <!-- Content Wrapper -->
-    <div class="blog_content_wrapper">
-        <!-- Main Content Area -->
-        <div class="blog_content">
-        <div class="post_content">
-            <div
-            v-for="item in itemsWithImages"
-            :key="item.sequence_number"
-            class="content_block"
-            >
-            <div
-                v-if="item.type === 'text'"
-                class="text_block"
-                v-html="formatText(item.content)"
-            ></div>
-            <div v-else-if="item.type === 'image'" class="image_block">
-                <img
-                v-if="item.imageUrl"
-                :src="item.imageUrl"
-                alt="Content Image"
-                />
-            </div>
+            <!-- Content Wrapper -->
+            <div class="blog_content_wrapper">
+                <!-- Like Button Section -->
+                <div class="like_button_wrapper">
+                    <LikeButton
+                        :content-id="Number(route.params.id)"
+                        :initial-like-count="content.likeCount"
+                        :initial-liked-state="content.userHasLiked"
+                    />
+                </div>
+                <!-- Main Content Area -->
+                <div class="blog_content">
+                    <div class="post_content">
+                        <div
+                            v-for="item in itemsWithImages"
+                            :key="item.sequence_number"
+                            class="content_block"
+                        >
+                            <div
+                                v-if="item.type === 'text'"
+                                class="text_block"
+                                v-html="formatText(item.content)"
+                            ></div>
+                            <div v-else-if="item.type === 'image'" class="image_block">
+                                <img
+                                    v-if="item.imageUrl"
+                                    :src="item.imageUrl"
+                                    alt="Content Image"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-        </div>
     </div>
-    </div>
-</div>
 </template>
 
 <script setup lang="ts">
@@ -50,6 +58,7 @@ import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { useSmartContentStore } from '@/smartContent/stores/smartContentStore';
 import NavHeader from '@/growthBlog/ui/navigation/navigation.vue'; // NavHeader 컴포넌트 임포트
+import LikeButton from '~/growthBlog/ui/read/LikeButton.vue';
 
 const route = useRoute();
 const smartContentStore = useSmartContentStore();
@@ -59,6 +68,8 @@ const content = ref({
     title: '',
     nickname: '',
     regDate: '',
+    likeCount: 0,
+    userHasLiked: false,
 });
 
 // 텍스트 포맷팅 (줄바꿈 처리)
@@ -131,6 +142,7 @@ body {
     max-width: 858px;
     margin: 0 auto;
     padding: 20px;
+    position: relative;
 }
 
 .blog_header {
@@ -167,10 +179,13 @@ body {
 
 .blog_content_wrapper {
     display: flex;
+    position: relative;
+    margin-top: 20px;
 }
 
 .blog_content {
     flex-grow: 1;
+    margin-left: 100px; /* 좋아요 버튼 공간 확보 */
 }
 
 .post_content {
@@ -192,7 +207,57 @@ body {
     max-width: calc(100% - 40px);
     height: auto;
     margin-top: 16px;
-    border-radius: 8px; 
+    border-radius: 8px;
 }
 
+.like_button_wrapper {
+    position: sticky;
+    top: 100px;
+    left: 0;
+    width: 60px;
+    height: fit-content;
+    margin-right: 40px;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 1024px) {
+    .blog_container {
+        padding: 20px;
+    }
+    
+    .blog_content {
+        margin-left: 80px;
+    }
+}
+
+@media (max-width: 768px) {
+    .blog_container {
+        padding: 10px;
+    }
+
+    .blog_content {
+        margin-left: 0;
+    }
+
+    .blog_content_wrapper {
+        display: block;
+    }
+
+    .like_button_wrapper {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        top: auto;
+        margin-right: 0;
+        z-index: 100;
+    }
+
+    .post_title {
+        font-size: 32px;
+    }
+
+    .post_content {
+        padding: 20px;
+    }
+}
 </style>
