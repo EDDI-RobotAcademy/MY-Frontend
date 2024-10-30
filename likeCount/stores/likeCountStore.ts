@@ -8,13 +8,11 @@ export const useLikeCountStore = defineStore('likeCountStore', {
             const { djangoAxiosInst } = createAxiosInstances()
             const userToken = localStorage.getItem('userToken')
             try {
-                // URL 패턴 수정
                 const response = await djangoAxiosInst.post(`/like_count/toggle-like`, {
                     userToken: userToken,
                     content_id: contentId
                 })
                 
-                // 백엔드 응답 구조에 맞게 처리
                 if (response.data.hasOwnProperty('liked')) {
                     return {
                         success: true,
@@ -31,6 +29,18 @@ export const useLikeCountStore = defineStore('likeCountStore', {
                     success: false,
                     error: error.response?.data?.error || '서버와의 통신 중 오류가 발생했습니다.'
                 }
+            }
+        },
+        async requestLikeCountToDjango(contentId: number) {
+            const { djangoAxiosInst } = createAxiosInstances()
+            try{
+                const response = await djangoAxiosInst.post(`/like_count/count-like`, {
+                    content_id: contentId
+                })
+                return response.data.likeCount
+            } catch (error) {
+                console.error('requestLikeCountToDjango 중 에러 발생', error)
+                throw error
             }
         },
     }
