@@ -3,6 +3,7 @@
     <div>
       <label for="category">카테고리</label>
       <select id="category" v-model="selectedCategoryName" @change="handleCategoryChange" required class="form-input">
+        <option value="">선택</option>
         <option v-for="category in categories" :key="category.categoryId" :value="category.name">
           {{ category.name }}
         </option>
@@ -62,8 +63,8 @@ onMounted(async () => {
       name: category.name
     }))
 
-    const categoryId = route.query.categoryId
-    if (categoryId) {
+    const categoryId = route.query.category
+    if (categoryId && categoryId !== 'null') {
       localFormData.value.category_id = parseInt(categoryId as string)
       const category = categories.value.find(
         c => c.categoryId === localFormData.value.category_id
@@ -71,6 +72,9 @@ onMounted(async () => {
       if (category) {
         selectedCategoryName.value = category.name
       }
+    } else {
+      selectedCategoryName.value = ''
+      localFormData.value.category_id = null
     }
 
     emit('update:formData', localFormData.value)

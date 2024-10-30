@@ -4,9 +4,10 @@
             <thead>
                 <tr>
                     <th class="no-column">No</th>
+                    <th class="category-column">카테고리</th>
                     <th class="title-column">제목</th>
                     <th class="author-column">글쓴이</th>
-                    <th class="date-column">작성시간</th>
+                    <th class="date-column">작성일</th>
                     <th class="views-column">조회수</th>
                 </tr>
             </thead>
@@ -14,6 +15,7 @@
                 <tr v-for="(content, index) in sortedContents" :key="content.free_communityId"
                     @click="goToFreeCommunityDetail(content.free_communityId)" class="free-community-row">
                     <td>{{ sortedContents.length - index }}</td>
+                    <td>{{ content.category_name }}</td>
                     <td class="title-cell">
                         {{ content.title }}
                         <span v-if="getCommentCount(content.free_communityId) > 0" class="comment-count">
@@ -56,7 +58,6 @@ const currentSort = ref('date'); // 현재 정렬 방식을 저장
 const commentStore = useFreeCommunityCommentStore();
 const commentCounts = ref<{ [key: number]: number }>({});
 
-// 정렬된 컨텐츠를 반환하는 computed 속성
 const sortedContents = computed(() => {
     return [...freeCommunityContents.value].sort((a, b) => {
         if (currentSort.value === 'date') {
@@ -70,7 +71,6 @@ const sortedContents = computed(() => {
     });
 });
 
-// 외부에서 호출할 수 있는 정렬 메소드
 const sortBy = (sortType: string) => {
     currentSort.value = sortType;
 };
@@ -265,5 +265,10 @@ td {
 .comment-count i {
     color: #ff9033;
     margin-right: 2px;
+}
+
+.category-column {
+    width: 20%;
+    white-space: nowrap;
 }
 </style>

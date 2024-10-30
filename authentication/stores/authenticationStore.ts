@@ -12,12 +12,16 @@ export const useAuthenticationStore = defineStore('authentication', {
   actions: {
     async requestAddRedisAccessTokenToDjango(email: string): Promise<any> {
       const { djangoAxiosInst } = createAxiosInstances()
+      const guestToken = localStorage.getItem("guestToken")
       try {
         const response = await djangoAxiosInst.post(
-          '/redis_token/redis-access-token', { email }
-        )
+          '/redis_token/create-member-token', { 
+            email: email,
+            userToken: guestToken 
+          }
+        );
 
-        console.log('userToken:', response.data.userToken)
+        console.log('New userToken:', response.data.userToken)
 
         localStorage.setItem("userToken", response.data.userToken)
         this.isAuthenticated = true
@@ -44,6 +48,7 @@ export const useAuthenticationStore = defineStore('authentication', {
           this.isAuthenticated = false
           localStorage.removeItem("userToken")
 
+          await this.requestGuestTokenToDjango()
           await this.checkAndSetAuthStatus()
         }
       } catch (error) {
@@ -79,6 +84,24 @@ export const useAuthenticationStore = defineStore('authentication', {
       } else {
         this.isAuthenticated = false
         this.isAdmin = false
+      }
+    },
+
+    async requestGuestTokenToDjango(): Promise<void>{
+      const { djangoAxiosInst } = createAxiosInstances();
+    
+      try {
+        // 비회원용 유저 토큰 요청
+        const response = await djangoAxiosInst.post('/redis_token/create-guest-token');
+        
+        // 반환된 유저 토큰을 localStorage에 저장
+        const guestToken = response.data.userToken;
+        console.log('Guest userToken:', guestToken);
+        localStorage.setItem("guestToken", guestToken);
+
+      } catch (error) {
+        console.error('Error creating guest token:', error);
+        throw error;
       }
     }
   },

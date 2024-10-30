@@ -14,7 +14,10 @@
       </div>
       <div class="bottom-bar">
         <FreeCommunityAddCategoryButton v-if="isAdmin" @categoryAdded="refreshCategories" />
-        <FreeCommunityWriteButton v-if="isAuthenticated" :selectedCategoryId="selectedCategoryId" />
+        <FreeCommunityWriteButton 
+          v-if="isAuthenticated" 
+          :selectedCategoryId="selectedCategoryId"
+        />
       </div>
     </div>
   </div>
