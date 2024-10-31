@@ -134,7 +134,6 @@ const isValidNickname = computed(() => {
 
 const getNickname = async () => {
     const response = await accountStore.requestGetUserProfileByUserTokenToDjango()
-    console.log("응답", response)
     userInfo.value = {
         nickname: response.nickname || 'None',
         email: response.email || 'None',

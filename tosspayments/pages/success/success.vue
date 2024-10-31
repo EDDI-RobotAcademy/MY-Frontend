@@ -7,7 +7,7 @@
                 <h4 class="text-center description">결제 승인하고 완료해보세요.</h4>
             </div>
             <div class="w-100">
-                <button id="confirmPaymentButton" class="btn primary w-100" @click="confirmPayment">
+                <button id="confirmPaymentButton" class="btn primary w-100">
                     결제 승인하기
                 </button>
             </div>
@@ -29,16 +29,6 @@
                     <span id="paymentKey" class="response-text">{{ tossPaymentsStore.paymentKey }}</span>
                 </div>
             </div>
-
-            <div class="w-100 button-group">
-                <div class="flex" style="gap: 16px;">
-                    <NuxtLink class="btn w-100" to="/">다시 테스트하기</NuxtLink>
-                    <a class="btn w-100" href="https://docs.tosspayments.com/guides/v2/payment-widget/integration"
-                        target="_blank" rel="noreferrer noopener">
-                        결제 연동 문서가기
-                    </a>
-                </div>
-            </div>
         </div>
     </div>
 </template>
@@ -47,7 +37,8 @@
 import { onMounted, ref } from 'vue'  // ref 추가
 import { useRoute } from 'vue-router'
 import { useTossPayMentsStore } from '../../stores/tosspaymentsStore'
-
+import { useAccountStore } from '@/account/stores/accountStore'
+const accountStore = useAccountStore()
 const route = useRoute()
 const tossPaymentsStore = useTossPayMentsStore()
 
@@ -70,6 +61,7 @@ const handlePaymentSuccess = async () => {
         const response = await tossPaymentsStore.requestPaymentConfirmToDjango()
         if (response.status === "DONE") {
             console.log('결제 승인 성공')
+            await accountStore.requestchangeMembershipToDjango()
             if (confirmLoadingSection.value && confirmSuccessSection.value) {
                 confirmLoadingSection.value.style.display = 'none'
                 confirmSuccessSection.value.style.display = 'flex'

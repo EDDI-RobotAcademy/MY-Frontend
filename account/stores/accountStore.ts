@@ -83,6 +83,24 @@ export const useAccountStore = defineStore('accountStore', {
         console.error('requestGetUserProfileByAccountIdToDjango 실패:', error)
         throw error
       }
-    }
+    },
+    async requestchangeMembershipToDjango() {
+      const { djangoAxiosInst } = createAxiosInstances()
+      try {
+        const userToken = localStorage.getItem("userToken")
+
+        const payload = {
+          userToken: userToken,
+        }
+        const response = await djangoAxiosInst.put('/user_profile/change-membership', payload)
+        if (response.data) {
+          console.log('멤버쉽 변경 요청 완료')
+          return response.data
+        }
+      } catch (error) {
+        console.error('멤버쉽 변경 요청 실패:', error)
+        throw error
+      }
+    },
   }
 })
