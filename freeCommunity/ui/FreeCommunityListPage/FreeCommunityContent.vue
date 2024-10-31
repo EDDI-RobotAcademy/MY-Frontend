@@ -1,6 +1,6 @@
 <template>
     <div class="free-community-content">
-        <table v-if="sortedContents.length > 0" class="free-community-table">
+        <table v-if="paginatedContents.length > 0" class="free-community-table">
             <thead>
                 <tr>
                     <th class="no-column">No</th>
@@ -12,9 +12,9 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(content, index) in sortedContents" :key="content.free_communityId"
+                <tr v-for="(content, index) in paginatedContents" :key="content.free_communityId"
                     @click="goToFreeCommunityDetail(content.free_communityId)" class="free-community-row">
-                    <td>{{ sortedContents.length - index }}</td>
+                    <td>{{ getTotalIndex(index) }}</td>
                     <td>{{ content.category_name }}</td>
                     <td class="title-cell">
                         {{ content.title }}
@@ -30,6 +30,31 @@
         </table>
 
         <p v-else>{{ errorMessage || '게시글이 없습니다.' }}</p>
+
+        <div class="pagination">
+            <button 
+                :disabled="currentPage === 1" 
+                @click="currentPage--"
+                class="pagination-button"
+            >
+                이전
+            </button>
+            <span v-for="page in totalPages" :key="page">
+                <button 
+                    @click="currentPage = page"
+                    :class="['page-number', { active: currentPage === page }]"
+                >
+                    {{ page }}
+                </button>
+            </span>
+            <button 
+                :disabled="currentPage === totalPages" 
+                @click="currentPage++"
+                class="pagination-button"
+            >
+                다음
+            </button>
+        </div>
     </div>
 </template>
 
@@ -54,9 +79,19 @@ const freeCommunityStore = useFreeCommunityStore();
 const freeCommunityContents = ref([]);
 const errorMessage = ref('');
 const viewCounts = ref<{ [key: number]: number }>({});
-const currentSort = ref('date'); // 현재 정렬 방식을 저장
+const currentSort = ref('date');
 const commentStore = useFreeCommunityCommentStore();
 const commentCounts = ref<{ [key: number]: number }>({});
+
+const currentPage = ref(1);
+const itemsPerPage = 10;
+
+const resetData = () => {
+    freeCommunityContents.value = [];
+    commentCounts.value = {};
+    viewCounts.value = {};
+    currentPage.value = 1;
+};
 
 const sortedContents = computed(() => {
     return [...freeCommunityContents.value].sort((a, b) => {
@@ -70,6 +105,20 @@ const sortedContents = computed(() => {
         return 0;
     });
 });
+
+const paginatedContents = computed(() => {
+    const start = (currentPage.value - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    return sortedContents.value.slice(start, end);
+});
+
+const totalPages = computed(() => {
+    return Math.ceil(sortedContents.value.length / itemsPerPage);
+});
+
+const getTotalIndex = (index: number) => {
+    return sortedContents.value.length - ((currentPage.value - 1) * itemsPerPage + index);
+};
 
 const sortBy = (sortType: string) => {
     currentSort.value = sortType;
@@ -85,8 +134,11 @@ const getViewCount = (communityId: number) => {
 
 const fetchFreeCommunityContents = async (categoryId: number | null, searchQuery: string = '', searchType: string = 'title') => {
     try {
+        // 데이터 초기화
+        freeCommunityContents.value = [];
+        errorMessage.value = '';
+        
         let response;
-
         if (searchQuery) {
             response = await freeCommunityStore.searchFreeCommunity(searchQuery, searchType);
         } else if (categoryId !== null) {
@@ -95,15 +147,16 @@ const fetchFreeCommunityContents = async (categoryId: number | null, searchQuery
             response = await freeCommunityStore.getFreeCommunityContent();       
         }
 
-        if (Array.isArray(response)) {
-            freeCommunityContents.value = response.slice(0, 30);
-        } else if (response && Array.isArray(response.data)) {
-            freeCommunityContents.value = response.data.slice(0, 30);
-        } else {
-            throw new Error('Unexpected response format');
-        }
+        // 응답 데이터 설정
+        freeCommunityContents.value = Array.isArray(response) ? response :
+                                    (response?.data ? response.data : []);
 
-        errorMessage.value = '';
+        // 추가 데이터 fetch
+        await Promise.all([
+            fetchGetViewCount(),
+            fetchCommentCounts()
+        ]);
+
     } catch (error) {
         console.error('게시글을 가져오는 중 오류 발생:', error);
         freeCommunityContents.value = [];
@@ -163,17 +216,24 @@ onMounted(async () => {
 watch(
     [
         () => props.selectedCategoryId,
-        () => route.query.category,
         () => props.searchQuery,
         () => props.searchType
     ],
-    async ([newCategoryId, queryCategory, newSearchQuery, newSearchType]) => {
-        const categoryToUse = queryCategory ? Number(queryCategory) : newCategoryId;
-        await fetchFreeCommunityContents(categoryToUse, newSearchQuery, newSearchType);
-        await fetchCommentCounts();
+    async ([newCategoryId, newSearchQuery, newSearchType]) => {
+        currentPage.value = 1;
+        await fetchFreeCommunityContents(newCategoryId, newSearchQuery, newSearchType);
     },
     { immediate: true }
 );
+
+onMounted(async () => {
+    const categoryFromQuery = route.query.category ? Number(route.query.category) : null;
+    const categoryToUse = categoryFromQuery ?? props.selectedCategoryId;
+    
+    // 초기 데이터 로드
+    await fetchFreeCommunityContents(categoryToUse, props.searchQuery, props.searchType);
+});
+
 
 defineExpose({
     sortBy
@@ -270,5 +330,48 @@ td {
 .category-column {
     width: 20%;
     white-space: nowrap;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    gap: 10px;
+}
+
+.pagination-button {
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    background-color: white;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.pagination-button:disabled {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+}
+
+.page-number {
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    background-color: white;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.page-number.active {
+    background-color: #ff9033;
+    color: white;
+    border-color: #ff9033;
+}
+
+.pagination button:hover:not(:disabled) {
+    background-color: #f5f5f5;
+}
+
+.page-number.active:hover {
+    background-color: #ff9033;
 }
 </style>
