@@ -31,7 +31,6 @@
         </select>
       </div>
       <v-btn type="submit">질문 추가</v-btn>
-      <!-- 선택지 입력 부분 -->
       <div v-if="questionId && question.surveyType === 4">
         <h3>선택지 추가</h3>
         <div v-for="(custom, index) in customSelections" :key="index">
@@ -56,9 +55,20 @@
 </template>
 
 <script setup>
-import { ref, reactive  } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useSurveyStore } from '../../survey/stores/surveyStore'
+import { useAuthenticationStore } from '@/authentication/stores/authenticationStore'
+
+const router = useRouter()
+const authenticationStore = useAuthenticationStore()
+const isAdmin = computed(() => authenticationStore.isAdmin)
+
+onMounted(() => {
+  if (!isAdmin.value) {
+    router.push('/')
+  }
+})
 
 const surveyStore = useSurveyStore()
 
