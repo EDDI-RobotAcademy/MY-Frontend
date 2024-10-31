@@ -39,7 +39,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
+import debounce from 'lodash/debounce'  // 이렇게 수정
 import NavHeader from '../../ui/navigation/navigation.vue'
 import { useSmartContentStore } from '@/smartContent/stores/smartContentStore'
 import { useLikeCountStore } from '~/likeCount/stores/likeCountStore'
@@ -52,8 +53,8 @@ const smartContents = ref([])
 const itemsPerPage = 6
 const currentPage = ref(1)
 const isLoading = ref(false)
+const hasMoreData = ref(true)  
 const likeCountStore = useLikeCountStore()
-
 const likeCounts = ref({})
 
 
@@ -71,19 +72,21 @@ const formatDate = (date: any) => {
 }
 
 const fetchSmartContents = async () => {
-    if (isLoading.value) return
+    if (isLoading.value || !hasMoreData.value) return
     isLoading.value = true
     try {
         console.log('Requesting page:', currentPage.value, 'with page size:', itemsPerPage);
         const response = await smartContentStore.requestListSmartContentToDjango(currentPage.value, itemsPerPage)
         
         // 데이터가 없으면 로딩 중단
-        if (response.length === 0) {
-            return
+        if (response.length === 0 || response.length < itemsPerPage) {
+            hasMoreData.value = false
         }
 
+        if (response.length === 0) return
+
         // 각 컨텐츠의 좋아요 수 가져오기
-        for (const content of response) {
+        await Promise.all(response.map(async (content) => {
             try {
                 const likeCount = await likeCountStore.requestLikeCountToDjango(content.id)
                 likeCounts.value[content.id] = likeCount
@@ -91,24 +94,28 @@ const fetchSmartContents = async () => {
                 console.error(`좋아요 수 조회 실패 (컨텐츠 ID: ${content.id}):`, error)
                 likeCounts.value[content.id] = 0
             }
-        }
+        }))
 
         smartContents.value.push(...response)
         currentPage.value++
     } catch (error) {
         console.error('SmartContent 목록 조회 실패:', error)
+        hasMoreData.value = false  // 에러 발생 시 더 이상 요청하지 않음
     } finally {
         isLoading.value = false
     }
 }
 
 // 스크롤 이벤트 핸들러
-const handleScroll = (event) => {
-    const bottomReached = event.target.scrollHeight - event.target.scrollTop <= event.target.clientHeight + 100
-    if (bottomReached && !isLoading.value) {
+const handleScroll = debounce((event) => {
+    const element = event.target
+    const bottomReached = 
+        element.scrollHeight - element.scrollTop <= element.clientHeight + 100
+    
+    if (bottomReached && !isLoading.value && hasMoreData.value) {
         fetchSmartContents()
     }
-}
+}, 200)
 
 const goToReadPage = (id: number) => {
     router.push({ name: 'growthBlogRead-page', params: { id } })
@@ -117,6 +124,11 @@ const goToReadPage = (id: number) => {
 onMounted(() => {
     fetchSmartContents()
 })
+
+onUnmounted(() => {
+    handleScroll.cancel()  // debounce 핸들러 정리
+})
+
 </script>
 
 
