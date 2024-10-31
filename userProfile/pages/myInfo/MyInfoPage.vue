@@ -120,7 +120,7 @@ const defaultProfile = ref(cooingProfile);
 
 const getLoginType = async () => {
     const response = await authenticationStore.requestAccountLoginType();
-    console.log("loginType:", response);
+    
     if (response === 'GOOGLE') {
         defaultProfile.value = googleProfile;
     } else if (response === 'KAKAO') {

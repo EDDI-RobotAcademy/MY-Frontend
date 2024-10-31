@@ -78,7 +78,7 @@ const defaultProfile = ref(cooingProfile);
 
 const getLoginType = async () => {
     const response = await authenticationStore.requestAccountLoginType();
-    console.log("loginType:", response);
+    
     if (response === 'GOOGLE') {
         defaultProfile.value = googleProfile;
     } else if (response === 'KAKAO') {
@@ -96,7 +96,7 @@ const getNickname = async () => {
 
 const logOut = async () => {
     await authenticationStore.requestLogoutToDjango()
-    console.log("로그아웃 처리가 완료되었습니다.")
+    
     router.push("/")
 }
 

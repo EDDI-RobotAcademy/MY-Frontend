@@ -91,7 +91,7 @@ const createSurvey = async () => {
   try {
     const response = await surveyStore.requestCreateSurveyToDjango(survey)
     surveyId.value = response.title
-    console.log('설문 조사 생성 성공!', surveyId.value)
+    
   } catch (error) {
     console.error('설문 조사 생성 중 에러 발생: ', error)
   }
@@ -167,7 +167,7 @@ const submitSelections = async () => {
         }
         try {
           await surveyStore.requestCreateSurveySelectionToDjango(payload)
-          console.log('선택지 등록 성공:', selectionText)
+          
         } catch (error) {
           console.error('선택지 등록 중 에러 발생: ', error)
         }

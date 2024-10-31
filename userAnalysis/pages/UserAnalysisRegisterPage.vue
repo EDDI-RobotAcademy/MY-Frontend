@@ -70,7 +70,7 @@ const createUserAnalysis = async () => {
   try {
     const response = await userAnalysisStore.requestCreateUserAnalysisToDjango(UserAnalysisSurvey)
     userAnalysisId.value = response.title
-    console.log('사용자 성향조사 생성 성공!', userAnalysisId.value)
+    
   } catch (error) {
     console.error('사용자 성향조사 생성 중 에러 발생: ', error)
   }
@@ -134,7 +134,7 @@ const submitSelections = async () => {
         }
         try {
           await userAnalysisStore.requestCreateUserAnalysisSelectionToDjango(payload)
-          console.log('성향조사 선택지 등록 성공:', selectionText)
+          
         } catch (error) {
           console.error('성향조사 선택지 등록 중 에러 발생: ', error)
         }

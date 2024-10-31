@@ -32,9 +32,9 @@ export const useGrowthBlogStore = defineStore('growthBlogStore', {
                 this.followersCount = response.data.followers.length
                 this.following = response.data.following
                 this.followers = response.data.followers
-                console.log('팔로우 정보:', response.data)
-                console.log('팔로잉 수:', this.followingCount)
-                console.log('팔로워 수:', this.followersCount)
+                
+                
+                
                 return response.data
             } catch (error) {
                 console.error('팔로우 정보 조회 실패:', error)

@@ -27,7 +27,7 @@ export const useFreeCommunityCommentStore = defineStore('freeCommunityCommentSto
             try {
                 const { djangoAxiosInst } = createAxiosInstances()
                 const response = await djangoAxiosInst.post('free_community_comment/create', commentData)
-                console.log(response.data)
+                
                 return response.data
             } catch (error) {
                 console.error('addFreeCommunityComment 중 에러 발생:', error)
@@ -90,7 +90,7 @@ export const useFreeCommunityCommentStore = defineStore('freeCommunityCommentSto
             const { djangoAxiosInst } = createAxiosInstances()
             try {
                 const userToken = localStorage.getItem('userToken')
-                console.log("userToken : ", userToken)
+                
                 const response = await djangoAxiosInst.post(`free_community_comment/check-authority/${commentId}`, {
                     userToken: userToken
                 })

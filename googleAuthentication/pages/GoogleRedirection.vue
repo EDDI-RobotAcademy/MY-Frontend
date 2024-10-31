@@ -19,7 +19,7 @@
   const setRedirectData = async () => {
     const code = route.query.code as string
     const response = await googleAuthStore.requestAccessTokenToDjangoRedirection({ code })
-    console.log("response 출력", response)
+    
     if (response) {
       accessToken.value = response
       await checkUserExists(accessToken.value)

@@ -56,7 +56,7 @@ const handleCategoryChange = () => {
 onMounted(async () => {
   try {
     const rawCategories = await freeCommunityStore.getCategories()
-    console.log('원본 카테고리 데이터:', rawCategories)
+    
 
     categories.value = rawCategories.map(category => ({
       categoryId: category.categoryId,

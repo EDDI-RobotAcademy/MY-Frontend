@@ -298,7 +298,7 @@ const fetchChannelInfo = async (token: string) => {
         }
 
         const data = await response.json()
-        console.log('Channel Data:', data)
+        
         if (data.items && data.items.length > 0) {
             channelData.value = data.items[0]
         }
@@ -331,12 +331,9 @@ const fetchAnalyticsData = async () => {
         ].join(',')
 
         const channelId = channelData.value.id
-        console.log('Channel ID:', channelId)
+        
 
         const url = `${baseUrl}?dimensions=channel&metrics=${metrics}&startDate=${startDate.value}&endDate=${endDate.value}&ids=channel==${channelId}`
-
-        console.log('Fetching analytics with URL:', url)
-        console.log('Using token:', accessToken.value.substring(0, 10) + '...')
 
         const response = await fetch(url, {
             headers: {
@@ -356,7 +353,7 @@ const fetchAnalyticsData = async () => {
         }
 
         const data = await response.json()
-        console.log('Analytics Response:', data)
+        
 
         if (data.rows && data.rows.length > 0) {
             const [row] = data.rows
@@ -387,7 +384,7 @@ const fetchAnalyticsData = async () => {
                 cardImpressions: 0,
                 cardClicks: 0
             }
-            console.log('No analytics data found for the specified period')
+            
         }
     } catch (err: any) {
         error.value = err.message

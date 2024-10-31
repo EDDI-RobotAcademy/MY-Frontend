@@ -4,7 +4,7 @@ import {useAiRequestStore} from "../stores/aiRequestStore";
 const aiRequestStore = useAiRequestStore()
 const handleAiRequest = async () => {
   await aiRequestStore.aiRequestToDjango()
-  console.log('isRequestSuccessful:', aiRequestStore.isRequestSuccessful)
+  
 }
 </script>
 

@@ -8,7 +8,7 @@ import { useKakaoAuthenticationStore } from '../../../../kakaoAuthentication/sto
 const KakaoAuthenticationStore = useKakaoAuthenticationStore()
 
 const kakaoLoginClick = async () => {
-    console.log("kakaoLoginClick")
+    
     await KakaoAuthenticationStore.requestKakaoOauthRedirectionToDjango()
 }
 </script> 
