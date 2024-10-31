@@ -13,15 +13,14 @@
         <div v-if="questions[currentQuestionIndex].user_analysis_type === '4'" class="options">
           <label v-for="(option, optionIndex) in currentQuestionOptions" :key="optionIndex" class="option-label">
             <input type="radio" :name="'question-' + currentQuestionIndex" :value="option.custom_text"
-              v-model="questions[currentQuestionIndex].answer" @change="answerQuestion(currentQuestionIndex)">
+              v-model="questions[currentQuestionIndex].answer">
             <span class="radio-button"></span>
             <span class="option-text">{{ option.custom_text }}</span>
           </label>
         </div>
         <div v-else-if="questions[currentQuestionIndex].user_analysis_type === '1'" class="text-input">
           <input @keyup.enter="nextQuestionIfNotEmpty" type="text" v-model="questions[currentQuestionIndex].answer"
-            :placeholder="getPlaceholder(currentQuestionIndex)" @input="answerQuestion(currentQuestionIndex)">
-          <p v-if="mbtiError" class="error-message">{{ mbtiError }}</p>
+            :placeholder="getPlaceholder(currentQuestionIndex)">
         </div>
         <div class="button-container">
           <button @click="prevQuestion" class="prev-button" :disabled="currentQuestionIndex === 0">← 이전</button>
@@ -46,63 +45,35 @@ const currentQuestionIndex = ref(0)
 const userAnalysisInputId = ref('1')
 const questions = ref([])
 const selections = ref({})
-const mbtiError = ref('')
 
 const isLastQuestion = computed(() => currentQuestionIndex.value === questions.value.length - 1)
-const isFirstQuestion = computed(() => currentQuestionIndex.value === 0)
 const canProceed = computed(() => {
   const currentQuestion = questions.value[currentQuestionIndex.value]
-  if (currentQuestion.user_analysis_type === 1) {
-    return currentQuestion.answer && currentQuestion.answer.trim() !== ''
-  }
-  return currentQuestion.answer !== null
+  return currentQuestion.user_analysis_type === '1' 
+    ? currentQuestion.answer?.trim() !== ''
+    : currentQuestion.answer !== null
 })
+
 const currentQuestionOptions = computed(() => {
   const currentQuestion = questions.value[currentQuestionIndex.value]
-  if (!currentQuestion) return []
-  console.log(`현재 질문 ID: ${currentQuestion.id}`)
-  const options = selections.value[currentQuestion.id] || []
-  console.log(`질문 ID ${currentQuestion.id}의 선택지:`, options)
-  return options
+  return currentQuestion ? selections.value[currentQuestion.id] || [] : []
 })
 
 const loadSurvey = async () => {
   try {
     const fetchedQuestions = await userAnalysisStore.requestListQuestionToDjango(userAnalysisInputId.value)
     questions.value = fetchedQuestions
-    console.log('성향조사 질문 목록: ', questions.value)
 
     for (const question of questions.value) {
-      console.log(`질문 ID: ${question.id}, user_analysis_type: ${question.user_analysis_type}`)
       const options = await userAnalysisStore.requestListSelectionToDjango(question.id)
       selections.value[question.id] = options
-      console.log(`질문 ID ${question.id}에 대한 선택지 요청 완료`)
     }
   } catch (error) {
     console.error('성향조사 로딩 중 오류 발생:', error)
   }
 }
 
-const getQuestionType = (user_analysis_type) => {
-  switch (user_analysis_type) {
-    case 1: return 'text'
-    case 2: case 3: case 4: return 'radio'
-    default: return 'text'
-  }
-}
-
-const getOptionText = (option) => {
-  return option.custom_text
-}
-
-const handleError = (event) => {
-  console.error('Video playback error:', event)
-}
-
 const nextQuestion = () => {
-  if (currentQuestionIndex.value === 2 && mbtiError.value) {
-    return
-  }
   if (!isLastQuestion.value) {
     currentQuestionIndex.value++
   } else {
@@ -111,33 +82,8 @@ const nextQuestion = () => {
 }
 
 const prevQuestion = () => {
-  if (!isFirstQuestion.value) {
+  if (currentQuestionIndex.value > 0) {
     currentQuestionIndex.value--
-    checkAnswerStatus(currentQuestionIndex.value)
-  }
-}
-
-const answerQuestion = (index) => {
-  const question = questions.value[index]
-  if (question.user_analysis_type === '1') {
-    question.answer = question.answer || ''
-    question.answered = question.answer.trim() !== ''
-    if (index === 2) {
-      validateMBTI(question.answer)
-    }
-  } else {
-    question.answered = question.answer !== null
-  }
-}
-
-const validateMBTI = (mbti) => {
-  const mbtiRegex = /^[EI][NS][FT][JP]$/
-  if (mbtiRegex.test(mbti.toUpperCase())) {
-    mbtiError.value = ''
-    questions.value[2].answered = true
-  } else {
-    mbtiError.value = 'MBTI 형식이 올바르지 않습니다.'
-    questions.value[2].answered = false
   }
 }
 
@@ -147,28 +93,12 @@ const nextQuestionIfNotEmpty = () => {
   }
 }
 
-const checkAnswerStatus = (index) => {
-  const question = questions.value[index]
-  if (question.user_analysis_type === '1') {
-    question.answered = question.answer.trim() !== ''
-    if (index === 2) { // MBTI 질문
-      validateMBTI(question.answer)
-    }
-  } else {
-    question.answered = question.answer !== null
-  }
-}
-
 const getPlaceholder = (index) => {
-  if (questions.value[index].user_analysis_type === '1') {
-    const placeholders = {
-      2: "ex) INTJ, ISTP, ESFP...",
-      3: "ex) 운동, 여행, 패션, 맛집, 요리, 뷰티... ",
-      4: "ex) 창의적, 적응력, 긍정적...",
-      7: "ex) 김계란, 이사배, 침착맨..."
-    }
-    return placeholders[index]
+  const placeholders = {
+    3: "ex) 음악, 여행, 패션, 맛집 탐방, 요리, 뷰티... ",
+    8: "ex) 침착맨, 성시경, 이사배...",
   }
+  return questions.value[index].user_analysis_type === '1' ? placeholders[index] : ''
 }
 
 const submitSurvey = async () => {
@@ -182,25 +112,23 @@ const submitSurvey = async () => {
       user_analysis: userAnalysisInputId.value,
       user_analysis_answer: userAnalysisAnswer
     })
-    console.log('설문이 제출되었습니다:', response)
 
     const surveyData = {
-      gender: questions.value[0].answer,
-      age_group: questions.value[1].answer,
-      mbti: questions.value[2].answer,
-      topic: questions.value[3].answer,
-      strength: questions.value[4].answer,
-      reveal: questions.value[5].answer,
-      platform: questions.value[6].answer,
+      ages: questions.value[0].answer,
+      gender: questions.value[1].answer,
+      content_categories: questions.value[2].answer,
+      visibility: questions.value[3].answer,
+      platforms: questions.value[4].answer,
+      investment_amount: questions.value[5].answer,
+      upload_frequency: questions.value[6].answer,
       interested_influencer: questions.value[7].answer,
     }
 
-    // 쿼리 파라미터로 데이터를 전달합니다.
     router.push({
       path: '/user-analysis/result',
       query: { 
         surveyData: JSON.stringify(surveyData),
-        userAnalysisRequest : response.id
+        userAnalysisRequest: response.id
       }
     })
   } catch (error) {
@@ -260,14 +188,6 @@ onMounted(() => {
   background-color: rgba(255, 255, 255, 0.6);
 }
 
-.survey-container {
-  padding: 20px;
-  border-radius: 10px;
-  margin: 10px 0;
-  max-width: 800px;
-  width: 100%;
-}
-
 .overlay-text {
   text-align: center;
   display: flex;
@@ -301,18 +221,8 @@ onMounted(() => {
   background-color: rgba(255, 255, 255, .5);
   justify-content: center;
   align-items: center;
-}
-
-.survey-icon {
-  width: 60px;
-  height: 60px;
-  margin: 0 auto 20px;
-}
-
-.survey-icon img {
+  max-width: 800px;
   width: 100%;
-  height: 100%;
-  object-fit: contain;
 }
 
 .survey-container h2 {
@@ -417,22 +327,7 @@ button.prev-button:not(:disabled) {
   color: white;
 }
 
-/* 호버 효과 */
 button:not(:disabled):hover {
   opacity: 0.8;
-}
-
-.error-message {
-  color: red;
-  font-size: 0.9rem;
-  margin-top: 5px;
-  min-height: 1.2em;
-  /* 에러 메시지 영역의 최소 높이 설정 */
-}
-
-.text-input {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 20px;
 }
 </style>
