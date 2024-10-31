@@ -47,7 +47,22 @@ export default {
         const { isAuthenticated } = storeToRefs(authenticationStore);
         const nickname = ref('Guest');
 
-        const computedNickname = computed(() => nickname.value || 'Guest');
+        const getUrlNickname = () => {
+            const pathParts = route.path.split('/');
+            const myPageIndex = pathParts.indexOf('my-page');
+            if (myPageIndex !== -1 && pathParts.length > myPageIndex + 1) {
+                return pathParts[myPageIndex + 1];
+            }
+            return null;
+        };
+
+        const computedNickname = computed(() => {
+            const urlNickname = getUrlNickname();
+            if (urlNickname) {
+                return urlNickname;
+            }
+            return nickname.value || 'Guest';
+        });
         
         const displayTitle = computed(() => {
             if (route.path.includes('/growth-blog/my-page')) {
@@ -57,7 +72,6 @@ export default {
         });
 
         const goToRegister = () => {
-            // 현재 경로를 확인
             const currentPath = route.path;
             if (currentPath.includes('/growth-blog/my-page')) {
                 router.push('/growth-blog/register?from=mypage');
@@ -72,6 +86,11 @@ export default {
 
         const getNickname = async () => {
             try {
+                // URL에 닉네임이 있는 경우 API 호출하지 않음
+                if (getUrlNickname()) {
+                    return;
+                }
+
                 if (isAuthenticated.value) {
                     const userProfile = await accountStore.requestGetUserProfileByUserTokenToDjango();
                     if (userProfile && userProfile.nickname) {
@@ -97,7 +116,8 @@ export default {
         });
 
         watch(() => route.path, () => {
-            if (route.path.includes('/growth-blog/my-page')) {
+            // URL이 /growth-blog/my-page인 경우에만 API 호출
+            if (route.path === '/growth-blog/my-page') {
                 getNickname();
             }
         });
