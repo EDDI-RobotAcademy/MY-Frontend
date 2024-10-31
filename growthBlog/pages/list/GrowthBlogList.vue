@@ -75,7 +75,7 @@ const fetchSmartContents = async () => {
     if (isLoading.value || !hasMoreData.value) return
     isLoading.value = true
     try {
-        console.log('Requesting page:', currentPage.value, 'with page size:', itemsPerPage);
+        
         const response = await smartContentStore.requestListSmartContentToDjango(currentPage.value, itemsPerPage)
         
         // 데이터가 없으면 로딩 중단

@@ -17,7 +17,7 @@ export const useSubscriptionStore = defineStore('subscriptionStore', {
         async registerSubscription(postData: Omit<SubscriptionInfo, 'id'>): Promise<string> {
             const {djangoAxiosInst} = createAxiosInstances()
             try {
-                console.log("postData: ", postData)
+                
                 const response = await djangoAxiosInst.post('subscription/create', postData)
                 return response.data
             } catch (error) {

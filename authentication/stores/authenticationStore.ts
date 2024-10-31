@@ -21,7 +21,7 @@ export const useAuthenticationStore = defineStore('authentication', {
           }
         );
 
-        console.log('New userToken:', response.data.userToken)
+        
 
         localStorage.setItem("userToken", response.data.userToken)
         this.isAuthenticated = true
@@ -43,7 +43,7 @@ export const useAuthenticationStore = defineStore('authentication', {
           userToken: userToken
         })
 
-        console.log('res:', res.data.isSuccess)
+        
         if (res.data.isSuccess === true) {
           this.isAuthenticated = false
           localStorage.removeItem("userToken")
@@ -61,8 +61,8 @@ export const useAuthenticationStore = defineStore('authentication', {
       const { djangoAxiosInst } = createAxiosInstances()
       const userToken = localStorage.getItem("userToken")
       if (userToken) {
-        console.log("User token found in localStorage")
-        console.log("userToken: ", userToken)
+        
+        
         this.isAuthenticated = true
         
         try{
@@ -70,11 +70,11 @@ export const useAuthenticationStore = defineStore('authentication', {
             userToken
           })
           if (res.data === "ADMIN"){
-            console.log("관리자 계정입니다.")
+            
             this.isAdmin = true
           }
           else {
-            console.log("관리자 계정이 아닙니다.")
+            
             this.isAdmin = false
           }
         } catch (error){
@@ -96,7 +96,7 @@ export const useAuthenticationStore = defineStore('authentication', {
         
         // 반환된 유저 토큰을 localStorage에 저장
         const guestToken = response.data.userToken;
-        console.log('Guest userToken:', guestToken);
+        
         localStorage.setItem("guestToken", guestToken);
 
       } catch (error) {
@@ -114,10 +114,10 @@ export const useAuthenticationStore = defineStore('authentication', {
             userToken
           })
           if (res.data === "KAKAO"){
-            console.log("카카오 로그인 사용자입니다.")
+            
           }
           else {
-            console.log("구글 로그인 사용자입니다.")
+            
           }
 
           return res.data

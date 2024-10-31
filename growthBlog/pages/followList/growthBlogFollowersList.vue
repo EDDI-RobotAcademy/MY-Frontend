@@ -79,13 +79,6 @@ onMounted(async () => {
     followers.value = route.query.followers?.toString() || '0';
     followersCount.value = route.query.followersCount?.toString() || '0';
 
-    console.log('Query params:', {
-        nickname: nickname.value,
-        following: following.value,
-        followers: followers.value,
-        followersCount: followersCount.value
-    });
-
     await getNickname();
     await getFollowerNicknames(followers.value);
 });

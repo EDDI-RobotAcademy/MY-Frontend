@@ -117,16 +117,16 @@ const loadSurvey = async () => {
       answer: null
     }))
     errors.value = new Array(questions.value.length).fill(null)
-    console.log(loadedQuestions)
+    
 
     let allSelections = []
 
     // 각 질문에 대해 선택지를 로드하여 selections 배열에 추가
     for (const question of questions.value) {
-      console.log(`질문 ID: ${question.id}, survey_type: ${question.survey_type}`)
+      
 
       if (question.survey_type === "1") {
-        console.log(`질문 ID ${question.id}는 서술형 질문입니다. 선택지 없음`)
+        
         continue
       } 
 
@@ -140,10 +140,9 @@ const loadSurvey = async () => {
       // 선택지가 있는 경우 각 질문에 대한 선택지들을 하나의 리스트로 합침
       allSelections = [...allSelections, ...options]
 
-      console.log(`질문 ID ${question.id}에 대한 선택지 요청 완료`)
+      
     }
     selections.value = allSelections
-    console.log('합쳐진 선택지: ', JSON.stringify(selections.value))
   } catch (error) {
     console.error('설문조사 로딩 중 오류 발생:', error)
   }
@@ -174,16 +173,14 @@ const submitSurvey = async () => {
   // 첫 번째 에러로 스크롤 (Vue의 $refs 사용)
     if (firstErrorIndex !== -1 && questionRefs.value[firstErrorIndex]) {
       const errorElement = questionRefs.value[firstErrorIndex]
-      console.log("errorElement", errorElement)
+      
       if (errorElement) {
         errorElement.scrollIntoView({ behavior: 'smooth' })
       }
     }
   return  
   }
-  console.log("설문 제출 시 에러 확인 로직 실행")
-
-  console.log("Survey submitted:", JSON.stringify(questions.value))
+  
   const surveyAnswers = questions.value.map(question => ({
     question_id: question.id,
     answer_data: question.answer === 'true' ? true : question.answer === 'false' ? false : question.answer || '' // 불리언 값으로 변환
@@ -193,7 +190,7 @@ const submitSurvey = async () => {
 
   try {
     const response = await surveyStore.requestSubmitSurveyAnswerToDjango({ survey_answer: surveyAnswers, userToken: userToken })
-    console.log('설문이 제출되었습니다:', response)
+    
   } catch (error) {
     console.error('설문 제출 중 오류 발생: ', error)
   }

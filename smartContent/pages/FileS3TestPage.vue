@@ -69,13 +69,13 @@ const uploadFile = async () => {
     }
 
     try {
-        console.log('Uploading file with params:', params)
+        
         const data = await s3Client.send(new PutObjectCommand(params))
         uploading.value = false
         uploadSuccess.value = true
         uploadedFileURL.value = `https://${BUCKET_NAME}.s3.${AWS_REGION}.amazonaws.com/${params.Key}`
         fileKey.value = params.Key
-        console.log('File uploaded successfully:', data)
+        
     } catch (err) {
         uploading.value = false
         uploadError.value = (err as Error).message
@@ -92,7 +92,7 @@ const listFiles = async () => {
     try {
         const data = await s3Client.send(new ListObjectsCommand(params))
         fileList.value = data.Contents as Array<{ Key: string }>
-        console.log('Files listed successfully:', data)
+        
     } catch (err) {
         console.error('Error listing files:', err)
     }
@@ -107,7 +107,7 @@ const deleteFile = async (key: string) => {
 
     try {
         const data = await s3Client.send(new DeleteObjectCommand(params))
-        console.log('File deleted successfully:', data)
+        
         // 파일 목록 새로고침
         await listFiles()
     } catch (err) {
@@ -124,7 +124,7 @@ const getFile = async (key: string) => {
 
     try {
         const data = await s3Client.send(new GetObjectCommand(params))
-        console.log('File retrieved successfully:', data)
+        
         return data
     } catch (err) {
         console.error('Error getting file:', err)
@@ -142,7 +142,7 @@ const setFileAcl = async () => {
 
     try {
         const data = await s3Client.send(new PutObjectAclCommand(params))
-        console.log('ACL set successfully:', data)
+        
     } catch (err) {
         console.error('Error setting ACL:', err)
     }

@@ -100,7 +100,7 @@ export const useFreeCommunityStore = defineStore('freeCommunityStore', {
             const { djangoAxiosInst } = createAxiosInstances()
             try {
                 const userToken = localStorage.getItem('userToken')
-                console.log("userToken : ", userToken)
+                
                 const response = await djangoAxiosInst.post(`free_community/check-authority/${free_communityId}`, {
                     userToken: userToken
                 })
@@ -128,7 +128,7 @@ export const useFreeCommunityStore = defineStore('freeCommunityStore', {
                 })
                 return response.data
             } catch (error) {
-                console.log(searchType, searchQuery)
+                
                 console.error(`${searchType} 검색 중 오류 발생:`, error)
                 return []
             }

@@ -21,7 +21,7 @@ export const useTossPayMentsStore = defineStore('tosspaymentsStore', {
         const res = await djangoAxiosInst.post('/tosspayments/create-payment', payload)
         return res.data
       } catch (error) {
-        console.log('requestCreatePayments() 중 에러 발생')
+         중 에러 발생')
         throw error
       }
     },

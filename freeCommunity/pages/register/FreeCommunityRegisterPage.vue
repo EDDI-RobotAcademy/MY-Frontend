@@ -28,8 +28,8 @@ const updatePostData = (newData) => {
 }
 
 const handleRegisterSuccess = (result) => {
-  console.log('글 등록 성공:', result)
-  console.log("postData.value.category_id ", postData.value.category_id )
+  
+  
   router.push({
     path: "/free-community/list",
     query: { category: postData.value.category_id }

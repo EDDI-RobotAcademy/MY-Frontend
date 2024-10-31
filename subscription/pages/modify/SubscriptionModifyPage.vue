@@ -75,7 +75,7 @@
   const fetchSubscriptionContent = async () => {
     try {
       const response = await subscriptionStore.readSubscriptionById(subscriptionId);
-      console.log('구독권 정보:', response);  // 확인용 로그 출력
+        // 확인용 로그 출력
       subscriptionContent.value = response;
     } catch (err) {
       error.value = '구독권 정보를 불러오는데 실패했습니다.';

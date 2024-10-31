@@ -232,7 +232,6 @@ watch(() => route.path, (to) => {
 })
 
 onMounted(async () => {
-    console.log("navigation bar mounted()")
     await checkAndSetAuthStatus()
     if (isAuthenticated.value) {
         await getNickname()
