@@ -23,7 +23,6 @@
     "animejs": "^3.2.2",
     "axios": "^1.7.7",
     "chart.js": "^4.4.6",
-    "date-fns": "^4.1.0",
     "firebase": "^10.14.1",
     "legacy": "^0.0.3",
     "lodash": "^4.17.21",

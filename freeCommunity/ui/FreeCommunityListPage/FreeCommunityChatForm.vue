@@ -8,7 +8,9 @@
                 <div v-for="message in messages" :key="message.id" class="message"
                     :class="{ 'own-message': message.nickname === nickname }">
                     <div class="message-content">
-                        <span class="sender">{{ message.nickname }}</span>
+                        <span class="sender" @click="goToUserPage(message.nickname)" style="cursor: pointer;">
+                            {{ message.nickname }}
+                        </span>
                         <p>{{ message.text }}</p>
                         <span class="timestamp">{{ formatTime(message.timestamp) }}</span>
                     </div>
@@ -24,6 +26,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, nextTick, watch } from 'vue';
+import { useRouter } from 'vue-router';
 import { initializeApp } from 'firebase/app';
 import {
     getDatabase,
@@ -74,7 +77,10 @@ const db = getDatabase(app);
 const messagesRef = dbRef(db, 'messages');
 const lastReadRef = dbRef(db, `lastRead/${props.nickname}`);
 
-// 커스텀 시간 포맷팅 함수
+const goToUserPage = (userNickname: string) => {
+    router.push(`/growth-blog/my-page/${userNickname}`);
+};
+
 const formatTime = (timestamp: number) => {
     const now = Date.now();
     const diff = now - timestamp;
@@ -93,7 +99,6 @@ const formatTime = (timestamp: number) => {
 
 const goToLoginPage = () => router.push("/login");
 
-// 스크롤 관련 함수들
 const checkScrollPosition = () => {
     const container = messageContainer.value;
     if (container) {
@@ -110,7 +115,6 @@ const scrollToBottom = () => {
     });
 };
 
-// 마지막 읽은 시간 업데이트
 const updateLastRead = () => {
     if (props.nickname) {
         const now = Date.now();
@@ -121,7 +125,6 @@ const updateLastRead = () => {
     }
 };
 
-// 메시지 전송
 const sendMessage = () => {
     if (newMessage.value.trim() && props.nickname) {
         push(messagesRef, {
@@ -145,33 +148,27 @@ watch(() => props.isOpen, (newValue) => {
 });
 
 onMounted(() => {
-    // 스크롤 이벤트 리스너
     if (messageContainer.value) {
         messageContainer.value.addEventListener('scroll', checkScrollPosition);
     }
 
-    // 마지막 읽은 시간 가져오기
     onValue(lastReadRef, (snapshot) => {
         lastReadTimestamp.value = snapshot.val() || Date.now();
     });
 
-    // 메시지 쿼리 설정 (최근 50개 메시지만 로드)
     const messagesQuery = query(
         messagesRef,
         orderByChild('timestamp'),
         limitToLast(50)
     );
 
-    // 새 메시지 감지
     const messageListener = onChildAdded(messagesQuery, (snapshot) => {
         const message = snapshot.val();
         message.id = snapshot.key;
         messages.value.push(message);
 
-        // 새 메시지가 오면 스크롤
         scrollToBottom();
 
-        // 채팅창이 닫혀있고, 다른 사람의 메시지일 때만 카운트 증가
         if (!props.isOpen && message.nickname !== props.nickname && message.timestamp > lastReadTimestamp.value) {
             unreadCount.value++;
             console.log('Emitting unread count:', unreadCount.value); // 디버그용
