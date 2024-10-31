@@ -11,19 +11,18 @@
 
         <h1 class="title">{{ followersCount }}명의 팔로워</h1>
 
-        <div class="follower-container">
-            <div v-for="(follower, index) in followersList" :key="follower.id" class="follower-item">
-                <div class="follower-info">
-                    <div class="initial-box">
-                        <span class="initial-text">{{ index + 1 }}</span>
-                    </div>
-                    <div class="user-info">
-                        <span class="user-name" @click="goToUserPage(follower.nickname)" style="cursor: pointer">{{
-                            follower.nickname }}</span>
-                    </div>
+        <div v-for="(follower, index) in followersList" :key="follower.id" class="follower-item">
+            <div class="follower-info">
+                <div v-if="!follower.isError" class="initial-box">
+                    <span class="initial-text">{{ index + 1 }}</span>
                 </div>
-                <button class="follow-button">팔로우</button>
+                <div class="user-info">
+                    <span class="user-name" @click="goToUserPage(follower.nickname)" style="cursor: pointer">
+                        {{ follower.nickname }}
+                    </span>
+                </div>
             </div>
+            <button v-if="!follower.isError" class="follow-button">팔로우</button>
         </div>
     </div>
 </template>
@@ -56,15 +55,16 @@ const getFollowerNicknames = async (followersString) => {
 
         followersList.value = userDataList.map(userData => ({
             id: userData.accountId,
-            nickname: userData.nickname
+            nickname: userData.nickname,
+            isError: false
         }));
     } catch (error) {
         console.error('Failed to fetch nicknames:', error);
-        // 에러 시 기본값으로 설정
-        followersList.value = followerIds.map(id => ({
-            id: id,
-            nickname: `Unknown User (${id})`
-        }));
+        followersList.value = [{
+            id: 'none',
+            nickname: '없음',
+            isError: true
+        }];
     }
 };
 
