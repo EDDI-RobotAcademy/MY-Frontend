@@ -96,7 +96,7 @@ const nextQuestionIfNotEmpty = () => {
 const getPlaceholder = (index) => {
   const placeholders = {
     3: "ex) 음악, 여행, 패션, 맛집 탐방, 요리, 뷰티... ",
-    8: "ex) 침착맨, 성시경, 이사배...",
+    8: "ex) 침착맨, 김계란, 이사배...",
   }
   return questions.value[index].user_analysis_type === '1' ? placeholders[index] : ''
 }
