@@ -7,17 +7,15 @@
           <FreeCommunitySearchButton @search="handleSearch" />
         </div>
       </div>
-      <ChatFloatingButton :nickname="nickname"></ChatFloatingButton>
+      <ChatFloatingButton :nickname="nickname" :isOpen="false" @update-unread-count="handleUnreadCount" />
       <div class="content-wrapper">
-        <FreeCommunityContent ref="contentRef" :selectedCategoryId="selectedCategoryId" :searchQuery="searchQuery" :searchType="searchType" />
+        <FreeCommunityContent ref="contentRef" :selectedCategoryId="selectedCategoryId" :searchQuery="searchQuery"
+          :searchType="searchType" />
         <FreeCommunitySortDropdown @sort="handleSort" />
       </div>
       <div class="bottom-bar">
         <FreeCommunityAddCategoryButton v-if="isAdmin" @categoryAdded="refreshCategories" />
-        <FreeCommunityWriteButton 
-          v-if="isAuthenticated" 
-          :selectedCategoryId="selectedCategoryId"
-        />
+        <FreeCommunityWriteButton v-if="isAuthenticated" :selectedCategoryId="selectedCategoryId" />
       </div>
     </div>
   </div>
@@ -52,9 +50,12 @@ const isAdmin = computed(() => authenticationStore.isAdmin);
 const nickname = ref('')
 const selectedCategoryId = ref<number | null>(null)
 const contentRef = ref<InstanceType<typeof FreeCommunityContent> | null>(null);
-const searchQuery = ref('')  
-const searchType = ref('title')  
+const searchQuery = ref('')
+const searchType = ref('title')
 
+const handleUnreadCount = (count: number) => {
+  console.log('Parent received unread count:', count);  // 디버그용
+};
 
 const handleSort = (sortType: string) => {
   contentRef.value?.sortBy(sortType);

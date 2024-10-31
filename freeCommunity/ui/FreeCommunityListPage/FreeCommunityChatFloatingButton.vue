@@ -1,55 +1,121 @@
 <template>
   <div class="chat-button-container">
     <button @click="toggleChat" class="chat-button" :class="{ 'active': isOpen }">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="chat-icon">
-        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-      </svg>
+      <div class="chat-button-content">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="chat-icon">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+        </svg>
+        <div v-if="unreadCount > 0" class="notification-badge">
+          {{ unreadCount > 99 ? '99+' : unreadCount }}
+        </div>
+      </div>
     </button>
 
     <Transition name="slide">
       <div v-if="isOpen" class="chat-panel">
-        <ChatComponent :nickname="nickname"/>
+        <FreeCommunityChatForm 
+          :nickname="nickname" 
+          :isOpen="isOpen"
+        />
       </div>
     </Transition>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
-import ChatComponent from './FreeCommunityChatForm.vue'
+import { ref, onMounted, onUnmounted } from 'vue';
+import { initializeApp } from 'firebase/app';
+import {
+  getDatabase,
+  ref as dbRef,
+  onChildAdded,
+  onValue,
+  query,
+  orderByChild,
+  limitToLast,
+  set
+} from 'firebase/database';
+import FreeCommunityChatForm from './FreeCommunityChatForm.vue';
 
 const props = defineProps({
   nickname: {
     type: String,
     required: true
   }
-})
+});
 
-const isOpen = ref(false)
+const isOpen = ref(false);
+const unreadCount = ref(0);
+const lastReadTimestamp = ref(Date.now());
+
+// Firebase 설정
+const config = useRuntimeConfig();
+const firebaseConfig = {
+  apiKey: config.public.FIREBASE_API_KEY,
+  authDomain: config.public.FIREBASE_AUTH_DOMAIN,
+  databaseURL: config.public.FIREBASE_DATABASE_URL,
+  projectId: config.public.FIREBASE_PROJECT_ID,
+  storageBucket: config.public.FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: config.public.FIREBASE_MESSAGING_SENDER_ID,
+  appId: config.public.FIREBASE_APP_ID
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const messagesRef = dbRef(db, 'messages');
+const lastReadRef = dbRef(db, `lastRead/${props.nickname}`);
+
+// 마지막 읽은 시간 업데이트
+const updateLastRead = () => {
+  if (props.nickname) {
+    const now = Date.now();
+    set(lastReadRef, now);
+    lastReadTimestamp.value = now;
+    unreadCount.value = 0;
+  }
+};
 
 const toggleChat = () => {
-  isOpen.value = !isOpen.value
-}
-
-const handleClickOutside = (event: MouseEvent) => {
-  const chatPanel = document.querySelector('.chat-panel')
-  const chatButton = document.querySelector('.chat-button')
-  
-  if (isOpen.value && chatPanel && chatButton) {
-    if (!chatPanel.contains(event.target as Node) && !chatButton.contains(event.target as Node)) {
-      isOpen.value = false
-    }
+  isOpen.value = !isOpen.value;
+  if (isOpen.value) {
+    updateLastRead();
   }
-}
+};
 
 onMounted(() => {
-  document.addEventListener('click', handleClickOutside)
-})
+  // 마지막 읽은 시간 가져오기
+  onValue(lastReadRef, (snapshot) => {
+    lastReadTimestamp.value = snapshot.val() || Date.now();
+  });
 
-onUnmounted(() => {
-  document.removeEventListener('click', handleClickOutside)
-})
+  // 메시지 쿼리 설정
+  const messagesQuery = query(
+    messagesRef,
+    orderByChild('timestamp'),
+    limitToLast(50)
+  );
+
+  // 새 메시지 감지
+  const messageListener = onChildAdded(messagesQuery, (snapshot) => {
+    const message = snapshot.val();
+    
+    // 채팅창이 닫혀있고, 다른 사람의 메시지이며, 마지막으로 읽은 시간 이후의 메시지일 때
+    if (!isOpen.value && 
+        message.nickname !== props.nickname && 
+        message.timestamp > lastReadTimestamp.value) {
+      console.log('New unread message:', message); // 디버그용
+      unreadCount.value++;
+    }
+  });
+
+  // 컴포넌트 언마운트 시 리스너 제거
+  onUnmounted(() => {
+    if (messageListener) {
+      messageListener();
+    }
+  });
+});
 </script>
 
 <style scoped>
@@ -68,6 +134,7 @@ onUnmounted(() => {
   height: 56px;
   border-radius: 50%;
   background-color: #ff9033;
+  border: none;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -79,10 +146,35 @@ onUnmounted(() => {
 
 .chat-button:hover {
   transform: scale(1.05);
+  background-color: #ffb04c;
 }
 
 .chat-button.active {
   background-color: #ffb04c;
+}
+
+.chat-button-content {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notification-badge {
+  position: absolute;
+  top: -16px;
+  right: -12px;
+  background-color: #ff4444;
+  color: white;
+  border-radius: 12px;
+  padding: 0 6px;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  z-index: 1002;
 }
 
 .chat-panel {
@@ -93,8 +185,14 @@ onUnmounted(() => {
   height: 600px;
   background-color: white;
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   overflow: hidden;
+}
+
+.chat-icon {
+  color: white;
+  width: 24px;
+  height: 24px;
 }
 
 .slide-enter-active,
@@ -110,11 +208,5 @@ onUnmounted(() => {
 .slide-leave-to {
   transform: translateX(100%);
   opacity: 0;
-}
-
-.chat-icon {
-  color: white;
-  width: 24px;
-  height: 24px;
 }
 </style>

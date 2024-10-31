@@ -10,11 +10,12 @@
                     <div class="message-content">
                         <span class="sender">{{ message.nickname }}</span>
                         <p>{{ message.text }}</p>
+                        <span class="timestamp">{{ formatTime(message.timestamp) }}</span>
                     </div>
                 </div>
             </div>
             <div class="input-area">
-                <input v-model="newMessage" @keyup.enter="sendMessage" class="input" />
+                <input v-model="newMessage" @keyup.enter="sendMessage" placeholder="메시지를 입력하세요..." class="input" />
                 <button @click="sendMessage" class="button">전송</button>
             </div>
         </div>
@@ -22,48 +23,105 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, nextTick } from 'vue';
+import { ref, onMounted, onUnmounted, nextTick, watch } from 'vue';
 import { initializeApp } from 'firebase/app';
-import { getDatabase, ref as dbRef, push, onChildAdded } from 'firebase/database';
+import {
+    getDatabase,
+    ref as dbRef,
+    push,
+    onChildAdded,
+    set,
+    onValue,
+    query,
+    orderByChild,
+    limitToLast
+} from 'firebase/database';
 
-const router = useRouter()
+const router = useRouter();
+const emit = defineEmits(['update-unread-count']);
 
 const props = defineProps({
     nickname: {
         type: String,
         default: ''
+    },
+    isOpen: {
+        type: Boolean,
+        default: false
     }
 });
 
 const config = useRuntimeConfig();
-const API_KEY = config.public.FIREBASE_API_KEY;
-const AUTH_DOMAIN = config.public.FIREBASE_AUTH_DOMAIN;
-const DATABASE_URL = config.public.FIREBASE_DATABASE_URL;
-const PROJECT_ID = config.public.FIREBASE_PROJECT_ID;
-const STORAGE_BUCKET = config.public.FIREBASE_STORAGE_BUCKET;
-const MESSAGING_SENDER_ID = config.public.FIREBASE_MESSAGING_SENDER_ID;
-const APP_ID = config.public.FIREBASE_APP_ID;
-
 const firebaseConfig = {
-    apiKey: API_KEY,
-    authDomain: AUTH_DOMAIN,
-    databaseURL: DATABASE_URL,
-    projectId: PROJECT_ID,
-    storageBucket: STORAGE_BUCKET,
-    messagingSenderId: MESSAGING_SENDER_ID,
-    appId: APP_ID
+    apiKey: config.public.FIREBASE_API_KEY,
+    authDomain: config.public.FIREBASE_AUTH_DOMAIN,
+    databaseURL: config.public.FIREBASE_DATABASE_URL,
+    projectId: config.public.FIREBASE_PROJECT_ID,
+    storageBucket: config.public.FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: config.public.FIREBASE_MESSAGING_SENDER_ID,
+    appId: config.public.FIREBASE_APP_ID
 };
-const inputNickname = ref('');
+
 const messages = ref([]);
 const newMessage = ref('');
 const messageContainer = ref(null);
+const lastReadTimestamp = ref(Date.now());
+const unreadCount = ref(0);
+const isScrolledToBottom = ref(true);
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const messagesRef = dbRef(db, 'messages');
+const lastReadRef = dbRef(db, `lastRead/${props.nickname}`);
 
-const goToLoginPage = () => router.push("/login")
+// 커스텀 시간 포맷팅 함수
+const formatTime = (timestamp: number) => {
+    const now = Date.now();
+    const diff = now - timestamp;
+    const minutes = Math.floor(diff / (1000 * 60));
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
+    if (minutes < 1) return '방금 전';
+    if (minutes < 60) return `${minutes}분 전`;
+    if (hours < 24) return `${hours}시간 전`;
+    if (days < 7) return `${days}일 전`;
+
+    const date = new Date(timestamp);
+    return `${date.getFullYear()}.${date.getMonth() + 1}.${date.getDate()}`;
+};
+
+const goToLoginPage = () => router.push("/login");
+
+// 스크롤 관련 함수들
+const checkScrollPosition = () => {
+    const container = messageContainer.value;
+    if (container) {
+        const { scrollHeight, scrollTop, clientHeight } = container;
+        isScrolledToBottom.value = Math.abs(scrollHeight - scrollTop - clientHeight) < 10;
+    }
+};
+
+const scrollToBottom = () => {
+    nextTick(() => {
+        if (messageContainer.value && isScrolledToBottom.value) {
+            messageContainer.value.scrollTop = messageContainer.value.scrollHeight;
+        }
+    });
+};
+
+// 마지막 읽은 시간 업데이트
+const updateLastRead = () => {
+    if (props.nickname) {
+        const now = Date.now();
+        set(lastReadRef, now);
+        lastReadTimestamp.value = now;
+        unreadCount.value = 0;
+        emit('update-unread-count', 0);
+    }
+};
+
+// 메시지 전송
 const sendMessage = () => {
     if (newMessage.value.trim() && props.nickname) {
         push(messagesRef, {
@@ -72,26 +130,63 @@ const sendMessage = () => {
             timestamp: Date.now()
         });
         newMessage.value = '';
+        isScrolledToBottom.value = true;
     }
 };
 
-const scrollToBottom = () => {
-    nextTick(() => {
-        if (messageContainer.value) {
-            messageContainer.value.scrollTop = messageContainer.value.scrollHeight;
-        }
-    });
-};
+watch(() => props.isOpen, (newValue) => {
+    if (newValue) {
+        updateLastRead();
+        emit('update-unread-count', 0);
+        nextTick(() => {
+            scrollToBottom();
+        });
+    }
+});
 
 onMounted(() => {
-    const unsubscribe = onChildAdded(messagesRef, (snapshot) => {
+    // 스크롤 이벤트 리스너
+    if (messageContainer.value) {
+        messageContainer.value.addEventListener('scroll', checkScrollPosition);
+    }
+
+    // 마지막 읽은 시간 가져오기
+    onValue(lastReadRef, (snapshot) => {
+        lastReadTimestamp.value = snapshot.val() || Date.now();
+    });
+
+    // 메시지 쿼리 설정 (최근 50개 메시지만 로드)
+    const messagesQuery = query(
+        messagesRef,
+        orderByChild('timestamp'),
+        limitToLast(50)
+    );
+
+    // 새 메시지 감지
+    const messageListener = onChildAdded(messagesQuery, (snapshot) => {
         const message = snapshot.val();
         message.id = snapshot.key;
         messages.value.push(message);
+
+        // 새 메시지가 오면 스크롤
         scrollToBottom();
+
+        // 채팅창이 닫혀있고, 다른 사람의 메시지일 때만 카운트 증가
+        if (!props.isOpen && message.nickname !== props.nickname && message.timestamp > lastReadTimestamp.value) {
+            unreadCount.value++;
+            console.log('Emitting unread count:', unreadCount.value); // 디버그용
+            emit('update-unread-count', unreadCount.value);
+        }
     });
 
-    onUnmounted(unsubscribe);
+    onUnmounted(() => {
+        if (messageListener) {
+            messageListener();
+        }
+        if (messageContainer.value) {
+            messageContainer.value.removeEventListener('scroll', checkScrollPosition);
+        }
+    });
 });
 </script>
 
@@ -178,6 +273,17 @@ onMounted(() => {
     display: block;
 }
 
+.timestamp {
+    font-size: 0.7em;
+    color: #666;
+    margin-top: 4px;
+    display: block;
+}
+
+.own-message .timestamp {
+    color: rgba(255, 255, 255, 0.8);
+}
+
 .input-area {
     display: flex;
     margin-top: 10px;
@@ -189,17 +295,6 @@ onMounted(() => {
     border-radius: 20px;
     padding: 10px;
     font-size: 16px;
-}
-
-.inputNickname {
-    max-width: 150px;
-    max-height: 50px;
-    flex: 1;
-    border: 1px solid #ccc;
-    border-radius: 20px;
-    margin-bottom: 20px;
-    text-align: center;
-    font-size: small;
 }
 
 .button {
