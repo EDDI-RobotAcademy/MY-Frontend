@@ -5,18 +5,18 @@
             <button @click="goToHomePage" class="logo" :style="{ color: currentColor }">COOING</button>
             <div class="center-menu-container" ref="centerMenuContainer">
                 <div class="center-menu" ref="centerMenu">
-                    <button class="menu-item button" data-text="성향 분석하기" @click="goToUserAnalysisPage">
-                        <span>성향 분석하기</span>
+                    <button class="menu-item button" data-text="AI 컨설팅" @click="goToUserAnalysisPage">
+                        <span>AI 컨설팅</span>
                     </button>
-                    <button class="menu-item button" data-text="인플루언서 분석하기" @click="goToInfluencerAnalysisPage">
-                        <span>인플루언서 분석하기</span>
+                    <button class="menu-item button" data-text="MY DASHBOARD" @click="goToInfluencerAnalysisPage">
+                        <span>MY DASHBOARD</span>
                     </button>
                 </div>
             </div>
             <div class="right-menu">
                 <div class="board-container" ref="boardContainer">
-                    <button class="menu-item button" data-text="네트워킹" @click="goToFreeCommunityPage">
-                        <span>네트워킹</span>
+                    <button class="menu-item button" data-text="커뮤니티" @click="goToFreeCommunityPage">
+                        <span>커뮤니티</span>
                     </button>
                 </div>
                 <div class="blog-container" ref="blogContainer">
