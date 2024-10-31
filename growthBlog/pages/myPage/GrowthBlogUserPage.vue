@@ -1,6 +1,6 @@
 <!-- UserBlogPage.vue -->
 <template>
-    <div class="container">
+    <div class="container" @scroll.passive="handleScroll">
       <NavHeader />
   
       <main class="main-content">
@@ -23,6 +23,8 @@
             :format-date="formatDate"
           />
         </div>
+
+        <div v-if="isLoading" class="loading">Loading...</div>
       </main>
     </div>
   </template>
@@ -45,6 +47,11 @@
   const posts = ref([]);
   const searchQuery = ref('');
   const userNickname = computed(() => route.params.nickname);
+
+  const currentPage = ref(1);
+  const itemsPerPage = 6;
+  const isLoading = ref(false);
+  const hasMore = ref(true);
   
   const profileStats = ref({
     following: 0,
@@ -68,11 +75,42 @@
   };
   
   const fetchUserSmartContents = async () => {
+    if (isLoading.value || !hasMore.value) return;
+    
+    isLoading.value = true;
     try {
-      const response = await smartContentStore.requestListUserSmartContentToDjango(userNickname.value);
-      posts.value = response;
+      console.log('Requesting page:', currentPage.value, 'with page size:', itemsPerPage);
+      const response = await smartContentStore.requestListUserSmartContentToDjango(
+            userNickname.value,
+            currentPage.value,
+            itemsPerPage
+        );
+
+        if (response.length < itemsPerPage) {
+            hasMore.value = false;
+        }
+
+        if (currentPage.value === 1) {
+            posts.value = response;
+        } else {
+            posts.value = [...posts.value, ...response];
+        }
+
+        currentPage.value++;
     } catch (error) {
-      console.error('사용자 SmartContent 목록 조회 실패:', error);
+        console.error('사용자 SmartContent 목록 조회 실패:', error);
+    } finally {
+        isLoading.value = false;
+    }
+  };
+
+  const handleScroll = (event) => {
+    const container = event.target;
+    const scrollPosition = container.scrollTop + container.clientHeight;
+    const threshold = container.scrollHeight - 100;
+
+    if (scrollPosition > threshold && !isLoading.value && hasMore.value) {
+        fetchUserSmartContents();
     }
   };
   
@@ -97,6 +135,9 @@
   };
   
   onMounted(() => {
+    currentPage.value = 1;
+    hasMore.value = true;
+    posts.value = [];
     fetchUserSmartContents();
   });
   </script>
@@ -104,6 +145,8 @@
   <style scoped>
   .container {
     margin-top: 70px;
+    height: 100vh;
+    overflow-y: auto;
   }
   
   .main-content {

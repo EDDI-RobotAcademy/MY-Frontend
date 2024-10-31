@@ -51,6 +51,7 @@ const searchQuery = ref('');
 const itemsPerPage = 6;
 const currentPage = ref(1);
 const isLoading = ref(false);
+const hasMore = ref(true);
 const followingCount = ref(0);
 const followersCount = ref(0);
 
@@ -89,17 +90,22 @@ const getNickname = async () => {
 };
 
 const fetchMySmartContents = async () => {
-    if (isLoading.value) return;
+    if (isLoading.value || !hasMore.value) return;
     isLoading.value = true;
     const userToken = localStorage.getItem('userToken');
     try {
         console.log('Requesting page:', currentPage.value, 'with page size:', itemsPerPage);
         const response = await smartContentStore.requestListMySmartContentToDjango(userToken, currentPage.value, itemsPerPage);
-        if (response.length === 0) {
-            return;
+        if (response.length < itemsPerPage) {
+            hasMore.value = false;
         }
-
-        posts.value.push(...response);
+        
+        if (currentPage.value === 1) {
+            posts.value = response;
+        } else {
+            posts.value = [...posts.value, ...response];
+        }
+        
         currentPage.value++;
     } catch (error) {
         console.error('내 SmartContent 목록 조회 실패:', error);
@@ -109,8 +115,11 @@ const fetchMySmartContents = async () => {
 };
 
 const handleScroll = (event) => {
-    const bottomReached = event.target.scrollHeight - event.target.scrollTop <= event.target.clientHeight + 100;
-    if (bottomReached && !isLoading.value) {
+    const container = event.target;
+    const scrollPosition = container.scrollTop + container.clientHeight;
+    const threshold = container.scrollHeight - 100;
+
+    if (scrollPosition > threshold && !isLoading.value && hasMore.value) {
         fetchMySmartContents();
     }
 };
