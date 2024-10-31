@@ -152,7 +152,7 @@
                     content,
                     userToken,
                 }
-                console.log('댓글 데이터:', commentData)
+                
                 await freeCommunityCommentStore.addFreeCommunityComment(commentData)
                 await loadComments()
             } catch (error) {

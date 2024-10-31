@@ -60,7 +60,7 @@ const handlePaymentSuccess = async () => {
     try {
         const response = await tossPaymentsStore.requestPaymentConfirmToDjango()
         if (response.status === "DONE") {
-            console.log('결제 승인 성공')
+            
             await accountStore.requestchangeMembershipToDjango()
             if (confirmLoadingSection.value && confirmSuccessSection.value) {
                 confirmLoadingSection.value.style.display = 'none'

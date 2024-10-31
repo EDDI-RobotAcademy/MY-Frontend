@@ -28,7 +28,7 @@
       }
     },
     mounted() {
-      console.log("SummaryContent 출력", this.data);
+      
       this.setupIntersectionObserver();
     },
     beforeUnmount() {

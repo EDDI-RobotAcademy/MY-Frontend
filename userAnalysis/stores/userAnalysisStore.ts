@@ -12,9 +12,6 @@ interface UserAnalysisPayload {
   interested_influencer: string
 }
 
-interface UserAnalysisInputAnswer {
-  // Define the structure of UserAnalysisInputAnswer
-}
 
 export const useUserAnalysisStore = defineStore('userAnalysisStore', {
   state: () => ({
@@ -28,7 +25,6 @@ export const useUserAnalysisStore = defineStore('userAnalysisStore', {
       const command = 7
 
       try {
-        console.log('sendUserAnalysisToFastAPI()')
         const response = await fastapiAxiosInst.post('/request-ai-command', 
           { "command" : command,
             "data" : [
@@ -45,7 +41,7 @@ export const useUserAnalysisStore = defineStore('userAnalysisStore', {
         )
         return response.data
       } catch (error) {
-        console.log('sendUserAnalysisToFastAPI() 중 문제 발생:', error)
+         console.error('sendUserAnalysisToFastAPI 중 문제 발생:', error)
         throw error
       }
     },
@@ -57,7 +53,7 @@ export const useUserAnalysisStore = defineStore('userAnalysisStore', {
         const response = await djangoAxiosInst.post('user_analysis/list-question', {
           user_analysis_Id: userAnalysisId
         })
-        console.log('질문 리스트: ', response.data)
+        
         return response.data
       } catch (error) {
         console.error('requestListQuestionToDjango() 중 에러 발생')
@@ -94,7 +90,7 @@ export const useUserAnalysisStore = defineStore('userAnalysisStore', {
         })
         return response.data
       } catch (error) {
-        console.log('requestSubmitAnswerToDjango() 중 에러 발생')
+         console.error('sendUserAnalysisToFastAPI중 에러 발생')
         throw error
       }
     },
@@ -109,7 +105,7 @@ export const useUserAnalysisStore = defineStore('userAnalysisStore', {
           const res = await djangoAxiosInst.post('/user_analysis/create', payload)
           return res.data
       } catch (error) {
-          console.log('requestCreateUserAnalysisToDjango() 중 에러 발생')
+           console.error('requestCreateUserAnalysisToDjango 중 에러 발생', error)
           throw error
       } 
   },
@@ -126,10 +122,10 @@ export const useUserAnalysisStore = defineStore('userAnalysisStore', {
             question,
             user_analysis_type
         })
-        console.log(res.data)
+        
         return res.data
     } catch (error) {
-        console.log('requestCreateSurveyQuestionToDjango() 중 에러 발생')
+        console.error('requestCreateUserAnalysisQuestionToDjango 중 에러 발생')
         throw error
     }
   },
@@ -153,15 +149,15 @@ export const useUserAnalysisStore = defineStore('userAnalysisStore', {
     const { question_id, custom_text } = payload
     const { djangoAxiosInst } = createAxiosInstances()
     try {
-        console.log(payload)
+        
         const res = await djangoAxiosInst.post('user_analysis/create-user-analysis-selection', {
             question_id,
             custom_text
         })
-        console.log(res.data)
+        
         return res.data
     } catch (error) {
-        console.log('requestCreateUserAnalysisSelectionToDjango() 중 에러 발생')
+        console.error('requestCreateUserAnalysisSelectionToDjango() 중 에러 발생')
         throw error
     }
   },
@@ -212,7 +208,7 @@ export const useUserAnalysisStore = defineStore('userAnalysisStore', {
       userToken: userToken
     }
     try {
-      console.log('Sending request with request_id: ', request_id)
+      
       const res = await djangoAxiosInst.post('ai_request/send', payload)
       return res.data;
     } catch (error) {

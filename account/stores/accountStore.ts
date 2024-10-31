@@ -26,7 +26,7 @@ export const useAccountStore = defineStore('accountStore', {
       try {
         const response = await djangoAxiosInst.post('/account/register', accountInfo)
         if (response.data) {
-          console.log("회원 가입 완료")
+          
         }
       } catch (error) {
         console.error('신규 계정 생성 실패:', error)
@@ -43,7 +43,7 @@ export const useAccountStore = defineStore('accountStore', {
       try {
         const response = await djangoAxiosInst.post('/user_profile/get-self-profile', payload)
         if (response.data) {
-          console.log("사용자 정보 요청 완료")
+          
           return response.data
         }
       } catch (error) {
@@ -59,7 +59,7 @@ export const useAccountStore = defineStore('accountStore', {
           userToken: userToken
         })
         if (response.data) {
-          console.log('사용자 닉네임 변경 요청 완료')
+          
           return response.data
         }
       } catch (error) {
@@ -76,7 +76,7 @@ export const useAccountStore = defineStore('accountStore', {
           accountIds: accountIds  // 배열로 전송
         })
         if (response.data) {
-          console.log("닉네임 반환")
+          
           return response.data
         }
       } catch (error) {
@@ -94,7 +94,7 @@ export const useAccountStore = defineStore('accountStore', {
         }
         const response = await djangoAxiosInst.put('/user_profile/change-membership', payload)
         if (response.data) {
-          console.log('멤버쉽 변경 요청 완료')
+          
           return response.data
         }
       } catch (error) {

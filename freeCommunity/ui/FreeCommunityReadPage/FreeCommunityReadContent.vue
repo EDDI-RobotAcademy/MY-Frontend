@@ -53,7 +53,7 @@ const checkMyFreeCommunity = ref(false)
 const fetchFreeCommunityContent = async () => {
     try {
         const response = await freeCommunityStore.readFreeCommunityContent(free_communityId);
-        console.log("readFreeCommunityContent 데이터", response);
+        
         freeCommunityContent.value = response;
 
     } catch (err) {
@@ -64,11 +64,11 @@ const fetchFreeCommunityContent = async () => {
 
 const fetchCheckAuthority = async () => {
     try {
-        console.log("fetchCheckAuthority 접근")
+        
         const response = await freeCommunityStore.checkAuthority(free_communityId);
-        console.log("readFreeCommunityCofetchCheckAuthorityntent 데이터", response.is_authorized);
+        
         checkMyFreeCommunity.value = response.is_authorized
-        console.log("checkMyFreeCommunity 확인", checkMyFreeCommunity.value)
+        
     } catch (err) {
         error.value = 'fetchCheckAuthority 에러';
         console.error('Error fetching free-community content:', err);

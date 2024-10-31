@@ -94,7 +94,7 @@ const fetchMySmartContents = async () => {
     isLoading.value = true;
     const userToken = localStorage.getItem('userToken');
     try {
-        console.log('Requesting page:', currentPage.value, 'with page size:', itemsPerPage);
+        
         const response = await smartContentStore.requestListMySmartContentToDjango(userToken, currentPage.value, itemsPerPage);
         if (response.length < itemsPerPage) {
             hasMore.value = false;

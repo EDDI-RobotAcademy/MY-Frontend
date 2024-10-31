@@ -8,7 +8,7 @@ import { useGoogleAuthenticationStore } from '../../../../googleAuthentication/s
 const GoogleAuthenticationStore = useGoogleAuthenticationStore()
 
 const googleLoginClick = async () => {
-    console.log("googleLoginClick")
+    
     await GoogleAuthenticationStore.requestGoogleOauthRedirectionToDjango()
 }
 </script> 

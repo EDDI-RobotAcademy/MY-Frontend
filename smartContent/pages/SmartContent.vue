@@ -315,10 +315,10 @@ const saveContent = async () => {
             }))
         }
 
-        console.log('저장할 데이터:', smartContentData)
+        
 
         const result = await smartContentStore.requestCreateSmartContentToDjango(smartContentData)
-        console.log('API 응답:', result)
+        
 
         if (result) {
             alert('저장되었습니다.')

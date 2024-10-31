@@ -51,7 +51,7 @@ async function searchYouTube() {
         }
 
         const channelDetails = channelInfo.items[0];
-        console.log("채널 상세", channelDetails)
+        
         // 2. Search for videos
         const videosResponse = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&key=${API_KEY}&q=${encodeURIComponent(searchQuery.value)}&maxResults=5`);
         const videosData = await videosResponse.json();
@@ -87,7 +87,7 @@ async function searchYouTube() {
             }))
         };
 
-        console.log("influencerData:", influencerData);
+        
         emit('searchResult', influencerData);
     } catch (error) {
         console.error('API 요청 중 오류 발생:', error);

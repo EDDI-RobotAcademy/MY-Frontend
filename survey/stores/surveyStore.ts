@@ -17,7 +17,7 @@ export const useSurveyStore = defineStore('surveyStore', {
         const res = await djangoAxiosInst.post('/survey/create', payload)
         return res.data
       } catch (error) {
-        console.log('requestCreateToDjango() 중 에러 발생')
+        console.error('requestCreateToDjango() 중 에러 발생')
         throw error
       }
     },
@@ -31,10 +31,9 @@ export const useSurveyStore = defineStore('surveyStore', {
       const { djangoAxiosInst } = createAxiosInstances()
       try {
         const res = await djangoAxiosInst.post('survey/create-question', payload)
-        console.log(res.data)
         return res.data
       } catch (error) {
-        console.log('requestCreateSurveyQuestionToDjango() 중 에러 발생')
+        console.error('requestCreateSurveyQuestionToDjango() 중 에러 발생')
         throw error
       }
     },
@@ -43,10 +42,9 @@ export const useSurveyStore = defineStore('surveyStore', {
       const { djangoAxiosInst } = createAxiosInstances()
       try {
         const res = await djangoAxiosInst.post('survey/create-survey-selection', payload)
-        console.log(res.data)
         return res.data
       } catch (error) {
-        console.log('requestCreateSurveySelectionToDjango() 중 에러 발생')
+        console.error('requestCreateSurveySelectionToDjango() 중 에러 발생')
         throw error
       }
     },
@@ -56,7 +54,6 @@ export const useSurveyStore = defineStore('surveyStore', {
       try {
         const res = await djangoAxiosInst.post('survey/list-question', { survey_Id: surveyId })
         const data = res.data
-        console.log('질문 리스트: ', data)
         return data
       } catch (error) {
         console.error('requestListSurveyQuestionToDjango() 중 에러 발생')
@@ -95,14 +92,13 @@ export const useSurveyStore = defineStore('surveyStore', {
       const { djangoAxiosInst } = createAxiosInstances()
       try {
         const userToken = localStorage.getItem('userToken')
-        console.log("userToken : ", userToken)
         const res = await djangoAxiosInst.post('survey/submit-answer', {
           survey_answer: payload.survey_answer,
           userToken: userToken
         })
         return res.data
       } catch (error) {
-        console.log('requestSubmitSurveyAnswerToDjango() 중 에러 발생')
+        console.error('requestSubmitSurveyAnswerToDjango() 중 에러 발생')
         throw error
       }
     }

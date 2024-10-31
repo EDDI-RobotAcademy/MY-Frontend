@@ -34,7 +34,7 @@
   const contentStrategySubtitle = ref('')
   
   onMounted(() => {
-    console.log("userAnalysisRequest: ", userAnalysisRequest)
+    
     if (userAnalysisRequest) {
       try {
         sendSurveyToFastAPI()
@@ -49,7 +49,7 @@
   const sendSurveyToFastAPI = async () => {
     try {
       const response = await userAnalysisStore.sendUserAnalysisRequestToFastapiByDjango(userAnalysisRequest.value)
-      console.log("응답 데이터", response)
+      
   
       processAnalysisData(response)
   
@@ -80,13 +80,13 @@
       contentStrategyText.value = lines.slice(1).join('\n')
     }
   
-    console.log("Content Strategy Subtitle:", contentStrategySubtitle.value)
-    console.log("Content Strategy Text:", contentStrategyText.value)
+    
+    
   }
   
   const extractMBTITypeAndTraits = (data) => {
     let mbtiMatch = data.match(/\*\*(\w{4})의 장점:/)
-    console.log("mbtiMatch", mbtiMatch)
+    
   
     mbtiType.value = mbtiMatch ? mbtiMatch[1] : ''
   
@@ -96,8 +96,8 @@
   
       const strengths = data.match(strengthsRegex)
       const weaknesses = data.match(weaknessesRegex)
-      console.log("strengths 출력", strengths)
-      console.log("weaknesses 출력", weaknesses)
+      
+      
   
       const extractContent = (text) => {
         return text.split('\n')
@@ -110,14 +110,14 @@
       const extractedStrengths = strengths ? extractContent(strengths[0]) : ''
       const extractedWeaknesses = weaknesses ? extractContent(weaknesses[0]) : ''
   
-      console.log("추출된 장점:", extractedStrengths)
-      console.log("추출된 단점:", extractedWeaknesses)
+      
+      
   
       parsedStrengths.value = parseTraits(extractedStrengths)
       parsedWeaknesses.value = parseTraits(extractedWeaknesses)
   
-      console.log("파싱된 장점:", parsedStrengths.value)
-      console.log("파싱된 단점:", parsedWeaknesses.value)
+      
+      
     } else {
       console.error("MBTI 타입을 찾을 수 없습니다.")
       parsedStrengths.value = []

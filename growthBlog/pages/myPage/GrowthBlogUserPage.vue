@@ -79,7 +79,7 @@
     
     isLoading.value = true;
     try {
-      console.log('Requesting page:', currentPage.value, 'with page size:', itemsPerPage);
+      
       const response = await smartContentStore.requestListUserSmartContentToDjango(
             userNickname.value,
             currentPage.value,
@@ -117,7 +117,7 @@
   const handleFollow = async () => {
     try {
       const response = await growthBlogStore.registerSocial(userNickname.value);
-      console.log('팔로우 성공:', response);
+      
       profileStats.value.followers += 1;
     } catch (error) {
       console.error('팔로우 실패:', error);
@@ -127,7 +127,7 @@
   const handleUnfollow = async () => {
     try {
       const response = await growthBlogStore.unregisterSocial(userNickname.value);
-      console.log('언팔로우 성공:', response);
+      
       profileStats.value.followers = Math.max(0, profileStats.value.followers - 1);
     } catch (error) {
       console.error('언팔로우 실패:', error);
