@@ -5,8 +5,8 @@
         <v-img alt="Survey Icon"></v-img>
       </div>
       <div class="overlay-text">
-        <h1>COOING은 인플루언서가 되고 싶은 당신을 위해<br>가장 비슷한 롤 모델을 찾고, 성장 방향을 알려주는 서비스에요.</h1>
-        <h3>당신이 어떤 성향인지 알고싶어요. 다음 질문들에 답변해주세요!</h3>
+        <h1>COOING은 인플루언서를 꿈꾸는 당신의 든든한 성장 파트너예요!</h1>
+        <h3>맞춤형 성장 전략을 제안해드리기 위해 간단한 질문들을 준비했어요.<br>당신을 더 잘 이해할 수 있도록, 아래 질문들에 솔직하게 답변해 주세요✨</h3>
       </div>
       <div class="survey-container" v-if="questions.length > 0">
         <h2>{{ questions[currentQuestionIndex].question_text }}</h2>

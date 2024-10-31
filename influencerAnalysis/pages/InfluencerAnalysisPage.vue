@@ -1,8 +1,8 @@
 <template>
     <v-container>
-        <v-row>
-            <v-col cols="12">
-                <h2 class="text-h5 mb-6">YouTube 채널 분석</h2>
+        <v-row justify="center" align="center" style="min-height: 100vh;">
+            <v-col cols="12" class="text-center">
+                <h2 class="text-h5 mb-6">내 채널 분석</h2>
 
                 <div v-if="!isLoggedIn">
                     <v-btn color="red" @click="handleLogin" :loading="isLoading" class="youtube-login-btn">
@@ -481,6 +481,7 @@ watch([startDate, endDate], async () => {
 }
 
 .youtube-login-btn {
+    align-self: center;
     background-color: #ff0000 !important;
     color: white !important;
 }
