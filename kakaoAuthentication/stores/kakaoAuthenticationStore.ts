@@ -7,7 +7,6 @@ export const useKakaoAuthenticationStore = defineStore('KakaoAuthStore', {
     actions: {
         async requestKakaoOauthRedirectionToDjango(): Promise<void> {
             const { djangoAxiosInst } = createAxiosInstances()
-            ')
             return djangoAxiosInst.get('/kakao_oauth/kakao').then((res) => {
                 
                 window.location.href = res.data.url
@@ -16,7 +15,6 @@ export const useKakaoAuthenticationStore = defineStore('KakaoAuthStore', {
         async requestAccessTokenToDjangoRedirection(payload: { code: string }): Promise<string> {
             const { djangoAxiosInst } = createAxiosInstances()
             try {
-                ')
                 const { code } = payload
                 const response = await djangoAxiosInst.post(
                     'kakao_oauth/kakao/access-token', { code })
