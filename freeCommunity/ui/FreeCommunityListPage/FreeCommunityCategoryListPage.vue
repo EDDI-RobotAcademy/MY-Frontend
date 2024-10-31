@@ -100,44 +100,38 @@ const fetchCategories = async () => {
 }
 
 const selectCategory = async (categoryId: number | null) => {
+    emit('update:modelValue', categoryId)
+    emit('categoryContentLoaded', []);
+
     if (categoryId === null) {
         const { category, ...queryWithoutCategory } = route.query
-        router.push({ query: queryWithoutCategory })
+        await router.push({ query: queryWithoutCategory })
     } else {
-        router.push({
+        await router.push({
             query: { ...route.query, category: categoryId.toString() }
         })
     }
 
-    emit('update:modelValue', categoryId)
     try {
-        let response = await freeCommunityStore.getCategoriesContent(categoryId)
-        let dataToProcess = response;
-        if (response && response.data !== undefined) {
-            dataToProcess = response.data;
+        // 새로운 카테고리 데이터 요청
+        const response = await freeCommunityStore.getCategoriesContent(categoryId);
+        
+        // 응답이 없거나 빈 배열인 경우 빈 배열 전달
+        if (!response || (Array.isArray(response) && response.length === 0) || 
+            (response?.data && Array.isArray(response.data) && response.data.length === 0)) {
+            emit('categoryContentLoaded', []);
+            return;
         }
-
-        let filteredContent = [];
-        if (Array.isArray(dataToProcess)) {
-            filteredContent = categoryId === null
-                ? dataToProcess
-                : dataToProcess.filter(
-                    (item: any) => item.categoryfree_communityId === categoryId
-                );
-        } else if (typeof dataToProcess === 'object' && dataToProcess !== null) {
-            filteredContent = categoryId === null
-                ? [dataToProcess]
-                : [dataToProcess].filter(
-                    (item: any) => item.categoryfree_communityId === categoryId
-                );
-        }
-
-        emit('categoryContentLoaded', filteredContent)
+        
+        const contents = Array.isArray(response) ? response : 
+                        (response?.data ? response.data : []);
+        
+        emit('categoryContentLoaded', contents);
     } catch (error) {
-        console.error('카테고리 내용을 가져오는 중 오류 발생:', error)
-        emit('categoryContentLoaded', [])
+        console.error('카테고리 내용을 가져오는 중 오류 발생:', error);
+        emit('categoryContentLoaded', []);
     }
-}
+};
 
 const handleClickOutside = (event: MouseEvent) => {
     const popupEl = popupRef.value
