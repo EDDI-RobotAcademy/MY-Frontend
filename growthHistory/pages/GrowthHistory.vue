@@ -215,17 +215,6 @@ const handleLogin = () => {
     }
 }
 
-const handleLogout = () => {
-    const { google } = window as any
-    if (google && accessToken.value) {
-        google.accounts.oauth2.revoke(accessToken.value)
-        isLoggedIn.value = false
-        accessToken.value = ''
-        channelData.value = null
-        analyticsData.value = null
-    }
-}
-
 onMounted(async () => {
     await initializeGoogleAuth()
 })
@@ -242,13 +231,20 @@ watch([startDate, endDate], async () => {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 24px;
-    margin: 24px 0;
+    margin: 48px 0;
+    padding-top: 24px;
 }
+
 
 .dashboard-card {
     background: #fff;
     border-radius: 12px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-top: 16px;
+}
+
+.v-container {
+    padding-top: 24px;
 }
 
 .dashboard-card .v-card-title {
