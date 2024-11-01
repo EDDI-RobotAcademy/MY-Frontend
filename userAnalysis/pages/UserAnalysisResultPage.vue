@@ -37,12 +37,12 @@
     
     if (userAnalysisRequest) {
         try {
-          const result = sendSurveyToFastAPI(); // 수정: 결과를 변수에 저장
-
-          if (result === true) {
-            getUserAnalysisResultFromFastAPI(); // 결과가 true이면 실행
+          const result =  sendSurveyToFastAPI(); // 수정: 결과를 변수에 저장
+          console.log("result", result)
+          if (result) {
+            userAnalysisStore.getUserAnalysisResultFromFastAPI(); // 결과가 true이면 실행
           }
-        } catch (error) {
+        } catch (error) { 
           console.error("Failed to parse surveyData:", error);
         }
       } else {
@@ -56,9 +56,11 @@
       const response = await userAnalysisStore.sendUserAnalysisRequestToFastapiByDjango(userAnalysisRequest.value)
       
   
-      processAnalysisData(response)
+      // processAnalysisData(response)
   
-      localStorage.setItem('userAnalysisData', JSON.stringify(response))
+      // localStorage.setItem('userAnalysisData', JSON.stringify(response))
+      return response
+
     } catch (error) {
       console.error("FastAPI 요청 오류:", error)
     }
