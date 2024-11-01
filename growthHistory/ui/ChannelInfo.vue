@@ -37,3 +37,33 @@ const formatNumber = (num: string | number) => {
     return new Intl.NumberFormat('ko-KR').format(Number(num))
 }
 </script>
+
+<style scoped>
+.channel-card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.v-card-text {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+}
+
+.stat-box {
+    text-align: center;
+    padding: 8px;
+}
+
+.stat-label {
+    color: rgba(0, 0, 0, 0.6);
+    font-size: 0.875rem;
+    margin-bottom: 4px;
+}
+
+.stat-value {
+    font-size: 1.25rem;
+    font-weight: 500;
+}
+</style>
