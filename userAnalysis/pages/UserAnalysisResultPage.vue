@@ -33,15 +33,18 @@
   const contentStrategyText = ref('')
   const contentStrategySubtitle = ref('')
   
-  onMounted(() => {
+  onMounted(async () => {
     
     if (userAnalysisRequest) {
         try {
-          const result =  sendSurveyToFastAPI(); // 수정: 결과를 변수에 저장
+          const result =  await sendSurveyToFastAPI(); // 수정: 결과를 변수에 저장
           console.log("result", result)
           if (result) {
-            userAnalysisStore.getUserAnalysisResultFromFastAPI(); // 결과가 true이면 실행
+            await userAnalysisStore.getUserAnalysisResultFromFastAPI(); // 결과가 true이면 실행
           }
+
+          const strategy = await userAnalysisStore.getCustomStrategyFromDjango(userAnalysisRequest.value)
+          console.log("strategy: ", strategy)
         } catch (error) { 
           console.error("Failed to parse surveyData:", error);
         }

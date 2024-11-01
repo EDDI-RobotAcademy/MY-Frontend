@@ -241,6 +241,25 @@ export const useUserAnalysisStore = defineStore('userAnalysisStore', {
           console.log('getUserAnalysisResultFromFastAPI() 중 문제 발생:', error)
           throw error
       }
+    },
+
+    async getCustomStrategyFromDjango(request_id: number): Promise<any>{
+      const { djangoAxiosInst } = createAxiosInstances();
+      const userToken = localStorage.getItem("userToken") || localStorage.getItem("guestToken")
+
+      const payload = {
+        request_id: request_id,
+        userToken: userToken
+      }
+      try {
+        
+        const res = await djangoAxiosInst.post('custom_strategy_history/read', payload)
+        return res.data;
+      } catch (error) {
+        console.error('getCustomStrategyFromDjango() 중 에러 발생');
+        throw error;
+      }
+
     }
   }
   }
