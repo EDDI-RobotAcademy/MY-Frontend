@@ -36,15 +36,20 @@
   onMounted(() => {
     
     if (userAnalysisRequest) {
-      try {
-        sendSurveyToFastAPI()
-      } catch (error) {
-        console.error("Failed to parse surveyData:", error)
+        try {
+          const result = sendSurveyToFastAPI(); // 수정: 결과를 변수에 저장
+
+          if (result === true) {
+            getUserAnalysisResultFromFastAPI(); // 결과가 true이면 실행
+          }
+        } catch (error) {
+          console.error("Failed to parse surveyData:", error);
+        }
+      } else {
+        console.error("No surveyData received");
       }
-    } else {
-      console.error("No surveyData received")
     }
-  })
+  )
   
   const sendSurveyToFastAPI = async () => {
     try {

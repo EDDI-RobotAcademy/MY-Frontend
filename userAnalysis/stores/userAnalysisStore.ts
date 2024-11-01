@@ -108,114 +108,140 @@ export const useUserAnalysisStore = defineStore('userAnalysisStore', {
            console.error('requestCreateUserAnalysisToDjango 중 에러 발생', error)
           throw error
       } 
-  },
-  async requestCreateUserAnalysisQuestionToDjango( payload: { 
-    user_analysis: number, 
-    question: string, 
-    user_analysis_type: number 
-  }): Promise<any> {
-    const { djangoAxiosInst } = createAxiosInstances()
-    const { user_analysis, question, user_analysis_type } = payload
-    try {
-        const res = await djangoAxiosInst.post('user_analysis/create-question', {
-            user_analysis,
-            question,
-            user_analysis_type
-        })
-        
-        return res.data
-    } catch (error) {
-        console.error('requestCreateUserAnalysisQuestionToDjango 중 에러 발생')
-        throw error
-    }
-  },
-  async requestListUserAnalysisAnswerToDjango(payload: {
-    user_analysis_id: number
-  }): Promise<void> {
-    const { djangoAxiosInst } = createAxiosInstances()
-    try {
-      const res = await djangoAxiosInst.post('user_analysis/list-answer', payload);   
-      const data = res.data;
-      return data
-    } catch (error) {
-        console.error('requestListUserAnalysisAnswerToDjango() 중 에러 발생')
-        throw error
-    }
-  },
-  async requestCreateUserAnalysisSelectionToDjango(payload: { 
-    question_id: number, 
-    custom_text: string 
-  }): Promise<any> {
-    const { question_id, custom_text } = payload
-    const { djangoAxiosInst } = createAxiosInstances()
-    try {
-        
-        const res = await djangoAxiosInst.post('user_analysis/create-user-analysis-selection', {
-            question_id,
-            custom_text
-        })
-        
-        return res.data
-    } catch (error) {
-        console.error('requestCreateUserAnalysisSelectionToDjango() 중 에러 발생')
-        throw error
-    }
-  },
-  async listAllUserAnalysisRequestToDjango(): Promise<any> {
-    const { djangoAxiosInst } = createAxiosInstances();
-    try {
-      const res = await djangoAxiosInst.get('user_analysis/list-all-request');
-      this.requests = res.data;
-      return res.data;
-    } catch (error) {
-      console.error('listAllUserAnalysisRequestToDjango() 중 에러 발생');
-      throw error;
-    }
-  },
-  async listOwnUserAnalysisRequestToDjango(): Promise<any> {
-    const { djangoAxiosInst } = createAxiosInstances();
-    const userToken = localStorage.getItem("userToken")
-    try {
-      const res = await djangoAxiosInst.get('user_analysis/list-own-request', {
-        params: {
-          userToken: userToken
-        }
-      });
-      this.requests = res.data;
-      return res.data;
-    } catch (error) {
-      console.error('listOwnUserAnalysisRequestToDjango() 중 에러 발생');
-      throw error;
-    }
-  },
-  async readUserAnalysisRequestToDjango(requestId: number): Promise<void> {
-    const { djangoAxiosInst } = createAxiosInstances();
-    try {
-      const res = await djangoAxiosInst.get(`user_analysis/read-request/${requestId}`);
-      this.selectedRequestDetails = res.data;  // 직접 업데이트
-    } catch (error) {
-      console.error('readUserAnalysisRequestToDjango() 중 에러 발생');
-      throw error;
-    }
-  },
-  async sendUserAnalysisRequestToFastapiByDjango(request_id: number): Promise<any>{
-    const { djangoAxiosInst } = createAxiosInstances();
-    const userToken = localStorage.getItem("userToken") || localStorage.getItem("guestToken")
+    },
+    async requestCreateUserAnalysisQuestionToDjango( payload: { 
+      user_analysis: number, 
+      question: string, 
+      user_analysis_type: number 
+    }): Promise<any> {
+      const { djangoAxiosInst } = createAxiosInstances()
+      const { user_analysis, question, user_analysis_type } = payload
+      try {
+          const res = await djangoAxiosInst.post('user_analysis/create-question', {
+              user_analysis,
+              question,
+              user_analysis_type
+          })
+          
+          return res.data
+      } catch (error) {
+          console.error('requestCreateUserAnalysisQuestionToDjango 중 에러 발생')
+          throw error
+      }
+    },
+    async requestListUserAnalysisAnswerToDjango(payload: {
+      user_analysis_id: number
+    }): Promise<void> {
+      const { djangoAxiosInst } = createAxiosInstances()
+      try {
+        const res = await djangoAxiosInst.post('user_analysis/list-answer', payload);   
+        const data = res.data;
+        return data
+      } catch (error) {
+          console.error('requestListUserAnalysisAnswerToDjango() 중 에러 발생')
+          throw error
+      }
+    },
+    async requestCreateUserAnalysisSelectionToDjango(payload: { 
+      question_id: number, 
+      custom_text: string 
+    }): Promise<any> {
+      const { question_id, custom_text } = payload
+      const { djangoAxiosInst } = createAxiosInstances()
+      try {
+          
+          const res = await djangoAxiosInst.post('user_analysis/create-user-analysis-selection', {
+              question_id,
+              custom_text
+          })
+          
+          return res.data
+      } catch (error) {
+          console.error('requestCreateUserAnalysisSelectionToDjango() 중 에러 발생')
+          throw error
+      }
+    },
+    async listAllUserAnalysisRequestToDjango(): Promise<any> {
+      const { djangoAxiosInst } = createAxiosInstances();
+      try {
+        const res = await djangoAxiosInst.get('user_analysis/list-all-request');
+        this.requests = res.data;
+        return res.data;
+      } catch (error) {
+        console.error('listAllUserAnalysisRequestToDjango() 중 에러 발생');
+        throw error;
+      }
+    },
+    async listOwnUserAnalysisRequestToDjango(): Promise<any> {
+      const { djangoAxiosInst } = createAxiosInstances();
+      const userToken = localStorage.getItem("userToken")
+      try {
+        const res = await djangoAxiosInst.get('user_analysis/list-own-request', {
+          params: {
+            userToken: userToken
+          }
+        });
+        this.requests = res.data;
+        return res.data;
+      } catch (error) {
+        console.error('listOwnUserAnalysisRequestToDjango() 중 에러 발생');
+        throw error;
+      }
+    },
+    async readUserAnalysisRequestToDjango(requestId: number): Promise<void> {
+      const { djangoAxiosInst } = createAxiosInstances();
+      try {
+        const res = await djangoAxiosInst.get(`user_analysis/read-request/${requestId}`);
+        this.selectedRequestDetails = res.data;  // 직접 업데이트
+      } catch (error) {
+        console.error('readUserAnalysisRequestToDjango() 중 에러 발생');
+        throw error;
+      }
+    },
+    async sendUserAnalysisRequestToFastapiByDjango(request_id: number): Promise<any>{
+      const { djangoAxiosInst } = createAxiosInstances();
+      const userToken = localStorage.getItem("userToken") || localStorage.getItem("guestToken")
 
-    const payload = {
-      command: 7,
-      request_id: request_id,
-      userToken: userToken
+      const payload = {
+        command: 7,
+        request_id: request_id,
+        userToken: userToken
+      }
+      try {
+        
+        const res = await djangoAxiosInst.post('ai_request/send', payload)
+        return res.data;
+      } catch (error) {
+        console.error('sendUserAnalysisRequestToFastapiByDjango() 중 에러 발생');
+        throw error;
+      }
+    },
+    async getUserAnalysisResultFromFastAPI(): Promise<any> {
+      const { fastapiAxiosInst } = createAxiosInstances()
+      try {
+
+          const maxAttempts = 50
+          const delay = 5000
+
+          for (let attempt = 0; attempt < maxAttempts; attempt++) {
+              const response = await fastapiAxiosInst.post('/growth-strategy')
+              console.log("getUserAnalysisResultFromFastAPI:", response)
+
+              if (response.data) {
+                  console.log("response.data:", response.data)
+                  return response.data
+              }
+
+              console.log(`Attempt ${attempt} failed.`)
+              await new Promise(resolve => setTimeout(resolve, delay))
+          }
+
+          throw new Error('결과를 가져오는 데 실패했습니다.')
+      } catch (error) {
+          console.log('getUserAnalysisResultFromFastAPI() 중 문제 발생:', error)
+          throw error
+      }
     }
-    try {
-      
-      const res = await djangoAxiosInst.post('ai_request/send', payload)
-      return res.data;
-    } catch (error) {
-      console.error('sendUserAnalysisRequestToFastapiByDjango() 중 에러 발생');
-      throw error;
-    }
-  
   }
-}
-})
+  }
+)
