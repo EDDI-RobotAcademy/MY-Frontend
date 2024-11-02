@@ -35,20 +35,29 @@ const growthRoadmap = ref(null)
 const supportMessage = ref(null)
 const userAnalysisRequest = ref(route.query.userAnalysisRequest)
 
+// 마크다운 제거 함수
+const removeMarkdown = (text) => {
+  return text
+    .replace(/\*\*/g, '')
+    .replace(/`/g, '')
+    .replace(/\[(.*?)\]\(.*?\)/g, '$1')
+    .replace(/#{1,6}\s/g, '')
+}
+
 onMounted(async () => {
   if (userAnalysisRequest.value) {
     try {
-          const result =  await sendSurveyToFastAPI(); // 수정: 결과를 변수에 저장
-          console.log("result", result)
-          if (result) {
-            await userAnalysisStore.getUserAnalysisResultFromFastAPI(); // 결과가 true이면 실행
-          }
-
-          const strategy = await userAnalysisStore.getCustomStrategyFromDjango(userAnalysisRequest.value)
-          console.log("strategy: ", strategy)
-        } catch (error) { 
-          console.error("Failed to parse surveyData:", error);
+      const result = await sendSurveyToFastAPI()
+      console.log("result", result)
+      if (result) {
+        const analysisData = await userAnalysisStore.getUserAnalysisResultFromFastAPI()
+        if (analysisData) {
+          processAnalysisData(analysisData)
         }
+      }
+    } catch (error) {
+      console.error("Failed to process analysis data:", error)
+    }
   }
 })
 
@@ -61,10 +70,152 @@ const sendSurveyToFastAPI = async () => {
   }
 }
 
-const parseAnalysisPoints = (text) => {
-  return text.split('-')
-    .map(point => point.trim())
-    .filter(point => point.length > 0 && !point.includes('**'))
+const extractSection = (text, startMarker, endMarker) => {
+  if (!text) return null
+  try {
+    const startPattern = `### ${startMarker}`
+    const startIndex = text.indexOf(startPattern)
+    if (startIndex === -1) return null
+
+    let endIndex
+    if (endMarker) {
+      endIndex = text.indexOf(`### ${endMarker}`, startIndex)
+      if (endIndex === -1) {
+        endIndex = text.length
+      }
+    } else {
+      endIndex = text.length
+    }
+
+    let sectionText = text.slice(startIndex + startPattern.length, endIndex).trim()
+    return sectionText.replace(/^:\s*/, '')
+  } catch (error) {
+    console.error(`Error extracting section ${startMarker}:`, error)
+    return null
+  }
+}
+
+const processContentStrategy = (strategySection) => {
+  try {
+    if (!strategySection) return []
+
+    const cleanedSection = removeMarkdown(strategySection)
+    const strategies = []
+
+    // 숫자로 시작하는 전략 항목을 찾습니다
+    const strategyItems = cleanedSection.split(/\d+\.\s+/).slice(1)
+
+    strategyItems.forEach(item => {
+      const lines = item.split('\n').map(line => line.trim()).filter(Boolean)
+
+      if (lines.length > 0) {
+        const strategy = {
+          title: '',
+          description: '',
+          examples: []
+        }
+
+        // 첫 줄에서 제목과 설명 분리
+        const titleMatch = lines[0].match(/([^:]+):(.*)/)
+        if (titleMatch) {
+          strategy.title = titleMatch[1].trim()
+          strategy.description = titleMatch[2].trim()
+        } else {
+          strategy.title = lines[0]
+        }
+
+        // 나머지 줄에서 예시와 추가 설명 처리
+        lines.slice(1).forEach(line => {
+          if (line.startsWith('-')) {
+            line = line.substring(1).trim()
+
+            // 예시 항목 처리
+            const exampleMatch = line.match(/"([^"]+)"/)
+            if (exampleMatch) {
+              strategy.examples.push(exampleMatch[1])
+            } else {
+              // 일반 설명 추가
+              strategy.description += ' ' + line
+            }
+          }
+        })
+
+        strategies.push(strategy)
+      }
+    })
+
+    return strategies
+  } catch (error) {
+    console.error("Error parsing content strategy:", error)
+    return []
+  }
+}
+
+const processEquipmentSection = (generatedText) => {
+  try {
+    const equipmentSection = extractSection(generatedText, '예산별 장비 및 툴 추천', '총정리: 성장 로드맵')
+    if (!equipmentSection) return null
+
+    const cleanedSection = removeMarkdown(equipmentSection)
+    const recommendations = []
+
+    // 라인별로 분리하고 처리
+    const lines = cleanedSection.split('\n')
+      .map(line => line.trim())
+      .filter(line => line && !line.includes('투자 가능 금액'))
+
+    // 예시 항목과 일반 항목 모두 처리
+    lines.forEach(line => {
+      // 예시 항목 처리 ("장비명" (가격) 형식)
+      if (line.startsWith('예:')) {
+        const items = line.substring(line.indexOf('"')).split(',')
+        items.forEach(item => {
+          const quoteMatch = item.match(/"([^"]+)"/)
+          const priceMatch = item.match(/\(([^)]+)\)/)
+
+          if (quoteMatch) {
+            recommendations.push({
+              type: 'recommended',
+              equipment: quoteMatch[1].trim(),
+              price: priceMatch ? priceMatch[1].trim() : '',
+              details: ''
+            })
+          }
+        })
+      }
+      // 일반 항목 처리 (- 으로 시작하는 항목)
+      else if (line.startsWith('-')) {
+        line = line.substring(1).trim()
+
+        // "장비명" (가격) 형식 처리
+        const quoteMatch = line.match(/"([^"]+)"/)
+        const priceMatch = line.match(/\(([^)]+)\)/)
+        const detailsMatch = line.match(/[^")]+$/)
+
+        if (quoteMatch || priceMatch) {
+          recommendations.push({
+            type: 'basic',
+            equipment: quoteMatch ? quoteMatch[1].trim() : line.split('(')[0].trim(),
+            price: priceMatch ? priceMatch[1].trim() : '',
+            details: detailsMatch ? detailsMatch[0].replace(/^[-\s]*/, '').trim() : ''
+          })
+        }
+      }
+    })
+
+    // 가격이 있는 항목을 먼저 정렬하고, 그 다음 상세 설명이 있는 항목 정렬
+    return recommendations.sort((a, b) => {
+      if (a.price && !b.price) return -1
+      if (!a.price && b.price) return 1
+      if (a.details && !b.details) return -1
+      if (!a.details && b.details) return 1
+      return 0
+    })
+
+  } catch (error) {
+    console.error("Error processing equipment section:", error)
+    return []
+  }
 }
 
 const processAnalysisData = (data) => {
@@ -78,192 +229,97 @@ const processAnalysisData = (data) => {
     // 입력 요약 처리
     const summarySection = extractSection(generatedText, '입력 요약', '입력 분석')
     if (summarySection) {
-      const summaryLines = summarySection.split('\n')
+      const summaryLines = removeMarkdown(summarySection)
+        .split('\n')
         .map(line => line.trim())
         .filter(line => line.startsWith('-'))
         .map(line => {
-          const [key, value] = line.substring(2).split(':').map(s => s.trim().replace(/\*\*/g, ''))
+          let [key, value] = line.substring(2).split(':').map(s => s.trim())
           return { key, value }
         })
+        .filter(item => item.key && item.value)
       summary.value = summaryLines
     }
 
     // 입력 분석 처리
     const analysisSection = extractSection(generatedText, '입력 분석', '인플루언서 분석')
     if (analysisSection) {
-      const analysisData = extractStrengthsWeaknesses(analysisSection)
+      const cleanedSection = removeMarkdown(analysisSection)
+      const strengthsMatch = cleanedSection.match(/장점:([\s\S]*?)(?=단점:)/)
+      const weaknessesMatch = cleanedSection.match(/단점:([\s\S]*?)(?=###|$)/)
+
       analysis.value = {
-        strengths: parseAnalysisPoints(analysisData.strengths),
-        weaknesses: parseAnalysisPoints(analysisData.weaknesses)
+        strengths: strengthsMatch ?
+          strengthsMatch[1].trim().split('\n')
+            .map(point => point.trim())
+            .filter(point => point.startsWith('-'))
+            .map(point => point.substring(1).trim()) : [],
+        weaknesses: weaknessesMatch ?
+          weaknessesMatch[1].trim().split('\n')
+            .map(point => point.trim())
+            .filter(point => point.startsWith('-'))
+            .map(point => point.substring(1).trim()) : []
       }
     }
 
     // 인플루언서 분석 처리
     const influencerSection = extractSection(generatedText, '인플루언서 분석', '콘텐츠 전략')
     if (influencerSection) {
-      influencerAnalysis.value = parseInfluencerAnalysis(influencerSection)
+      const cleanedSection = removeMarkdown(influencerSection)
+      const [analysisText, strategyText] = cleanedSection.split('적용 전략')
+
+      const basicPoints = analysisText.split('\n')
+        .map(line => line.trim())
+        .filter(line => line.startsWith('-'))
+        .map(line => line.substring(1).trim())
+
+      const strategyPoints = strategyText ?
+        strategyText.split('\n')
+          .map(line => line.trim())
+          .filter(line => line.startsWith('-'))
+          .map(line => line.substring(1).trim()) : []
+
+      influencerAnalysis.value = {
+        analysis: basicPoints,
+        strategy: strategyPoints
+      }
     }
 
     // 콘텐츠 전략 처리
     const strategySection = extractSection(generatedText, '콘텐츠 전략', '예산별 장비 및 툴 추천')
     if (strategySection) {
-      console.log('Raw strategy section:', strategySection)
-      const strategies = parseContentStrategy(strategySection)
-      console.log('Parsed strategies:', strategies)
-      contentStrategy.value = strategies
+      contentStrategy.value = processContentStrategy(strategySection)
     }
 
-    // 장비 추천 섹션 처리
-    const equipmentSection = extractSection(generatedText, '예산별 장비 및 툴 추천', '총정리: 성장 로드맵')
-    if (equipmentSection) {
-      console.log('Raw equipment section:', equipmentSection)
-      const parsedEquipment = parseEquipmentRecommendation(equipmentSection)
-      console.log('Parsed equipment:', parsedEquipment)
-      equipmentRecommendation.value = parsedEquipment
-    }
+    // 장비 추천 처리
+    equipmentRecommendation.value = processEquipmentSection(generatedText)
 
-    const roadmapSection = extractSection(generatedText, '총정리: 성장 로드맵', null)
+    // 성장 로드맵 처리
+    const roadmapSection = extractSection(generatedText, '총정리: 성장 로드맵', '응원 메시지')
     if (roadmapSection) {
-      console.log('Raw roadmap section:', roadmapSection)
-      const parsedRoadmap = parseGrowthRoadmap(roadmapSection)
-      console.log('Parsed roadmap:', parsedRoadmap)
-      growthRoadmap.value = parsedRoadmap
+      const cleanedSection = removeMarkdown(roadmapSection)
+      const roadmapItems = cleanedSection
+        .split(/\d+\.\s+/)
+        .slice(1)
+        .map(item => {
+          const [period, description] = item.split(':').map(s => s.trim())
+          if (period && description) {
+            return { period, description }
+          }
+          return null
+        })
+        .filter(Boolean)
+
+      growthRoadmap.value = roadmapItems
     }
 
+    // 응원 메시지 처리
     const messageSection = extractSection(generatedText, '응원 메시지', null)
     if (messageSection) {
-      console.log('Raw support message:', messageSection)
-      const parsedMessage = parseSupportMessage(messageSection)
-      console.log('Parsed message:', parsedMessage)
-      supportMessage.value = parsedMessage
+      supportMessage.value = removeMarkdown(messageSection).trim()
     }
   } catch (error) {
     console.error("Error processing analysis data:", error)
-  }
-}
-
-const extractSection = (text, startMarker, endMarker) => {
-  if (!text) return null
-  try {
-    const startIndex = text.indexOf(`### ${startMarker}`)
-    if (startIndex === -1) return null
-
-    const endIndex = text.indexOf(`### ${endMarker}`)
-    if (endIndex === -1) return text.slice(startIndex + startMarker.length + 4).trim()
-
-    return text.slice(startIndex + startMarker.length + 4, endIndex).trim()
-  } catch (error) {
-    console.error(`Error extracting section ${startMarker}:`, error)
-    return null
-  }
-}
-
-const extractStrengthsWeaknesses = (analysisText) => {
-  try {
-    const strengthsMatch = analysisText.match(/\*\*장점\*\*:([\s\S]*?)(?=\*\*단점\*\*:)/)
-    const weaknessesMatch = analysisText.match(/\*\*단점\*\*:([\s\S]*?)$/)
-
-    return {
-      strengths: strengthsMatch ? strengthsMatch[1].trim() : '',
-      weaknesses: weaknessesMatch ? weaknessesMatch[1].trim() : ''
-    }
-  } catch (error) {
-    console.error("Error extracting strengths and weaknesses:", error)
-    return { strengths: '', weaknesses: '' }
-  }
-}
-
-const parseInfluencerAnalysis = (text) => {
-  return text.split('\n')
-    .map(line => line.trim())
-    .filter(line => line.length > 0 && !line.includes('###'))
-    .map(line => line.replace(/^-\s*/, ''))
-}
-
-const parseContentStrategy = (text) => {
-  try {
-    const strategyItems = text.split(/\d+\.\s+\*\*/).slice(1)
-
-    return strategyItems.map(item => {
-      const titleEndIndex = item.indexOf('**:')
-      if (titleEndIndex === -1) return null
-
-      const strategyTitle = item.substring(0, titleEndIndex)
-      const strategyDescription = item.substring(titleEndIndex + 3)
-        .split('\n')
-        .map(line => line.trim())
-        .filter(line => line && line.startsWith('-'))
-        .map(line => line.substring(1).trim())
-        .join('\n')
-
-      return {
-        title: strategyTitle.trim(),
-        description: strategyDescription || item.substring(titleEndIndex + 3).trim()
-      }
-    }).filter(Boolean)
-  } catch (error) {
-    console.error("Error parsing content strategy:", error)
-    return []
-  }
-}
-
-const parseEquipmentRecommendation = (text) => {
-  try {
-    return text
-      .split('-')
-      .map(line => line.trim())
-      .filter(line => line.length > 0)
-      .map(line => {
-        // 기본 항목 파싱
-        let [equipment, ...restParts] = line.split(':')
-        let details = restParts.join(':').trim()
-
-        // 가격 정보 추출
-        let price = ''
-        const priceMatch = equipment.match(/\((.*?)\)/)
-        if (priceMatch) {
-          price = priceMatch[1]
-          equipment = equipment.replace(/\((.*?)\)/, '').trim()
-        }
-
-        return {
-          equipment: equipment.replace(/\*\*/g, '').trim(),
-          price: price,
-          details: details
-        }
-      })
-  } catch (error) {
-    console.error("Error parsing equipment recommendations:", error)
-    return []
-  }
-}
-
-// 새로운 파싱 함수 추가
-const parseGrowthRoadmap = (text) => {
-  try {
-    const roadmapItems = text.split(/\d+\.\s+\*\*/).slice(1)
-
-    return roadmapItems.map(item => {
-      const match = item.match(/([^*]+)\*\*:\s*(.+)/)
-      if (!match) return null
-
-      return {
-        period: match[1].trim(),
-        description: match[2].trim()
-      }
-    }).filter(Boolean)
-  } catch (error) {
-    console.error("Error parsing growth roadmap:", error)
-    return []
-  }
-}
-
-const parseSupportMessage = (text) => {
-  try {
-    return text.trim()
-  } catch (error) {
-    console.error("Error parsing support message:", error)
-    return ''
   }
 }
 </script>
@@ -273,5 +329,95 @@ const parseSupportMessage = (text) => {
 
 * {
   font-family: 'Noto Sans KR', sans-serif;
+}
+
+.summary-section,
+.analysis-section,
+.influencer-section,
+.content-strategy-section,
+.equipment-section,
+.roadmap-section,
+.support-message-section {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  background-color: #1a1a1a;
+}
+
+h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: white;
+}
+
+h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: white;
+}
+
+ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+li {
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
+  color: #e0e0e0;
+}
+
+.summary-item {
+  display: flex;
+  margin-bottom: 0.5rem;
+  color: #e0e0e0;
+}
+
+.key {
+  font-weight: 600;
+  margin-right: 0.5rem;
+  min-width: 100px;
+}
+
+.strategy-item,
+.equipment-item,
+.roadmap-item {
+  margin-bottom: 1.5rem;
+  background-color: #2a2a2a;
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+
+.equipment-price {
+  color: #a0aec0;
+  margin-left: 0.5rem;
+}
+
+.equipment-details {
+  display: block;
+  margin-top: 0.25rem;
+  color: #e0e0e0;
+}
+
+.message {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #e0e0e0;
+  padding: 1rem;
+  background-color: #2a2a2a;
+  border-radius: 0.375rem;
+}
+
+
+@media (max-width: 768px) {
+  .summary-item {
+    flex-direction: column;
+  }
+
+  .key {
+    margin-bottom: 0.25rem;
+  }
 }
 </style>
