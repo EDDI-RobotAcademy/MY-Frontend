@@ -183,7 +183,7 @@ const submitSurvey = async () => {
   
   const surveyAnswers = questions.value.map(question => ({
     question_id: question.id,
-    answer_data: question.answer === 'true' ? true : question.answer === 'false' ? false : question.answer || '' // 불리언 값으로 변환
+    answer_data: question.answer === 'true' ? true : question.answer === 'false' ? false : question.answer || null // 불리언 값으로 변환
   }))
 
   const userToken = null
