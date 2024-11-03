@@ -153,68 +153,41 @@ const processContentStrategy = (strategySection) => {
 
 const processEquipmentSection = (generatedText) => {
   try {
+    // 장비 섹션 텍스트 추출
     const equipmentSection = extractSection(generatedText, '예산별 장비 및 툴 추천', '총정리: 성장 로드맵')
     if (!equipmentSection) return null
 
+    // 마크다운 제거하고 텍스트 정리
     const cleanedSection = removeMarkdown(equipmentSection)
-    const recommendations = []
 
-    // 라인별로 분리하고 처리
-    const lines = cleanedSection.split('\n')
+    // 각 장비 항목 추출
+    const equipmentItems = cleanedSection
+      .split('\n')
       .map(line => line.trim())
-      .filter(line => line && !line.includes('투자 가능 금액'))
-
-    // 예시 항목과 일반 항목 모두 처리
-    lines.forEach(line => {
-      // 예시 항목 처리 ("장비명" (가격) 형식)
-      if (line.startsWith('예:')) {
-        const items = line.substring(line.indexOf('"')).split(',')
-        items.forEach(item => {
-          const quoteMatch = item.match(/"([^"]+)"/)
-          const priceMatch = item.match(/\(([^)]+)\)/)
-
-          if (quoteMatch) {
-            recommendations.push({
-              type: 'recommended',
-              equipment: quoteMatch[1].trim(),
-              price: priceMatch ? priceMatch[1].trim() : '',
-              details: ''
-            })
-          }
-        })
-      }
-      // 일반 항목 처리 (- 으로 시작하는 항목)
-      else if (line.startsWith('-')) {
+      .filter(line => line.startsWith('-'))
+      .map(line => {
+        // 하이픈 제거 및 양쪽 공백 제거
         line = line.substring(1).trim()
 
-        // "장비명" (가격) 형식 처리
-        const quoteMatch = line.match(/"([^"]+)"/)
-        const priceMatch = line.match(/\(([^)]+)\)/)
-        const detailsMatch = line.match(/[^")]+$/)
+        // 장비명과 가격 분리
+        const [equipment, price] = line.split(':').map(s => s.trim())
 
-        if (quoteMatch || priceMatch) {
-          recommendations.push({
-            type: 'basic',
-            equipment: quoteMatch ? quoteMatch[1].trim() : line.split('(')[0].trim(),
-            price: priceMatch ? priceMatch[1].trim() : '',
-            details: detailsMatch ? detailsMatch[0].replace(/^[-\s]*/, '').trim() : ''
-          })
+        // 유효한 항목만 반환
+        if (equipment && price) {
+          return {
+            equipment: equipment,
+            price: price,
+            details: ''
+          }
         }
-      }
-    })
+        return null
+      })
+      .filter(Boolean) // null 항목 제거
 
-    // 가격이 있는 항목을 먼저 정렬하고, 그 다음 상세 설명이 있는 항목 정렬
-    return recommendations.sort((a, b) => {
-      if (a.price && !b.price) return -1
-      if (!a.price && b.price) return 1
-      if (a.details && !b.details) return -1
-      if (!a.details && b.details) return 1
-      return 0
-    })
-
+    return equipmentItems.length > 0 ? equipmentItems : null
   } catch (error) {
     console.error("Error processing equipment section:", error)
-    return []
+    return null
   }
 }
 
