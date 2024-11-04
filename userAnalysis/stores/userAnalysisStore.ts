@@ -12,11 +12,23 @@ interface UserAnalysisPayload {
   interested_influencer: string
 }
 
+interface UserAnalysisSurveyData {
+  ages: string
+  gender: string
+  content_categories: string
+  visibility: string
+  platforms: string
+  investment_amount: string
+  upload_frequency: string
+  interested_influencer: string
+}
 
 export const useUserAnalysisStore = defineStore('userAnalysisStore', {
   state: () => ({
     requests: [],
     selectedRequestDetails: null,
+    currentSurveyData: null as UserAnalysisSurveyData | null,
+    currentRequestId: null as number | null
   }),
 
   actions: {
@@ -76,7 +88,7 @@ export const useUserAnalysisStore = defineStore('userAnalysisStore', {
     },
 
     async requestSubmitAnswerToDjango(payload: {
-      user_analysis : number,
+      user_analysis: number,
       user_analysis_answer: {[key: string]:string},
     }): Promise<any> {
       const { djangoAxiosInst } = createAxiosInstances()
@@ -85,8 +97,8 @@ export const useUserAnalysisStore = defineStore('userAnalysisStore', {
         const userToken = localStorage.getItem('userToken') || localStorage.getItem('guestToken');
         const response = await djangoAxiosInst.post('user_analysis/submit-answer',{ 
           userToken,
-          user_analysis : payload.user_analysis,
-          user_analysis_answer : payload.user_analysis_answer
+          user_analysis: payload.user_analysis,
+          user_analysis_answer: payload.user_analysis_answer
         })
         return response.data
       } catch (error) {
@@ -95,7 +107,7 @@ export const useUserAnalysisStore = defineStore('userAnalysisStore', {
       }
     },
 
-    async requestCreateUserAnalysisToDjango( payload: {
+    async requestCreateUserAnalysisToDjango(payload: {
       title: string,
       description: string  
     }): Promise<any> {
@@ -109,7 +121,8 @@ export const useUserAnalysisStore = defineStore('userAnalysisStore', {
           throw error
       } 
     },
-    async requestCreateUserAnalysisQuestionToDjango( payload: { 
+
+    async requestCreateUserAnalysisQuestionToDjango(payload: { 
       user_analysis: number, 
       question: string, 
       user_analysis_type: number 
@@ -129,6 +142,7 @@ export const useUserAnalysisStore = defineStore('userAnalysisStore', {
           throw error
       }
     },
+
     async requestListUserAnalysisAnswerToDjango(payload: {
       user_analysis_id: number
     }): Promise<void> {
@@ -142,6 +156,7 @@ export const useUserAnalysisStore = defineStore('userAnalysisStore', {
           throw error
       }
     },
+
     async requestCreateUserAnalysisSelectionToDjango(payload: { 
       question_id: number, 
       custom_text: string 
@@ -149,7 +164,6 @@ export const useUserAnalysisStore = defineStore('userAnalysisStore', {
       const { question_id, custom_text } = payload
       const { djangoAxiosInst } = createAxiosInstances()
       try {
-          
           const res = await djangoAxiosInst.post('user_analysis/create-user-analysis-selection', {
               question_id,
               custom_text
@@ -161,6 +175,7 @@ export const useUserAnalysisStore = defineStore('userAnalysisStore', {
           throw error
       }
     },
+
     async listAllUserAnalysisRequestToDjango(): Promise<any> {
       const { djangoAxiosInst } = createAxiosInstances();
       try {
@@ -172,6 +187,7 @@ export const useUserAnalysisStore = defineStore('userAnalysisStore', {
         throw error;
       }
     },
+
     async listOwnUserAnalysisRequestToDjango(): Promise<any> {
       const { djangoAxiosInst } = createAxiosInstances();
       const userToken = localStorage.getItem("userToken")
@@ -188,17 +204,19 @@ export const useUserAnalysisStore = defineStore('userAnalysisStore', {
         throw error;
       }
     },
+
     async readUserAnalysisRequestToDjango(requestId: number): Promise<void> {
       const { djangoAxiosInst } = createAxiosInstances();
       try {
         const res = await djangoAxiosInst.get(`user_analysis/read-request/${requestId}`);
-        this.selectedRequestDetails = res.data;  // 직접 업데이트
+        this.selectedRequestDetails = res.data;
       } catch (error) {
         console.error('readUserAnalysisRequestToDjango() 중 에러 발생');
         throw error;
       }
     },
-    async sendUserAnalysisRequestToFastapiByDjango(request_id: number): Promise<any>{
+
+    async sendUserAnalysisRequestToFastapiByDjango(request_id: number): Promise<any> {
       const { djangoAxiosInst } = createAxiosInstances();
       const userToken = localStorage.getItem("userToken") || localStorage.getItem("guestToken")
 
@@ -208,7 +226,6 @@ export const useUserAnalysisStore = defineStore('userAnalysisStore', {
         userToken: userToken
       }
       try {
-        
         const res = await djangoAxiosInst.post('ai_request/send', payload)
         return res.data;
       } catch (error) {
@@ -216,10 +233,10 @@ export const useUserAnalysisStore = defineStore('userAnalysisStore', {
         throw error;
       }
     },
+
     async getUserAnalysisResultFromFastAPI(): Promise<any> {
       const { fastapiAxiosInst } = createAxiosInstances()
       try {
-
           const maxAttempts = 50
           const delay = 8000
 
@@ -243,7 +260,7 @@ export const useUserAnalysisStore = defineStore('userAnalysisStore', {
       }
     },
 
-    async getCustomStrategyFromDjango(): Promise<any>{
+    async getCustomStrategyFromDjango(): Promise<any> {
       const { djangoAxiosInst } = createAxiosInstances();
       const userToken = localStorage.getItem("userToken") || localStorage.getItem("guestToken")
 
@@ -251,15 +268,22 @@ export const useUserAnalysisStore = defineStore('userAnalysisStore', {
         userToken: userToken
       }
       try {
-        
         const res = await djangoAxiosInst.post('custom_strategy_history/read', payload)
         return res.data;
       } catch (error) {
         console.error('getCustomStrategyFromDjango() 중 에러 발생');
         throw error;
       }
+    },
 
+    setSurveyDataAndRequest(surveyData: UserAnalysisSurveyData, requestId: number) {
+      this.currentSurveyData = surveyData
+      this.currentRequestId = requestId
+    },
+
+    clearSurveyData() {
+      this.currentSurveyData = null
+      this.currentRequestId = null
     }
   }
-  }
-)
+})

@@ -33,7 +33,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserAnalysisStore } from '../../userAnalysis/stores/userAnalysisStore'
@@ -46,12 +46,23 @@ const userAnalysisInputId = ref('1')
 const questions = ref([])
 const selections = ref({})
 
+// Computed Properties
 const isLastQuestion = computed(() => currentQuestionIndex.value === questions.value.length - 1)
+
 const canProceed = computed(() => {
   const currentQuestion = questions.value[currentQuestionIndex.value]
-  return currentQuestion.user_analysis_type === '1' 
-    ? currentQuestion.answer?.trim() !== ''
-    : currentQuestion.answer !== null
+  if (!currentQuestion) return false
+
+  // 텍스트 입력 타입 (user_analysis_type === '1')인 경우
+  if (currentQuestion.user_analysis_type === '1') {
+    return currentQuestion.answer && currentQuestion.answer.trim() !== ''
+  }
+  // 라디오 버튼 타입 (user_analysis_type === '4')인 경우
+  else if (currentQuestion.user_analysis_type === '4') {
+    return currentQuestion.answer !== undefined && currentQuestion.answer !== null
+  }
+
+  return false
 })
 
 const currentQuestionOptions = computed(() => {
@@ -59,10 +70,14 @@ const currentQuestionOptions = computed(() => {
   return currentQuestion ? selections.value[currentQuestion.id] || [] : []
 })
 
+// Methods
 const loadSurvey = async () => {
   try {
     const fetchedQuestions = await userAnalysisStore.requestListQuestionToDjango(userAnalysisInputId.value)
-    questions.value = fetchedQuestions
+    questions.value = fetchedQuestions.map(question => ({
+      ...question,
+      answer: null // 초기 답변 상태를 null로 설정
+    }))
 
     for (const question of questions.value) {
       const options = await userAnalysisStore.requestListSelectionToDjango(question.id)
@@ -74,6 +89,8 @@ const loadSurvey = async () => {
 }
 
 const nextQuestion = () => {
+  if (!canProceed.value) return // 답변이 없으면 진행 불가
+
   if (!isLastQuestion.value) {
     currentQuestionIndex.value++
   } else {
@@ -93,23 +110,37 @@ const nextQuestionIfNotEmpty = () => {
   }
 }
 
-const getPlaceholder = (index) => {
-  const placeholders = {
-    3: "ex) 음악, 여행, 패션, 맛집 탐방, 요리, 뷰티... ",
-    8: "ex) 침착맨, 김계란, 이사배...",
+const getPlaceholder = (index: number) => {
+  const placeholders: { [key: number]: string } = {
+    2: "ex) 운동, 영화, 맛집, 연애, 게임...",
+    7: "ex) 김계란, 성시경, 이사배..."
   }
-  return questions.value[index].user_analysis_type === '1' ? placeholders[index] : ''
+  return questions.value[index]?.user_analysis_type === '1' ? placeholders[index] || '' : ''
 }
 
 const submitSurvey = async () => {
+  // 모든 질문에 답변이 있는지 확인
+  const allQuestionsAnswered = questions.value.every(question => {
+    if (question.user_analysis_type === '1') {
+      return question.answer && question.answer.trim() !== ''
+    } else {
+      return question.answer !== null && question.answer !== undefined
+    }
+  })
+
+  if (!allQuestionsAnswered) {
+    console.error('모든 질문에 답변해주세요.')
+    return
+  }
+
   const userAnalysisAnswer = questions.value.reduce((acc, question, index) => {
     acc[String(index + 1)] = question.answer || '';
     return acc;
-  }, {});
+  }, {} as { [key: string]: string });
 
   try {
-    const response = await userAnalysisStore.requestSubmitAnswerToDjango({ 
-      user_analysis: userAnalysisInputId.value,
+    const response = await userAnalysisStore.requestSubmitAnswerToDjango({
+      user_analysis: Number(userAnalysisInputId.value),
       user_analysis_answer: userAnalysisAnswer
     })
 
@@ -124,13 +155,11 @@ const submitSurvey = async () => {
       interested_influencer: questions.value[7].answer,
     }
 
-    router.push({
-      path: '/user-analysis/result',
-      query: { 
-        surveyData: JSON.stringify(surveyData),
-        userAnalysisRequest: response.id
-      }
-    })
+    // store에 데이터 저장
+    userAnalysisStore.setSurveyDataAndRequest(surveyData, response.id)
+
+    // 결과 페이지로 이동
+    router.push('/user-analysis/result')
   } catch (error) {
     if (error.response && error.response.status === 403) {
       // 서버에서 403 상태 코드가 반환된 경우 (비회원 중복 요청)
@@ -147,7 +176,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-
 .main-container {
   position: relative;
   width: 100%;
