@@ -3,8 +3,8 @@ import { resolve } from 'path';
 
 export default defineNuxtModule ({
     meta: {
-        name: 'influencerAnalysis',
-        configKey: 'influencerAnalysis',
+        name: 'keywordAnalysis',
+        configKey: 'keywordAnalysis',
     },
 
     setup(moduleOptions, nuxt) {
@@ -12,9 +12,9 @@ export default defineNuxtModule ({
 
         nuxt.hook('pages:extend', (pages) => {
             pages.push({
-                name: 'influencerAnalysis-page',
-                path: '/influencer-analysis',
-                file: resolve(themeDir, 'influencerAnalysis/pages/InfluencerAnalysisPage.vue'),
+                name: 'keywordAnalysis-page',
+                path: '/keyword-analysis',
+                file: resolve(themeDir, 'keywordAnalysis/pages/keywordAnalysisPage.vue'),
             })
         })
 

@@ -8,8 +8,8 @@
                     <button class="menu-item button" data-text="AI 컨설팅" @click="goToUserAnalysisPage">
                         <span>AI 컨설팅</span>
                     </button>
-                    <button class="menu-item button" data-text="MY DASHBOARD" @click="goToInfluencerAnalysisPage">
-                        <span>MY DASHBOARD</span>
+                    <button class="menu-item button" data-text="키워드 분석" @click="goToKeywordAnalysisPage">
+                        <span>키워드 분석</span>
                     </button>
                 </div>
             </div>
@@ -107,7 +107,7 @@ const goToSurveyPage = () => router.push("/survey")
 const goToFreeCommunityPage = () => router.push("/free-community/list")
 const goToGrowthBlogListPage = () => router.push("/growth-blog/list")
 const goToUserAnalysisPage = () => router.push("/user-analysis")
-const goToInfluencerAnalysisPage = () => router.push("/influencer-analysis")
+const goToKeywordAnalysisPage = () => router.push("/keyword-analysis")
 const goToSurveyDashboardPage = () => router.push("/survey/dashboard")
 const goToUserAnalysisListPage = () => router.push("/user-analysis/list")
 const goToSurveyVisualizationPage = () => router.push("/survey/visualization")
