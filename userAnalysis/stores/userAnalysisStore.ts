@@ -82,7 +82,7 @@ export const useUserAnalysisStore = defineStore('userAnalysisStore', {
       const { djangoAxiosInst } = createAxiosInstances()
 
       try {
-        const userToken = localStorage.getItem('userToken')
+        const userToken = localStorage.getItem('userToken') || localStorage.getItem('guestToken');
         const response = await djangoAxiosInst.post('user_analysis/submit-answer',{ 
           userToken,
           user_analysis : payload.user_analysis,
@@ -243,12 +243,11 @@ export const useUserAnalysisStore = defineStore('userAnalysisStore', {
       }
     },
 
-    async getCustomStrategyFromDjango(request_id: number): Promise<any>{
+    async getCustomStrategyFromDjango(): Promise<any>{
       const { djangoAxiosInst } = createAxiosInstances();
       const userToken = localStorage.getItem("userToken") || localStorage.getItem("guestToken")
 
       const payload = {
-        request_id: request_id,
         userToken: userToken
       }
       try {
