@@ -19,7 +19,7 @@
         <div class="post-grid">
         <article v-for="content in smartContents" :key="content.id" class="post-card" @click="goToReadPage(content.id)">
             <div class="post-content">
-                <img :src="defaultThumbnail" :alt="content.title" class="post-thumbnail">
+                <img :src="content.thumbnail || defaultThumbnail" :alt="content.title" class="post-thumbnail">
                 <h2 class="post-title">{{ content.title }}</h2>
                 <div class="post-meta">
                     <span class="post-date">{{ formatDate(content.regDate) }} · {{ content.comments }}개의 댓글</span>
@@ -40,7 +40,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
-import debounce from 'lodash/debounce'  // 이렇게 수정
+import debounce from 'lodash/debounce'
 import NavHeader from '../../ui/navigation/navigation.vue'
 import { useSmartContentStore } from '@/smartContent/stores/smartContentStore'
 import { useLikeCountStore } from '~/likeCount/stores/likeCountStore'
@@ -57,7 +57,6 @@ const hasMoreData = ref(true)
 const likeCountStore = useLikeCountStore()
 const likeCounts = ref({})
 
-
 // formatDate 함수 정의
 const formatDate = (date: any) => {
     if (!(date instanceof Date)) {
@@ -71,36 +70,61 @@ const formatDate = (date: any) => {
     return `${year}-${month}-${day}`;
 }
 
+// 컨텐츠의 첫 번째 이미지 가져오기
+const fetchContentThumbnail = async (contentId: string) => {
+    try {
+        const response = await smartContentStore.requestListItemsToDjango(contentId)
+
+        const items = response.items || []
+        
+        // type이 'image'인 항목만 필터링
+        const imageItems = items
+            .filter(item => item && item.type === 'image' && item.image_url)
+            .sort((a, b) => {
+                const seqA = Number(a.sequence_number) || Infinity
+                const seqB = Number(b.sequence_number) || Infinity
+                return seqA - seqB
+            })
+        
+        // 첫 번째 이미지의 URL 반환
+        return imageItems.length > 0 ? imageItems[0].image_url : null
+    } catch (error) {
+        console.error(`썸네일 가져오기 실패 (컨텐츠 ID: ${contentId}):`, error)
+        return null
+    }
+}
+
 const fetchSmartContents = async () => {
     if (isLoading.value || !hasMoreData.value) return
     isLoading.value = true
     try {
-        
         const response = await smartContentStore.requestListSmartContentToDjango(currentPage.value, itemsPerPage)
         
-        // 데이터가 없으면 로딩 중단
         if (response.length === 0 || response.length < itemsPerPage) {
             hasMoreData.value = false
         }
 
         if (response.length === 0) return
 
-        // 각 컨텐츠의 좋아요 수 가져오기
-        await Promise.all(response.map(async (content) => {
-            try {
-                const likeCount = await likeCountStore.requestLikeCountToDjango(content.id)
-                likeCounts.value[content.id] = likeCount
-            } catch (error) {
-                console.error(`좋아요 수 조회 실패 (컨텐츠 ID: ${content.id}):`, error)
-                likeCounts.value[content.id] = 0
+        // 각 컨텐츠의 썸네일과 좋아요 수 가져오기
+        const contentsWithData = await Promise.all(response.map(async (content) => {
+            const [thumbnail, likeCount] = await Promise.all([
+                fetchContentThumbnail(content.id.toString()),
+                likeCountStore.requestLikeCountToDjango(content.id)
+            ])
+
+            likeCounts.value[content.id] = likeCount
+            return {
+                ...content,
+                thumbnail: thumbnail || defaultThumbnail
             }
         }))
 
-        smartContents.value.push(...response)
+        smartContents.value.push(...contentsWithData)
         currentPage.value++
     } catch (error) {
         console.error('SmartContent 목록 조회 실패:', error)
-        hasMoreData.value = false  // 에러 발생 시 더 이상 요청하지 않음
+        hasMoreData.value = false
     } finally {
         isLoading.value = false
     }
@@ -126,9 +150,8 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-    handleScroll.cancel()  // debounce 핸들러 정리
+    handleScroll.cancel()
 })
-
 </script>
 
 
