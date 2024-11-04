@@ -132,7 +132,12 @@ const submitSurvey = async () => {
       }
     })
   } catch (error) {
-    console.error('설문 제출 중 오류 발생: ', error)
+    if (error.response && error.response.status === 403) {
+      // 서버에서 403 상태 코드가 반환된 경우 (비회원 중복 요청)
+      alert("비회원은 최초 1회만 요청이 가능합니다.");
+    } else {
+      console.error('설문 제출 중 오류 발생: ', error);
+    }
   }
 }
 
