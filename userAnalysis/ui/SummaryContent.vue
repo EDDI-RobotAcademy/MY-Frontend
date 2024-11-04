@@ -86,7 +86,7 @@ export default {
 <style scoped>
 .analysis-content {
   background-color: #000000;
-  padding: 40px 0;
+  padding: 100px 0 40px;
 }
 
 .content-wrapper {
@@ -165,14 +165,13 @@ export default {
 }
 
 @media (max-width: 768px) {
+  .analysis-content {
+    padding: 80px 0 40px;
+  }
+  
   .main-title {
     font-size: 32px;
     margin-bottom: 30px;
-  }
-
-  .summary-item {
-    min-width: calc(50% - 6px);
-    max-width: calc(50% - 6px);
   }
 }
 
