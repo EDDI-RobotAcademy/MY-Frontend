@@ -4,7 +4,13 @@
             <div class="article-header">
                 <h2 class="article-title">{{ freeCommunityContent.title }}</h2>
                 <div class="article-meta">
-                    <span class="author">{{ freeCommunityContent.profile_nickname }}</span>
+                    <span class="author">
+                        <router-link v-if="freeCommunityContent" :to="{
+                            path: `/growth-blog/my-page/${freeCommunityContent.profile_nickname}`
+                        }" class="author-link">
+                            {{ freeCommunityContent.profile_nickname }}
+                        </router-link>
+                    </span>
                     <span class="date">{{ formatDate(freeCommunityContent.regDate) }}</span>
                     <span class="category">{{ freeCommunityContent.category_name }}</span>
                 </div>
@@ -31,7 +37,7 @@
 
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useFreeCommunityStore } from '../../stores/freeCommunityStore';
 import { useViewCountStore } from '~/viewCount/stores/viewCountStore';
@@ -53,7 +59,7 @@ const checkMyFreeCommunity = ref(false)
 const fetchFreeCommunityContent = async () => {
     try {
         const response = await freeCommunityStore.readFreeCommunityContent(free_communityId);
-        
+
         freeCommunityContent.value = response;
 
     } catch (err) {
@@ -64,11 +70,11 @@ const fetchFreeCommunityContent = async () => {
 
 const fetchCheckAuthority = async () => {
     try {
-        
+
         const response = await freeCommunityStore.checkAuthority(free_communityId);
-        
+
         checkMyFreeCommunity.value = response.is_authorized
-        
+
     } catch (err) {
         error.value = 'fetchCheckAuthority 에러';
         console.error('Error fetching free-community content:', err);
@@ -247,5 +253,15 @@ onMounted(() => {
         padding: 6px 12px;
         font-size: 0.9em;
     }
+}
+
+.author-link {
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+}
+
+.author-link:hover {
+    text-decoration: underline;
 }
 </style>
