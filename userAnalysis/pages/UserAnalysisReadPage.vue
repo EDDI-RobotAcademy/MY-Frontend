@@ -2,19 +2,14 @@
   <div class="request-detail-page">
     <h2>요청 ID: {{ requestId }}의 상세 정보</h2>
 
-    <!-- 요청 상세 정보 -->
     <div v-if="userAnalysisStore.selectedRequestDetails && userAnalysisStore.selectedRequestDetails.length">
       <ul>
-        <!-- 각 질문과 답변 표시 -->
         <li v-for="(answer, index) in userAnalysisStore.selectedRequestDetails" :key="index">
           <p class="question"><strong>질문:</strong> {{ answer.question_text }}</p>
           <p class="answer">
             <strong>응답:</strong>
-            <!-- answer_text가 있을 경우 해당 텍스트 출력 -->
             <span v-if="answer.answer_text">{{ answer.answer_text }}</span>
-            <!-- user_analysis_custom_selection_text가 있을 경우 해당 텍스트 출력 -->
             <span v-else-if="answer.user_analysis_custom_selection_text">{{ answer.user_analysis_custom_selection_text }}</span>
-            <!-- 둘 다 없을 경우 빈 값 -->
             <span v-else>응답 없음</span>
           </p>
         </li>
@@ -33,7 +28,6 @@ const userAnalysisStore = useUserAnalysisStore();
 const route = useRoute();
 const requestId = ref(route.params.id);
 
-// 요청의 상세 정보를 가져오기
 const loadRequestDetails = async () => {
   try {
     await userAnalysisStore.readUserAnalysisRequestToDjango(requestId.value);
@@ -52,7 +46,7 @@ onMounted(() => {
   max-width: 800px;
   margin: 0 auto;
   padding: 30px;
-  background-color: #fff8f0; /* 연한 배경색으로 조정 */
+  background-color: #fff8f0;
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   margin-top: 70px;
