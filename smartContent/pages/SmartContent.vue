@@ -305,7 +305,7 @@ const saveContent = async () => {
 
         const smartContentData = {
             title: title.value.trim(),
-            content_type: 'mixed',
+            content_type: 'blog',
             userToken: localStorage.getItem('userToken'),
             items: contentBlocks.value.map((block, index) => ({
                 type: block.type,
