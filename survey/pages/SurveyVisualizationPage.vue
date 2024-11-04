@@ -20,12 +20,12 @@
           <p>응답 {{ questionData.totalResponses }}개</p>
         </div>
 
-        <!-- 선택형 질문의 경우 -->
+        <!-- 선택형 질문의 경우 차트 표시 -->
         <div v-if="questionData.type === 'multiple_choice'" class="chart-container">
           <canvas :id="'chart-' + index"></canvas>
         </div>
 
-        <!-- 서술형 질문의 경우 -->
+        <!-- 서술형 질문의 경우 서술형 답변 목록 표시 -->
         <div v-if="questionData.type === 'open_ended'" class="open-ended-answers">
           <h4>서술형 답변:</h4>
           <ul class="scrollable-list">
@@ -87,7 +87,12 @@ const processQuestions = () => {
   chartInstances.value.forEach(chart => chart.destroy())
   chartInstances.value = []
 
-  answers.value.forEach((answer) => {
+  // answer 데이터에서 유효한 응답만 필터링 후 question_id 순서대로 정렬
+  const validAnswers = answers.value
+    .filter(answer => answer.answer_text || answer.survey_custom_selection_text || answer.survey_fixed_five_score_selection || answer.survey_fixed_boolean_selection)
+    .sort((a, b) => a.question_id - b.question_id) // 질문 ID 순서로 정렬
+
+  validAnswers.forEach((answer) => {
     const questionText = answer.question_text
     let question = processedQuestions.value.find(q => q.question_text === questionText)
 
@@ -104,16 +109,18 @@ const processQuestions = () => {
 
     if (question.type === 'multiple_choice') {
       const selection = answer.survey_custom_selection_text || answer.survey_fixed_five_score_selection || answer.survey_fixed_boolean_selection
-      if (selection) {
+      if (selection !== null && selection !== undefined) {
         if (!question.choices[selection]) {
           question.choices[selection] = 0
         }
         question.choices[selection]++
         question.totalResponses++
       }
-    } else if (question.type === 'open_ended') {
-      question.answers.push(answer.answer_text)
-      question.totalResponses++
+    } else if (question.type === 'open_ended' && answer.answer_text) {
+      if (answer.answer_text.trim()) {
+        question.answers.push(answer.answer_text)
+        question.totalResponses++
+      }
     }
   })
 
