@@ -45,21 +45,29 @@ const removeMarkdown = (text) => {
 }
 
 onMounted(async () => {
-  if (userAnalysisRequest.value) {
-    try {
-      const result = await sendSurveyToFastAPI()
-      console.log("result", result)
-      if (result) {
-        const analysisData = await userAnalysisStore.getUserAnalysisResultFromFastAPI()
-        if (analysisData) {
-          processAnalysisData(analysisData)
+  await fetchAnalysisData()
+})
+
+const fetchAnalysisData = async () => {
+  try {
+    const result = await sendSurveyToFastAPI()
+    console.log("FastAPI 요청 결과:", result)
+
+    if(result){
+      const analysisData = await userAnalysisStore.getUserAnalysisResultFromFastAPI()
+
+      if(analysisData){
+        const finalData = await userAnalysisStore.getCustomStrategyFromDjango()
+        console.log("finalData: ", finalData)
+        if(finalData){
+          processAnalysisData(finalData)
         }
       }
-    } catch (error) {
-      console.error("Failed to process analysis data:", error)
     }
+  } catch (error) {
+    console.error("Failed to process analysis data:", error)
   }
-})
+}
 
 const sendSurveyToFastAPI = async () => {
   try {
@@ -209,7 +217,7 @@ const processEquipmentSection = (generatedText) => {
 
 const processAnalysisData = (data) => {
   try {
-    const generatedText = data.generatedText
+    const generatedText = data.strategy_result;
     if (!generatedText) {
       console.error("No generated text found in data")
       return
