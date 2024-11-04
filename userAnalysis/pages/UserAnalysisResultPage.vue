@@ -1,6 +1,6 @@
 <template>
   <loading-content v-if="!summary || !analysis || !influencerAnalysis" />
-  <div v-else>
+  <div v-else class="analysis-results-container">
     <SummaryContent :data="summary" />
     <InputAnalysisContent :data="analysis" />
     <InfluencerAnalysisContent :data="influencerAnalysis" />
@@ -97,59 +97,75 @@ const extractSection = (text, startMarker, endMarker) => {
 
 const processContentStrategy = (strategySection) => {
   try {
-    if (!strategySection) return []
+    if (!strategySection) return [];
 
-    const cleanedSection = removeMarkdown(strategySection)
-    const strategies = []
+    const strategies = [];
 
-    // 숫자로 시작하는 전략 항목을 찾습니다
-    const strategyItems = cleanedSection.split(/\d+\.\s+/).slice(1)
+    // 줄 단위로 분리하고 빈 줄 제거
+    const lines = strategySection.split('\n')
+      .map(line => line.trim())
+      .filter(Boolean);
 
-    strategyItems.forEach(item => {
-      const lines = item.split('\n').map(line => line.trim()).filter(Boolean)
+    let currentStrategy = null;
 
-      if (lines.length > 0) {
-        const strategy = {
-          title: '',
+    lines.forEach(line => {
+      // 숫자로 시작하면서 제목이 있는 새로운 전략 항목 확인
+      const titleMatch = line.match(/^(\d+)\.\s*(.+)$/);
+
+      if (titleMatch) {
+        if (currentStrategy) {
+          strategies.push(currentStrategy);
+        }
+
+        // 제목에서 ** 및 : 제거하고 앞뒤 공백 정리
+        const rawTitle = titleMatch[2];
+        const cleanTitle = rawTitle
+          .replace(/\*\*/g, '')  // ** 제거
+          .replace(/:/g, '')     // : 제거
+          .trim();               // 앞뒤 공백 제거
+
+        // 새로운 전략 객체 생성
+        currentStrategy = {
+          number: parseInt(titleMatch[1]),
+          title: cleanTitle,
           description: '',
           examples: []
-        }
-
-        // 첫 줄에서 제목과 설명 분리
-        const titleMatch = lines[0].match(/([^:]+):(.*)/)
-        if (titleMatch) {
-          strategy.title = titleMatch[1].trim()
-          strategy.description = titleMatch[2].trim()
-        } else {
-          strategy.title = lines[0]
-        }
-
-        // 나머지 줄에서 예시와 추가 설명 처리
-        lines.slice(1).forEach(line => {
-          if (line.startsWith('-')) {
-            line = line.substring(1).trim()
-
-            // 예시 항목 처리
-            const exampleMatch = line.match(/"([^"]+)"/)
-            if (exampleMatch) {
-              strategy.examples.push(exampleMatch[1])
-            } else {
-              // 일반 설명 추가
-              strategy.description += ' ' + line
-            }
-          }
-        })
-
-        strategies.push(strategy)
+        };
       }
-    })
+      // 현재 전략에 대한 추가 설명이나 예시인 경우
+      else if (currentStrategy) {
+        const examples = line.match(/"([^"]+)"/g);
+        if (examples) {
+          currentStrategy.examples.push(
+            ...examples.map(ex => ex.replace(/"/g, '').trim())
+          );
+          // 예시를 제외한 나머지 텍스트는 설명에 추가
+          const additionalDescription = line
+            .replace(/"[^"]+"/g, '')
+            .replace(/예:/g, '')
+            .trim();
+          if (additionalDescription) {
+            currentStrategy.description += ' ' + additionalDescription;
+          }
+        } else {
+          // 예시가 없는 경우 전체 라인을 설명에 추가
+          currentStrategy.description += ' ' + line;
+        }
+        currentStrategy.description = currentStrategy.description.trim();
+      }
+    });
 
-    return strategies
+    // 마지막 전략 추가
+    if (currentStrategy) {
+      strategies.push(currentStrategy);
+    }
+
+    return strategies;
   } catch (error) {
-    console.error("Error parsing content strategy:", error)
-    return []
+    console.error('Error processing content strategy:', error);
+    return [];
   }
-}
+};
 
 const processEquipmentSection = (generatedText) => {
   try {
@@ -302,6 +318,11 @@ const processAnalysisData = (data) => {
 
 * {
   font-family: 'Noto Sans KR', sans-serif;
+}
+
+.analysis-results-container {
+  padding-top: 40px;
+  background-color: #000000;
 }
 
 .summary-section,
