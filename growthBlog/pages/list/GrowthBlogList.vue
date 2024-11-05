@@ -18,9 +18,10 @@
         </div>
         <div class="post-grid">
         <article v-for="content in smartContents" :key="content.id" class="post-card" @click="goToReadPage(content.id)">
+            <img :src="content.thumbnail || defaultThumbnail" :alt="content.title" class="post-thumbnail">
             <div class="post-content">
-                <img :src="content.thumbnail || defaultThumbnail" :alt="content.title" class="post-thumbnail">
                 <h2 class="post-title">{{ content.title }}</h2>
+                <p v-if="content.text" class="post-description">{{ content.text }}</p>
                 <div class="post-meta">
                     <span class="post-date">{{ formatDate(content.regDate) }} · {{ content.comments }}개의 댓글</span>
                     <div class="author">
@@ -80,14 +81,20 @@ const fetchContentThumbnail = async (contentId: string) => {
         // type이 'image'인 항목만 필터링
         const imageItems = items
             .filter(item => item && item.type === 'image' && item.image_url)
-            .sort((a, b) => {
-                const seqA = Number(a.sequence_number) || Infinity
-                const seqB = Number(b.sequence_number) || Infinity
-                return seqA - seqB
-            })
+            .sort((a, b) => Number(a.sequence_number) - Number(b.sequence_number))
+
+        // 텍스트 항목 필터링 및 정렬
+        const textItems = items
+            .filter(item => item.type === 'text' && item.content)
+            .sort((a, b) => Number(a.sequence_number) - Number(b.sequence_number))
         
         // 첫 번째 이미지의 URL 반환
-        return imageItems.length > 0 ? imageItems[0].image_url : null
+        return {
+            thumbnail: imageItems.length > 0 ? imageItems[0].image_url : null,
+            text: textItems.length > 0 ? textItems[0].content : null
+        }
+
+        
     } catch (error) {
         console.error(`썸네일 가져오기 실패 (컨텐츠 ID: ${contentId}):`, error)
         return null
@@ -108,15 +115,18 @@ const fetchSmartContents = async () => {
 
         // 각 컨텐츠의 썸네일과 좋아요 수 가져오기
         const contentsWithData = await Promise.all(response.map(async (content) => {
-            const [thumbnail, likeCount] = await Promise.all([
-                fetchContentThumbnail(content.id.toString()),
-                likeCountStore.requestLikeCountToDjango(content.id)
-            ])
+            const [contentData, likeCount] = await Promise.all([
+            fetchContentThumbnail(content.id.toString()),
+            likeCountStore.requestLikeCountToDjango(content.id)
+        ])
+            console.log(`Content ID: ${content.id}, Thumbnail: ${JSON.stringify(contentData)}`);
+
 
             likeCounts.value[content.id] = likeCount
             return {
                 ...content,
-                thumbnail: thumbnail || defaultThumbnail
+                thumbnail: contentData.thumbnail || defaultThumbnail,
+                text: contentData.text || '기본 텍스트'
             }
         }))
 
@@ -242,7 +252,11 @@ onUnmounted(() => {
     border-radius: 8px;
     overflow: hidden;
     transition: transform 0.2s;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }
+
 
 .post-card:hover {
     transform: translateY(-4px);
@@ -250,7 +264,7 @@ onUnmounted(() => {
 
 .post-thumbnail {
     width: 100%;
-    height: 200px; /* 원하는 높이로 조정 */
+    height: 250px; /* 원하는 높이로 조정 */
     overflow: hidden;
 }
 
@@ -262,6 +276,10 @@ onUnmounted(() => {
 
 .post-content {
     padding: 16px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    justify-content: space-between;
 }
 
 .post-title {
@@ -269,20 +287,29 @@ onUnmounted(() => {
     font-weight: 500;
     margin-bottom: 8px;
     color: #212529;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.post-excerpt {
-    font-size: 14px;
-    color: #495057;
-    line-height: 1.5;
-    margin-bottom: 16px;
+.post-description {
+    font-size: 15px;
+    color: #868e96;
+    margin-bottom: 30px;
+    line-height: 1.4;
     display: -webkit-box;
-    -webkit-line-clamp: 3;
+    -webkit-line-clamp: 2; /* 원하는 줄 수 */
     -webkit-box-orient: vertical;
     overflow: hidden;
+    text-overflow: ellipsis;
+    /* max-height: 4.2em; /* line-height * 줄 수 */
+    line-height: 1.4; 
 }
 
+
 .post-meta {
+    margin-top: auto;
+    margin-bottom: -8px;
     font-size: 12px;
     color: #868e96;
 }
@@ -293,6 +320,8 @@ onUnmounted(() => {
 }
 
 .author {
+    border-top: 1px solid #e9ecef;
+    padding-top: 5px;
     display: flex;
     align-items: center;
     gap: 8px;
