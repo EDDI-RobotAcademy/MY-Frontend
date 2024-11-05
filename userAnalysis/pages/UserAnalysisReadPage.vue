@@ -16,16 +16,21 @@
       </ul>
     </div>
     <p v-else>요청 상세 정보를 불러오는 중입니다...</p>
+
+    <div class="button-container">
+      <button @click="viewPastResult" class="view-result-button">결과 보기</button>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useUserAnalysisStore } from '@/stores/userAnalysisStore';
 
 const userAnalysisStore = useUserAnalysisStore();
 const route = useRoute();
+const router = useRouter();
 const requestId = ref(route.params.id);
 
 const loadRequestDetails = async () => {
@@ -34,6 +39,10 @@ const loadRequestDetails = async () => {
   } catch (error) {
     console.error('요청 상세 정보 불러오기 실패:', error);
   }
+};
+
+const viewPastResult = () => {
+  router.push(`/user-analysis/past-result/${requestId.value}`);
 };
 
 onMounted(() => {
@@ -96,6 +105,27 @@ li:hover {
 
 p {
   margin: 0;
+}
+
+/* 버튼 컨테이너 */
+.button-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+/* 결과 보기 버튼 스타일 */
+.view-result-button {
+  padding: 12px 30px;
+  background-color: #ff9033;
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s, transform 0.2s;
 }
 
 </style>
