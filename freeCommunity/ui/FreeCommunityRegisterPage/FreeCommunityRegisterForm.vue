@@ -4,7 +4,7 @@
       <label for="category">카테고리</label>
       <select id="category" v-model="selectedCategoryName" @change="handleCategoryChange" required class="form-input">
         <option value="">선택</option>
-        <option v-for="category in categories" :key="category.categoryId" :value="category.name">
+        <option v-for="category in filteredCategories" :key="category.categoryId" :value="category.name">
           {{ category.name }}
         </option>
       </select>
@@ -17,19 +17,27 @@
       <label for="content">내용</label>
       <textarea id="content" v-model="formData.content" required class="form-input content-textarea"></textarea>
     </div>
+    <div v-if="isAdmin">
+      <label>
+        <input type="checkbox" v-model="formData.is_notice" />
+        공지글로 등록
+      </label>
+    </div>
   </form>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useFreeCommunityStore } from '../../stores/freeCommunityStore'
+import { useAuthenticationStore } from '@/authentication/stores/authenticationStore'
 
 const props = defineProps<{
   formData: {
     title: string;
     content: string;
     category_id: number | null;
+    is_notice: boolean;
   }
 }>()
 
@@ -42,6 +50,13 @@ const freeCommunityStore = useFreeCommunityStore()
 const localFormData = ref({ ...props.formData })
 const categories = ref<any[]>([])
 const selectedCategoryName = ref('')
+const authenticationStore = useAuthenticationStore();
+const isAdmin = computed(() => authenticationStore.isAdmin);
+
+// 관리자가 아니면 공지 카테고리를 제외한 목록만 표시
+const filteredCategories = computed(() => {
+  return categories.value.filter(category => isAdmin.value || category.name !== '공지');
+});
 
 const handleCategoryChange = () => {
   const selectedCategory = categories.value.find(
@@ -57,7 +72,6 @@ onMounted(async () => {
   try {
     const rawCategories = await freeCommunityStore.getCategories()
     
-
     categories.value = rawCategories.map(category => ({
       categoryId: category.categoryId,
       name: category.name
