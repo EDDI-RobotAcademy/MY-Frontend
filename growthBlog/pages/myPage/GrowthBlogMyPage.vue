@@ -3,22 +3,14 @@
         <NavHeader />
 
         <main class="main-content">
-            <ProfileSection 
-                :nickname="computedNickname"
-                :following="followingCount"
-                :followers="followersCount"
-            />
+            <ProfileSection :nickname="computedNickname" :following="followingCount" :followers="followersCount" />
 
             <NavigationTabs />
 
-            <SearchBar v-model="searchQuery" />
+            <SearchBar :posts="posts" @filtered-posts="handleFilteredPosts" />
 
             <div class="content-layout">
-                <TagsSection :tags="snsTagsList" />
-                <PostList 
-                    :posts="posts"
-                    :format-date="formatDate"
-                />
+                <PostList :posts="displayedPosts" :format-date="formatDate" />
             </div>
         </main>
     </div>
@@ -33,7 +25,6 @@ import NavHeader from '@/growthBlog/ui/navigation/navigation.vue';
 import ProfileSection from '../myPage/UserPageUI/ProfileSection.vue';
 import NavigationTabs from '../myPage/UserPageUI/NavigationTabs.vue';
 import SearchBar from '../myPage/UserPageUI/SearchBar.vue';
-import TagsSection from '../myPage/UserPageUI/TagSection.vue';
 import PostList from '../myPage/UserPageUI/PostList.vue';
 
 import { useSmartContentStore } from '~/smartContent/stores/smartContentStore';
@@ -45,7 +36,6 @@ const smartContentStore = useSmartContentStore();
 const accountStore = useAccountStore();
 const authenticationStore = useAuthenticationStore();
 
-const posts = ref([]);
 const nickname = ref('Guest');
 const searchQuery = ref('');
 const itemsPerPage = 6;
@@ -54,17 +44,12 @@ const isLoading = ref(false);
 const hasMore = ref(true);
 const followingCount = ref(0);
 const followersCount = ref(0);
-
+const posts = ref([]); // 전체 포스트 데이터
+const displayedPosts = ref([]); // 필터된 포스트 데이터
 const { isAuthenticated } = storeToRefs(authenticationStore);
 
 const computedNickname = computed(() => nickname.value || 'Guest');
 
-const snsTagsList = [
-    { id: 1, name: '유튜브', href: '#', count: 13 },
-    { id: 2, name: '트위터', href: '#', count: 6 },
-    { id: 3, name: '쓰레드', href: '#', count: 2 },
-    { id: 4, name: '인스타', href: '#', count: 2 }
-];
 
 const formatDate = (dateString) => {
     if (!dateString) return '';
@@ -89,23 +74,33 @@ const getNickname = async () => {
     }
 };
 
+const handleFilteredPosts = (filteredPosts) => {
+    displayedPosts.value = filteredPosts;
+};
+
 const fetchMySmartContents = async () => {
     if (isLoading.value || !hasMore.value) return;
     isLoading.value = true;
     const userToken = localStorage.getItem('userToken');
     try {
-        
-        const response = await smartContentStore.requestListMySmartContentToDjango(userToken, currentPage.value, itemsPerPage);
+        const response = await smartContentStore.requestListMySmartContentToDjango(
+            userToken,
+            currentPage.value,
+            itemsPerPage
+        );
+
         if (response.length < itemsPerPage) {
             hasMore.value = false;
         }
-        
+
         if (currentPage.value === 1) {
             posts.value = response;
+            displayedPosts.value = response; // 초기 표시 데이터도 설정
         } else {
             posts.value = [...posts.value, ...response];
+            displayedPosts.value = [...displayedPosts.value, ...response];
         }
-        
+
         currentPage.value++;
     } catch (error) {
         console.error('내 SmartContent 목록 조회 실패:', error);
