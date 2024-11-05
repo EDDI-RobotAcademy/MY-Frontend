@@ -23,7 +23,8 @@ export const useAuthenticationStore = defineStore('authentication', {
 
         
 
-        localStorage.setItem("userToken", response.data.userToken)
+        localStorage.setItem("userToken", response.data.userToken);
+        localStorage.removeItem("guestToken");
         this.isAuthenticated = true
 
         await this.checkAndSetAuthStatus()
