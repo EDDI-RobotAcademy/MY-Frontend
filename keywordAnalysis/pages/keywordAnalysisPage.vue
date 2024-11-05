@@ -14,7 +14,7 @@
                         <KeywordInput v-model:keywords="formData.keywords" />
                         <button @click="fetchTrendData" class="btn-search" :disabled="loading">
                             <span v-if="loading" class="loading-spinner">⌛</span>
-                            <span>{{ loading ? '검색 중...' : '검색하기' }}</span>
+                            <span>{{ loading ? '검색 중...' : '검색' }}</span>
                         </button>
                     </div>
                 </div>
