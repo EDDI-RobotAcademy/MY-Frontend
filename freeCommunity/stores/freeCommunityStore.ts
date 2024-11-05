@@ -34,6 +34,7 @@ export const useFreeCommunityStore = defineStore('freeCommunityStore', {
             title: string,
             content: string,
             category_id: number,
+            is_notice: boolean
         }) {
             try {
                 const { djangoAxiosInst } = createAxiosInstances()
@@ -41,6 +42,16 @@ export const useFreeCommunityStore = defineStore('freeCommunityStore', {
                 return response.data
             } catch (error) {
                 console.error('글 등록 중 오류 발생:', error)
+                throw error
+            }
+        },
+        async getNotices(){
+            const {djangoAxiosInst} = createAxiosInstances()
+            try{
+                const response = await djangoAxiosInst.get('free_community/list-notices')
+                return response.data
+            } catch(error){
+                console.error('공지글 목록 가져오는 중 오류 발생:', error)
                 throw error
             }
         },

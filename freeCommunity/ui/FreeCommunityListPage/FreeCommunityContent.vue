@@ -1,5 +1,6 @@
 <template>
     <div class="free-community-content">
+        <!-- 게시글 목록 -->
         <table v-if="paginatedContents.length > 0" class="free-community-table">
             <thead>
                 <tr>
@@ -12,9 +13,16 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(content, index) in paginatedContents" :key="content.free_communityId"
-                    @click="goToFreeCommunityDetail(content.free_communityId)" class="free-community-row">
-                    <td>{{ getTotalIndex(index) }}</td>
+                <tr
+                    v-for="(content, index) in paginatedContents"
+                    :key="content.free_communityId"
+                    @click="goToFreeCommunityDetail(content.free_communityId)"
+                    :class="{'notice-row': content.is_notice}"
+                    class="free-community-row"
+                >
+                    <!-- 공지글이 아닐 때만 No 표시 -->
+                    <td v-if="!content.is_notice">{{ getTotalIndex(index) }}</td>
+                    <td v-else></td> <!-- 공지글일 경우 No 컬럼 비우기 -->
                     <td>{{ content.category_name }}</td>
                     <td class="title-cell">
                         {{ content.title }}
@@ -31,6 +39,7 @@
 
         <p v-else>{{ errorMessage || '게시글이 없습니다.' }}</p>
 
+        <!-- 페이지 네비게이션 -->
         <div class="pagination">
             <button 
                 :disabled="currentPage === 1" 
@@ -58,13 +67,14 @@
     </div>
 </template>
 
+
 <script setup lang="ts">
 import { ref, onMounted, watch, computed } from 'vue';
 import { useFreeCommunityStore } from '../../stores/freeCommunityStore';
 import { useRouter, useRoute } from 'vue-router';
 import { useViewCountStore } from '~/viewCount/stores/viewCountStore';
 import { useFreeCommunityCommentStore } from '~/freeCommunityComment/stores/freeCommunityCommentStore';
-import '@fortawesome/fontawesome-free/css/all.css'
+import '@fortawesome/fontawesome-free/css/all.css';
 
 const viewCountStore = useViewCountStore();
 const router = useRouter();
@@ -93,8 +103,11 @@ const resetData = () => {
     currentPage.value = 1;
 };
 
+// 공지사항을 항상 상단에 두고, 최신순/인기순으로 정렬
 const sortedContents = computed(() => {
     return [...freeCommunityContents.value].sort((a, b) => {
+        if (a.is_notice && !b.is_notice) return -1;
+        if (!a.is_notice && b.is_notice) return 1;
         if (currentSort.value === 'date') {
             return new Date(b.regDate).getTime() - new Date(a.regDate).getTime();
         } else if (currentSort.value === 'views') {
@@ -148,8 +161,7 @@ const fetchFreeCommunityContents = async (categoryId: number | null, searchQuery
         }
 
         // 응답 데이터 설정
-        freeCommunityContents.value = Array.isArray(response) ? response :
-                                    (response?.data ? response.data : []);
+        freeCommunityContents.value = Array.isArray(response) ? response : (response?.data ? response.data : []);
 
         // 추가 데이터 fetch
         await Promise.all([
@@ -225,15 +237,6 @@ watch(
     },
     { immediate: true }
 );
-
-onMounted(async () => {
-    const categoryFromQuery = route.query.category ? Number(route.query.category) : null;
-    const categoryToUse = categoryFromQuery ?? props.selectedCategoryId;
-    
-    // 초기 데이터 로드
-    await fetchFreeCommunityContents(categoryToUse, props.searchQuery, props.searchType);
-});
-
 
 defineExpose({
     sortBy
@@ -373,5 +376,9 @@ td {
 
 .page-number.active:hover {
     background-color: #ff9033;
+}
+
+.notice-row {
+    background-color: #fff8d4;
 }
 </style>
