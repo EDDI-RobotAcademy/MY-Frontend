@@ -1,19 +1,26 @@
-<!-- UserBlogPage.vue -->
 <template>
   <div class="container" @scroll.passive="handleScroll">
     <NavHeader />
 
     <main class="main-content">
-      <ProfileSection :nickname="userNickname" :following="profileStats.following" :followers="profileStats.followers"
-        @follow="handleFollow" @unfollow="handleUnfollow" />
+      <ProfileSection 
+        :nickname="userNickname" 
+        :following="profileStats.following" 
+        :followers="profileStats.followers"
+        @follow="handleFollow" 
+        @unfollow="handleUnfollow" 
+      />
 
       <NavigationTabs />
 
-      <SearchBar v-model="searchQuery" />
+      <SearchBar 
+        :posts="posts"
+        @filtered-posts="handleFilteredPosts"
+        placeholder="게시물 검색하기"
+      />
 
       <div class="content-layout">
-        <TagsSection :tags="snsTagsList" />
-        <PostList :posts="posts" :format-date="formatDate" />
+        <PostList :posts="displayedPosts" :format-date="formatDate" />
       </div>
 
       <div v-if="isLoading" class="loading">Loading...</div>
@@ -23,12 +30,11 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import NavHeader from '@/growthBlog/ui/navigation/navigation.vue';
 import ProfileSection from '../myPage/UserPageUI/ProfileSection.vue';
 import NavigationTabs from '../myPage/UserPageUI/NavigationTabs.vue';
 import SearchBar from '../myPage/UserPageUI/SearchBar.vue';
-import TagsSection from '../myPage/UserPageUI/TagSection.vue';
 import PostList from '../myPage/UserPageUI/PostList.vue';
 import { useSmartContentStore } from '~/smartContent/stores/smartContentStore';
 import { useGrowthBlogStore } from '~/growthBlog/stores/growthBlogStore';
@@ -37,8 +43,9 @@ const route = useRoute();
 const router = useRouter();
 const smartContentStore = useSmartContentStore();
 const growthBlogStore = useGrowthBlogStore();
-const posts = ref([]);
-const searchQuery = ref('');
+
+const posts = ref([]); // 전체 포스트 데이터
+const displayedPosts = ref([]); // 필터된 포스트 데이터를 위한 새로운 ref
 const userNickname = computed(() => route.params.nickname);
 
 const currentPage = ref(1);
@@ -51,12 +58,10 @@ const profileStats = ref({
   followers: 0
 });
 
-const snsTagsList = [
-  { id: 1, name: '유튜브', href: '#', count: 13 },
-  { id: 2, name: '트위터', href: '#', count: 6 },
-  { id: 3, name: '쓰레드', href: '#', count: 2 },
-  { id: 4, name: '인스타', href: '#', count: 2 }
-];
+// 검색 결과를 처리하는 함수
+const handleFilteredPosts = (filteredPosts) => {
+  displayedPosts.value = filteredPosts;
+};
 
 const formatDate = (dateString) => {
   if (!dateString) return '';
@@ -72,7 +77,6 @@ const fetchUserSmartContents = async () => {
 
   isLoading.value = true;
   try {
-
     const response = await smartContentStore.requestListUserSmartContentToDjango(
       userNickname.value,
       currentPage.value,
@@ -85,8 +89,10 @@ const fetchUserSmartContents = async () => {
 
     if (currentPage.value === 1) {
       posts.value = response;
+      displayedPosts.value = response; // 초기 표시 데이터도 설정
     } else {
       posts.value = [...posts.value, ...response];
+      displayedPosts.value = [...displayedPosts.value, ...response];
     }
 
     currentPage.value++;
@@ -118,10 +124,20 @@ const handleFollow = async () => {
   }
 };
 
+const handleUnfollow = async () => {
+  try {
+    await growthBlogStore.unregisterSocial(userNickname.value);
+    profileStats.value.followers -= 1;
+  } catch (error) {
+    console.error('언팔로우 실패:', error);
+  }
+};
+
 onMounted(() => {
   currentPage.value = 1;
   hasMore.value = true;
   posts.value = [];
+  displayedPosts.value = [];
   fetchUserSmartContents();
 });
 </script>
@@ -143,6 +159,12 @@ onMounted(() => {
   display: flex;
   gap: 60px;
   margin-top: 40px;
+}
+
+.loading {
+  text-align: center;
+  padding: 20px;
+  color: #666;
 }
 
 @media (max-width: 768px) {
