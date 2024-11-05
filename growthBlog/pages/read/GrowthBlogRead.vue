@@ -2,22 +2,19 @@
     <div class="container">
         <NavHeader />
         <div class="blog_container">
-            <!-- Header Section -->
             <div class="blog_header">
                 <div class="header_inner">
                     <div class="header_content">
                         <h1 class="post_title">{{ content.title }}</h1>
                         <div class="post_info">
-                            <span class="writer">by {{ content.nickname }}</span>
+                            <span class="writer" @click="goToUserPage(content.nickname)">by {{ content.nickname }}</span>
                             <span class="date">{{ formatDate(content.regDate) }}</span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Content Wrapper -->
             <div class="blog_content_wrapper">
-                <!-- Like Button Section -->
                 <div class="like_button_wrapper">
                     <LikeButton
                         :content-id="Number(route.params.id)"
@@ -25,7 +22,6 @@
                         :initial-liked-state="content.userHasLiked"
                     />
                 </div>
-                <!-- Main Content Area -->
                 <div class="blog_content">
                     <div class="post_content">
                         <div
@@ -55,9 +51,9 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useSmartContentStore } from '@/smartContent/stores/smartContentStore';
-import NavHeader from '@/growthBlog/ui/navigation/navigation.vue'; // NavHeader 컴포넌트 임포트
+import NavHeader from '@/growthBlog/ui/navigation/navigation.vue';
 import LikeButton from '~/growthBlog/ui/read/LikeButton.vue';
 
 const route = useRoute();
@@ -71,8 +67,7 @@ const content = ref({
     likeCount: 0,
     userHasLiked: false,
 });
-
-// 텍스트 포맷팅 (줄바꿈 처리)
+const router = useRouter();
 const formatText = (text: string) => {
     return text.replace(/\n/g, '<br>');
 };
@@ -83,7 +78,6 @@ const formatDate = (dateString: string) => {
     return date.toLocaleDateString();
 };
 
-// SmartContent 기본 정보 가져오기
 const fetchSmartContent = async () => {
     try {
         const contentId = route.params.id;
@@ -100,7 +94,6 @@ const fetchSmartContent = async () => {
     }
 };
 
-// 콘텐츠 아이템 가져오기
 const fetchContentItems = async () => {
     try {
         const contentId = route.params.id;
@@ -116,6 +109,10 @@ const fetchContentItems = async () => {
     } finally {
         loading.value = false
     }
+};
+
+const goToUserPage = (userNickname) => {
+    router.push(`/growth-blog/my-page/${userNickname}`);
 };
 
 onMounted(() => {
@@ -179,6 +176,10 @@ body {
 .writer {
     font-weight: bold;
     margin-right: 20px;
+}
+
+.writer:hover {
+    cursor: pointer;
 }
 
 .blog_content_wrapper {
