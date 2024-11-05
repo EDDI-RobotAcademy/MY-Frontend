@@ -331,6 +331,9 @@ const fetchTrendData = async () => {
     .analysis-grid {
         grid-template-columns: 1fr;
     }
+    .btn-search {
+        width: 20%;
+    }
 }
 @media (max-width: 480px) {
     .header h1 {
