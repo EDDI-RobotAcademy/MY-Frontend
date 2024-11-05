@@ -110,7 +110,7 @@ const nextQuestionIfNotEmpty = () => {
 const getPlaceholder = (index: number) => {
   const placeholders: { [key: number]: string } = {
     2: "ex) 운동, 영화, 맛집, 연애, 게임...",
-    7: "ex) 김계란, 성시경, 이사배..."
+    7: "ex) 김계란, 침착맨, 이사배..."
   }
   return questions.value[index]?.user_analysis_type === '1' ? placeholders[index] || '' : ''
 }
