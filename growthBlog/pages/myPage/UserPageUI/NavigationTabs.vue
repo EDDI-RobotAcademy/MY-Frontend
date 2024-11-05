@@ -17,8 +17,6 @@
       type: Array,
       default: () => [
         { id: 1, label: '글', href: '#', isActive: true },
-        { id: 2, label: '시리즈', href: '#', isActive: false },
-        { id: 3, label: '소개', href: '#', isActive: false }
       ]
     }
   });
