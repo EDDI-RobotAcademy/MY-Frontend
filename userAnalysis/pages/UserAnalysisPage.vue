@@ -1,9 +1,6 @@
 <template>
   <div class="main-container">
     <div class="content-overlay">
-      <div class="survey-icon">
-        <v-img alt="Survey Icon"></v-img>
-      </div>
       <div class="overlay-text">
         <h1>COOING은 인플루언서를 꿈꾸는 당신의 든든한 성장 파트너예요!</h1>
         <h3>맞춤형 성장 전략을 제안해드리기 위해 간단한 질문들을 준비했어요.<br>당신을 더 잘 이해할 수 있도록, 아래 질문들에 솔직하게 답변해 주세요✨</h3>
@@ -184,15 +181,13 @@ onMounted(() => {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: rgba(255, 255, 255, 0.7);
-  background-image: url("@/assets/fixed/chatbot/background_gradient.png");
-  background-size: cover;
-  background-blend-mode: darken;
+  background-color: #111;
+  color: #fff;
 }
 
 .survey-icon {
   background-image: url("@/assets/fixed/survey/icon_survey.png");
-  filter: brightness(0) saturate(100%) invert(56%) sepia(75%) saturate(1605%) hue-rotate(346deg) brightness(100%) contrast(104%);
+  filter: brightness(0) saturate(100%) invert(100%);
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
@@ -213,7 +208,7 @@ onMounted(() => {
   align-items: center;
   padding: 20px;
   box-sizing: border-box;
-  background-color: rgba(255, 255, 255, 0.6);
+  background-color: rgba(0, 0, 0, 0.8);
 }
 
 .overlay-text {
@@ -230,14 +225,14 @@ onMounted(() => {
 
 .overlay-text h1 {
   font-size: 1.8rem;
-  color: #000;
+  color: #fff;
   margin-bottom: 20px;
   text-align: center;
 }
 
 .overlay-text h3 {
   font-size: 1.2rem;
-  color: #000;
+  color: #ccc;
   margin-bottom: 20px;
   text-align: center;
 }
@@ -246,16 +241,17 @@ onMounted(() => {
   text-align: center;
   padding: 20px;
   border-radius: 10px;
-  background-color: rgba(255, 255, 255, .5);
+  background-color: rgba(30, 30, 30, 0.9);
   justify-content: center;
   align-items: center;
   max-width: 800px;
   width: 100%;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
 }
 
 .survey-container h2 {
   font-size: 1.4rem;
-  color: #000;
+  color: #fff;
   margin-bottom: 20px;
 }
 
@@ -275,7 +271,7 @@ onMounted(() => {
 
 .option-text {
   font-size: 1.3rem;
-  color: #000;
+  color: #fff;
   text-align: center;
 }
 
@@ -286,7 +282,7 @@ input[type="radio"] {
 .radio-button {
   width: 20px;
   height: 20px;
-  border: 2px solid #000;
+  border: 2px solid #fff;
   border-radius: 50%;
   margin-right: 10px;
   position: relative;
@@ -316,11 +312,17 @@ input[type="radio"]:checked+.radio-button::after {
 .text-input input {
   width: 70%;
   padding: 10px;
-  border: 1px solid #000;
+  border: 1px solid #444;
   border-radius: 5px;
   font-size: 16px;
   margin-bottom: 12px;
   text-align: center;
+  background-color: rgba(0, 0, 0, 0.3);
+  color: #fff;
+}
+
+.text-input input::placeholder {
+  color: #888;
 }
 
 .button-container {
@@ -336,13 +338,13 @@ button {
   cursor: pointer;
   border: none;
   border-radius: 5px;
-  transition: background-color 0.3s;
+  transition: all 0.3s ease;
 }
 
 button:disabled {
-  background-color: #cecece;
+  background-color: #333;
   cursor: not-allowed;
-  color: white;
+  color: #666;
 }
 
 button.next-button:not(:disabled) {
@@ -351,11 +353,13 @@ button.next-button:not(:disabled) {
 }
 
 button.prev-button:not(:disabled) {
-  background-color: rgb(69, 69, 69);
+  background-color: #444;
   color: white;
 }
 
 button:not(:disabled):hover {
   opacity: 0.8;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(255, 144, 51, 0.2);
 }
 </style>
