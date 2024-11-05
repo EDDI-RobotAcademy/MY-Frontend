@@ -1,82 +1,65 @@
 <template>
-  <loading-content v-if="!summary || !analysis || !influencerAnalysis" />
-  <div v-else class="analysis-results-container">
-    <SummaryContent :data="summary" />
-    <InputAnalysisContent :data="analysis" />
-    <InfluencerAnalysisContent :data="influencerAnalysis" />
-    <ContentStrategyContent :data="contentStrategy" />
-    <EquipmentRecommendationContent :data="equipmentRecommendation" />
-    <GrowthRoadmapContent :data="growthRoadmap" />
-    <SupportMessageContent :message="supportMessage" />
-  </div>
-</template>
+    <loading-content v-if="!summary || !analysis || !influencerAnalysis" />
+    <div v-else class="analysis-results-container">
+      <SummaryContent :data="summary" />
+      <InputAnalysisContent :data="analysis" />
+      <InfluencerAnalysisContent :data="influencerAnalysis" />
+      <ContentStrategyContent :data="contentStrategy" />
+      <EquipmentRecommendationContent :data="equipmentRecommendation" />
+      <GrowthRoadmapContent :data="growthRoadmap" />
+      <SupportMessageContent :message="supportMessage" />
+    </div>
+  </template>
+  
+  <script setup>
+  import { ref, onMounted } from 'vue';
+  import { useRoute } from 'vue-router';
+  import { useUserAnalysisStore } from '../../userAnalysis/stores/userAnalysisStore';
+  import SummaryContent from '../ui/SummaryContent.vue';
+  import InputAnalysisContent from '../ui/InputAnalysisContent.vue';
+  import InfluencerAnalysisContent from '../ui/InfluencerAnalysisContent.vue';
+  import LoadingContent from '../ui/LoadingContent.vue';
+  import ContentStrategyContent from '../ui/ContentStrategyContent.vue';
+  import EquipmentRecommendationContent from '../ui/EquipmentRecommendationContent.vue';
+  import GrowthRoadmapContent from '../ui/GrowthRoadmapContent.vue';
+  import SupportMessageContent from '../ui/SupportMessageContent.vue';
+  
+  const route = useRoute();
+  const userAnalysisStore = useUserAnalysisStore();
+  const summary = ref(null);
+  const analysis = ref(null);
+  const influencerAnalysis = ref(null);
+  const contentStrategy = ref(null);
+  const equipmentRecommendation = ref(null);
+  const growthRoadmap = ref(null);
+  const supportMessage = ref(null);
+  const requestId = ref(route.params.id); // 요청 ID 가져오기
+  
+  onMounted(async () => {
+    await loadStoredAnalysisData();
+  });
 
-<script setup>
-import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
-import { useUserAnalysisStore } from '../../userAnalysis/stores/userAnalysisStore'
-import SummaryContent from '../ui/SummaryContent.vue'
-import InputAnalysisContent from '../ui/InputAnalysisContent.vue'
-import InfluencerAnalysisContent from '../ui/InfluencerAnalysisContent.vue'
-import LoadingContent from '../ui/LoadingContent.vue'
-import ContentStrategyContent from '../ui/ContentStrategyContent.vue'
-import EquipmentRecommendationContent from '../ui/EquipmentRecommendationContent.vue'
-import GrowthRoadmapContent from '../ui/GrowthRoadmapContent.vue'
-import SupportMessageContent from '../ui/SupportMessageContent.vue'
-
-const route = useRoute()
-const userAnalysisStore = useUserAnalysisStore()
-const summary = ref(null)
-const analysis = ref(null)
-const influencerAnalysis = ref(null)
-const contentStrategy = ref(null)
-const equipmentRecommendation = ref(null)
-const growthRoadmap = ref(null)
-const supportMessage = ref(null)
-const userAnalysisRequest = ref(route.query.userAnalysisRequest)
-
-// 마크다운 제거 함수
-const removeMarkdown = (text) => {
+  const removeMarkdown = (text) => {
   return text
     .replace(/\*\*/g, '')
     .replace(/`/g, '')
     .replace(/\[(.*?)\]\(.*?\)/g, '$1')
     .replace(/#{1,6}\s/g, '')
 }
-
-onMounted(async () => {
-  await fetchAnalysisData()
-})
-
-const fetchAnalysisData = async () => {
-  try {
-    const result = await sendSurveyToFastAPI()
-
-    if(result){
-      const analysisData = await userAnalysisStore.getUserAnalysisResultFromFastAPI()
-
-      if(analysisData){
-        const finalData = await userAnalysisStore.getLatestCustomStrategyFromDjango()
-        if(finalData){
-          processAnalysisData(finalData)
-        }
+  
+  // 저장된 분석 데이터를 불러오는 함수
+  const loadStoredAnalysisData = async () => {
+    try {
+      const storedData = await userAnalysisStore.getCustomStrategyFromDjango(requestId.value);
+      if (storedData) {
+        processAnalysisData(storedData);
       }
+    } catch (error) {
+      console.error("Failed to load stored analysis data:", error);
     }
-  } catch (error) {
-    console.error("Failed to process analysis data:", error)
-  }
-}
-
-const sendSurveyToFastAPI = async () => {
-  try {
-    return await userAnalysisStore.sendUserAnalysisRequestToFastapiByDjango(userAnalysisRequest.value)
-  } catch (error) {
-    console.error("FastAPI 요청 오류:", error)
-    return null
-  }
-}
-
-const extractSection = (text, startMarker, endMarker) => {
+  };
+  
+  const extractSection = (text, startMarker, endMarker) => {
   if (!text) return null
   try {
     const startPattern = `### ${startMarker}`
@@ -318,8 +301,8 @@ const processAnalysisData = (data) => {
   }
 }
 </script>
-
-<style>
+  
+<style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap');
 
 * {
@@ -421,3 +404,4 @@ li {
   }
 }
 </style>
+  

@@ -256,7 +256,7 @@ export const useUserAnalysisStore = defineStore('userAnalysisStore', {
       }
     },
 
-    async getCustomStrategyFromDjango(): Promise<any> {
+    async getLatestCustomStrategyFromDjango(): Promise<any> {
       const { djangoAxiosInst } = createAxiosInstances();
       const userToken = localStorage.getItem("userToken") || localStorage.getItem("guestToken")
 
@@ -264,10 +264,22 @@ export const useUserAnalysisStore = defineStore('userAnalysisStore', {
         userToken: userToken
       }
       try {
-        const res = await djangoAxiosInst.post('custom_strategy_history/read', payload)
+        const res = await djangoAxiosInst.post('custom_strategy_history/read-latest', payload)
         return res.data;
       } catch (error) {
         console.error('getCustomStrategyFromDjango() 중 에러 발생');
+        throw error;
+      }
+    },
+
+    async getCustomStrategyFromDjango(request_id: number): Promise<any> {
+      const { djangoAxiosInst } = createAxiosInstances();
+
+      try {
+        const res = await djangoAxiosInst.post(`custom_strategy_history/read/${request_id}`)
+        return res.data;
+      } catch (error) {
+        console.error('getCustomStrategyFromDjango() 중 에러 발생', error);
         throw error;
       }
     },
