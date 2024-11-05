@@ -104,7 +104,6 @@ onMounted(() => {
     if (!isOpen.value && 
         message.nickname !== props.nickname && 
         message.timestamp > lastReadTimestamp.value) {
-      console.log('New unread message:', message); // 디버그용
       unreadCount.value++;
     }
   });

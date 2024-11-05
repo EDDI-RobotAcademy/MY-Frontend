@@ -62,11 +62,9 @@ const formData = ref({
     keywords: ['']
 });
 const demographic = computed(() => {
-    console.log('Demographic data:', trendData.value?.demographic);
     return trendData.value?.demographic;
 });
 const deviceAnalysis = computed<DeviceAnalysis>(() => {
-    console.log('Device analysis:', trendData.value?.deviceAnalysis);
     return trendData.value?.deviceAnalysis || { pc: 0, mobile: 0 };
 });
 const pieOptions = {
@@ -156,21 +154,17 @@ const deviceData = computed(() => ({
     }]
 }));
 const validateForm = (): boolean => {
-    console.log('Validating form data:', formData.value);
     if (!formData.value.keywords.length) {
-        console.log('No keywords found'); // 디버깅용 로그 추가
         error.value = '최소 하나의 키워드가 필요합니다';
         return false;
     }
     const isValid = formData.value.keywords.every(keyword => keyword.trim() !== '');
-    console.log('Keywords validation result:', isValid); // 디버깅용 로그 추가
     if (!isValid) {
         error.value = '모든 키워드를 입력해주세요';
         return false;
     }
     const startDate = new Date(formData.value.startDate);
     const endDate = new Date(formData.value.endDate);
-    console.log('Date validation:', { startDate, endDate });
     if (startDate > endDate) {
         error.value = '시작일이 종료일보다 늦을 수 없습니다';
         return false;
@@ -187,7 +181,6 @@ const fetchTrendData = async () => {
             includeDemographic: true,
             includeTimeAnalysis: true
         });
-        console.log('API Response:', result);
         trendData.value = result;
     } catch (e) {
         console.error('Error occurred:', e);

@@ -7,7 +7,7 @@
           <FreeCommunitySearchButton @search="handleSearch" />
         </div>
       </div>
-      <ChatFloatingButton :nickname="nickname" :isOpen="false" @update-unread-count="handleUnreadCount" />
+      <ChatFloatingButton :nickname="nickname" :isOpen="false"/>
       <div class="content-wrapper">
         <FreeCommunityContent ref="contentRef" :selectedCategoryId="selectedCategoryId" :searchQuery="searchQuery"
           :searchType="searchType" />
@@ -52,10 +52,6 @@ const selectedCategoryId = ref<number | null>(null)
 const contentRef = ref<InstanceType<typeof FreeCommunityContent> | null>(null);
 const searchQuery = ref('')
 const searchType = ref('title')
-
-const handleUnreadCount = (count: number) => {
-  console.log('Parent received unread count:', count);  // 디버그용
-};
 
 const handleSort = (sortType: string) => {
   contentRef.value?.sortBy(sortType);

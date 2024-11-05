@@ -51,14 +51,12 @@ onMounted(async () => {
 const fetchAnalysisData = async () => {
   try {
     const result = await sendSurveyToFastAPI()
-    console.log("FastAPI 요청 결과:", result)
 
     if(result){
       const analysisData = await userAnalysisStore.getUserAnalysisResultFromFastAPI()
 
       if(analysisData){
         const finalData = await userAnalysisStore.getCustomStrategyFromDjango()
-        console.log("finalData: ", finalData)
         if(finalData){
           processAnalysisData(finalData)
         }
