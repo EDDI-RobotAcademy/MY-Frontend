@@ -171,7 +171,6 @@ onMounted(() => {
 
         if (!props.isOpen && message.nickname !== props.nickname && message.timestamp > lastReadTimestamp.value) {
             unreadCount.value++;
-            console.log('Emitting unread count:', unreadCount.value); // 디버그용
             emit('update-unread-count', unreadCount.value);
         }
     });

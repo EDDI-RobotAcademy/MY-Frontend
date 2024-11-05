@@ -242,20 +242,16 @@ export const useUserAnalysisStore = defineStore('userAnalysisStore', {
 
           for (let attempt = 0; attempt < maxAttempts; attempt++) {
               const response = await fastapiAxiosInst.post('/growth-strategy')
-              console.log("getUserAnalysisResultFromFastAPI:", response)
 
               if (response.data !== "아직 데이터를 처리 중이거나 요청한 데이터가 없습니다") {
-                  console.log("response.data:", response.data)
                   return response.data
               }
 
-              console.log(`Attempt ${attempt} failed.`)
               await new Promise(resolve => setTimeout(resolve, delay))
           }
 
           throw new Error('결과를 가져오는 데 실패했습니다.')
       } catch (error) {
-          console.log('getUserAnalysisResultFromFastAPI() 중 문제 발생:', error)
           throw error
       }
     },

@@ -47,5 +47,6 @@ defineEmits<{
     padding: 0 8px;
     border: 1px solid #e5e7eb;
     border-radius: 8px;
+    text-align: center;
 }
 </style>

@@ -29,9 +29,10 @@ const updateKeyword = (value: string) => {
     flex: 1;
     height: 35px;
     padding: 0 16px;
-    background-color: #000;
-    color: white;
+    background-color: #fff;
+    color: #000;
     border: none;
+    border: 1px solid #ccc;
     border-radius: 8px;
 }
 </style>
