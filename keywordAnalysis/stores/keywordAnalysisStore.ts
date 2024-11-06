@@ -79,10 +79,21 @@ export const useKeywordAnalysisStore = defineStore('account', () => {
       throw error;
     }
   }
-
+  
+  async function requestTrendKeywordToDjango() {
+    const { djangoAxiosInst } = createAxiosInstances();
+    try {
+      const response = await djangoAxiosInst.get('/keyword_search/get-hot-topic')
+      return response.data;
+    } catch (error) {
+      console.error('requestTrendKeywordToDjango 요청 실패:', error);
+      throw error;
+    }
+  }
   return {
     datalabError,
-    requestDatalabTrendDataToDjango
+    requestDatalabTrendDataToDjango,
+    requestTrendKeywordToDjango
   };
 });
 
