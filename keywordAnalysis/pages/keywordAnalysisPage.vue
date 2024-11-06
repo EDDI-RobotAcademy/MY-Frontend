@@ -2,8 +2,9 @@
     <div class="app-container">
         <div class="content-wrapper">
             <div class="header">
-                <h1>네이버 키워드 분석</h1>
+                <h1>키워드 분석</h1>
             </div>
+            <trendkeywordAnalysisPage @keyword-selected="handleKeywordSelect"></trendkeywordAnalysisPage>
             <div class="main-content">
                 <div class="search-form">
                     <div class="form-group">
@@ -19,6 +20,7 @@
                     </div>
                 </div>
             </div>
+            <YoutubeResults :searchQuery="currentKeyword" />
             <ErrorMessage v-if="error" :message="error" />
             <div v-if="trendData && !loading" class="results-section">
                 <TrendChart title="검색 트렌드" :results="trendData.results" />
@@ -39,6 +41,8 @@ import KeywordInput from '../ui/KeywordInput.vue';
 import TrendChart from '../ui/TrendChart.vue';
 import AnalysisCard from '../ui/AnalysisCard.vue';
 import ErrorMessage from '../ui/ErrorMessage.vue';
+import trendkeywordAnalysisPage from '../ui/trendkeyword.vue';
+import YoutubeResults from '../ui/YoutubeResults.vue';
 import {
     useKeywordAnalysisStore,
     type DataLabResponse,
@@ -51,9 +55,15 @@ const error = ref<string | null>(null);
 const keywordAnalysisStore = useKeywordAnalysisStore();
 const today = new Date();
 const thirtyDaysAgo = new Date(today);
+const currentKeyword = ref('');
 thirtyDaysAgo.setDate(today.getDate() - 30);
 const formatDate = (date: Date): string => {
     return date.toISOString().split('T')[0];
+};
+const handleKeywordSelect = (keyword: string) => {
+    formData.value.keywords = [keyword];
+    currentKeyword.value = keyword;
+    fetchTrendData();
 };
 const formData = ref({
     startDate: formatDate(thirtyDaysAgo),
@@ -67,6 +77,7 @@ const demographic = computed(() => {
 const deviceAnalysis = computed<DeviceAnalysis>(() => {
     return trendData.value?.deviceAnalysis || { pc: 0, mobile: 0 };
 });
+
 const pieOptions = {
     responsive: true,
     maintainAspectRatio: false,
@@ -188,6 +199,12 @@ const fetchTrendData = async () => {
     } finally {
         loading.value = false;
     }
+    onMounted(() => {
+        if (!localStorage.getItem("userToken")) {
+            authStore.requestGuestTokenToDjango()
+                .catch(error => console.error("Error initializing guest token:", error))
+        }
+    })
 };
 </script>
 <style scoped>
@@ -196,16 +213,19 @@ const fetchTrendData = async () => {
     background: linear-gradient(to bottom, #f8f9fa, #e9ecef);
     padding: 48px 0;
 }
+
 .content-wrapper {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 24px;
 }
+
 .header {
     margin-top: 48px;
     text-align: center;
     margin-bottom: 48px;
 }
+
 .header h1 {
     display: inline-block;
     font-size: 32px;
@@ -214,6 +234,7 @@ const fetchTrendData = async () => {
     padding: 16px 32px;
     position: relative;
 }
+
 .header h1::after {
     content: '';
     position: absolute;
@@ -225,6 +246,7 @@ const fetchTrendData = async () => {
     background-color: #2DB400;
     border-radius: 2px;
 }
+
 .main-content {
     max-width: 1000px;
     background: white;
@@ -233,39 +255,46 @@ const fetchTrendData = async () => {
     padding: 20px;
     margin: 0 auto;
 }
+
 .search-form {
     display: flex;
     align-items: center;
     gap: 12px;
     width: 100%;
 }
+
 .form-group {
     margin: 0;
     display: flex;
     align-items: center;
 }
+
 .date-selector {
     display: flex;
     align-items: center;
     gap: 16px;
 }
+
 .date-input {
     padding: 8px 12px;
     border: 1px solid #e0e0e0;
     border-radius: 8px;
 }
+
 .time-unit-select {
     padding: 8px 12px;
     border: 1px solid #e0e0e0;
     border-radius: 8px;
     background-color: white;
 }
+
 .keyword-section {
     display: flex;
     align-items: center;
     gap: 16px;
     flex: 1;
 }
+
 .keyword-input {
     flex: 1;
     padding: 8px 12px;
@@ -274,6 +303,7 @@ const fetchTrendData = async () => {
     border: none;
     border-radius: 8px;
 }
+
 .btn-search {
     color: white;
     height: 35px;
@@ -286,63 +316,84 @@ const fetchTrendData = async () => {
     cursor: pointer;
     transition: background-color 0.2s ease;
 }
+
 .btn-search:hover {
     background-color: #ffbc86;
 }
+
 .btn-search:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
+
 .loading-spinner {
     animation: spin 1s linear infinite;
     display: inline-block;
 }
+
+.youtube-section {
+    margin: 20px 0;
+    max-width: 1000px;
+    margin: 20px auto;
+}
+
 @keyframes spin {
     from {
         transform: rotate(0deg);
     }
+
     to {
         transform: rotate(360deg);
     }
 }
+
 .results-section {
     margin-top: 32px;
 }
+
 .analysis-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 24px;
     margin-top: 32px;
 }
+
 /* 반응형 스타일 */
 @media (max-width: 1024px) {
     .search-form {
         flex-direction: column;
     }
+
     .form-group,
     .keyword-section {
         width: 100%;
     }
+
     .btn-search {
         width: 100%;
     }
 }
+
 @media (max-width: 768px) {
     .analysis-grid {
         grid-template-columns: 1fr;
     }
+
     .btn-search {
         width: 20%;
     }
 }
+
 @media (max-width: 480px) {
     .header h1 {
         font-size: 24px;
         padding: 12px 24px;
     }
+
     .content-wrapper {
         padding: 0 16px;
     }
+
     .main-content {
         padding: 16px;
     }
