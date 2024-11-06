@@ -14,10 +14,7 @@
 
     <Transition name="slide">
       <div v-if="isOpen" class="chat-panel">
-        <FreeCommunityChatForm 
-          :nickname="nickname" 
-          :isOpen="isOpen"
-        />
+        <FreeCommunityChatForm :nickname="nickname" :isOpen="isOpen" />
       </div>
     </Transition>
   </div>
@@ -49,7 +46,6 @@ const isOpen = ref(false);
 const unreadCount = ref(0);
 const lastReadTimestamp = ref(Date.now());
 
-// Firebase 설정
 const config = useRuntimeConfig();
 const firebaseConfig = {
   apiKey: config.public.FIREBASE_API_KEY,
@@ -83,33 +79,45 @@ const toggleChat = () => {
   }
 };
 
+const handleClickOutside = (event: MouseEvent) => {
+  const chatPanel = document.querySelector('.chat-panel');
+  const chatButton = document.querySelector('.chat-button');
+
+  if (isOpen.value && chatPanel && chatButton) {
+    if (!chatPanel.contains(event.target as Node) && !chatButton.contains(event.target as Node)) {
+      isOpen.value = false;
+    }
+  }
+};
+
 onMounted(() => {
-  // 마지막 읽은 시간 가져오기
+  // Firebase 관련 설정
   onValue(lastReadRef, (snapshot) => {
     lastReadTimestamp.value = snapshot.val() || Date.now();
   });
 
-  // 메시지 쿼리 설정
   const messagesQuery = query(
     messagesRef,
     orderByChild('timestamp'),
     limitToLast(50)
   );
 
-  // 새 메시지 감지
   const messageListener = onChildAdded(messagesQuery, (snapshot) => {
     const message = snapshot.val();
-    
-    // 채팅창이 닫혀있고, 다른 사람의 메시지이며, 마지막으로 읽은 시간 이후의 메시지일 때
-    if (!isOpen.value && 
-        message.nickname !== props.nickname && 
-        message.timestamp > lastReadTimestamp.value) {
+
+    if (!isOpen.value &&
+      message.nickname !== props.nickname &&
+      message.timestamp > lastReadTimestamp.value) {
       unreadCount.value++;
     }
   });
 
-  // 컴포넌트 언마운트 시 리스너 제거
+  // 클릭 이벤트 리스너 등록
+  document.addEventListener('click', handleClickOutside);
+
+  // 컴포넌트가 언마운트될 때 이벤트 리스너와 Firebase 리스너 제거
   onUnmounted(() => {
+    document.removeEventListener('click', handleClickOutside);
     if (messageListener) {
       messageListener();
     }
