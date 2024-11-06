@@ -43,6 +43,7 @@ import AnalysisCard from '../ui/AnalysisCard.vue';
 import ErrorMessage from '../ui/ErrorMessage.vue';
 import trendkeywordAnalysisPage from '../ui/trendkeyword.vue';
 import YoutubeResults from '../ui/YoutubeResults.vue';
+const router = useRouter()
 import {
     useKeywordAnalysisStore,
     type DataLabResponse,
@@ -56,6 +57,8 @@ const keywordAnalysisStore = useKeywordAnalysisStore();
 const today = new Date();
 const thirtyDaysAgo = new Date(today);
 const currentKeyword = ref('');
+import { useAuthenticationStore } from '@/authentication/stores/authenticationStore'
+const authStore = useAuthenticationStore();
 thirtyDaysAgo.setDate(today.getDate() - 30);
 const formatDate = (date: Date): string => {
     return date.toISOString().split('T')[0];
@@ -199,13 +202,16 @@ const fetchTrendData = async () => {
     } finally {
         loading.value = false;
     }
-    onMounted(() => {
-        if (!localStorage.getItem("userToken")) {
-            authStore.requestGuestTokenToDjango()
-                .catch(error => console.error("Error initializing guest token:", error))
-        }
-    })
 };
+onMounted(() => {
+    if (!localStorage.getItem("userToken")) {
+        authStore.requestGuestTokenToDjango()
+            .catch(error => console.error("Error initializing guest token:", error))
+    }
+    if (!authStore.isAuthenticated) {
+        router.push("/login")
+    }
+})
 </script>
 <style scoped>
 .app-container {
