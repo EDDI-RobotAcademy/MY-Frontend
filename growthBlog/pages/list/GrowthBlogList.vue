@@ -1,4 +1,5 @@
 <template>
+    <div class="header"></div>
     <div class="post-list" @scroll.passive="handleScroll">
             <NavHeader class="nav" />
         <div class="post-filter">
@@ -166,6 +167,10 @@ onUnmounted(() => {
 
 
 <style scoped>
+.header {
+    width: 100%;
+    height: 63px; 
+}
 .nav {
     margin-top: 70px;
 }
